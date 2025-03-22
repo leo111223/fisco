@@ -11,10 +11,10 @@ variable "repo_url" {
   description = "GitHub Repository URL"
 }
 
-variable "github_token" {
-  description = "GitHub OAuth Token"
-  sensitive   = true
-}
+# variable "github_token" {
+#   description = "GitHub OAuth Token"
+#   sensitive   = true
+# }
 
 variable "api_url" {
   description = "API Base URL for the React App"
