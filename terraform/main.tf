@@ -32,15 +32,14 @@ resource "aws_iam_policy_attachment" "amplify_full_access" {
 
 # AWS Amplify App (With Plaid API Integration)
 resource "aws_amplify_app" "plaid_app" {
-  name       = var.app_name
-  platform   = "WEB"
-  repository = var.repo_url
+  name       = "FiscAI"
+  repository = "https://github.com/leo111223/fisco.git"
   # oauth_token = var.github_token  # GitHub OAuth token for Amplify
   
   # enable_auto_branch_creation = true
   auto_branch_creation_config {
     enable_auto_build = true  
-    # enable_pull_request_preview = false
+    enable_pull_request_preview = false
     framework = "React"
     stage = "PRODUCTION"
   }
