@@ -3,10 +3,16 @@ name: Terraform Deploy
 on:
   push:
     branches:
-      - main  # Adjust this to match your repo's main branch
+      - main
   pull_request:
     branches:
       - main
+  workflow_dispatch:
+    inputs:
+      action:
+        description: 'Choose Terraform action (apply or destroy)'
+        required: true
+        default: 'apply'
 
 jobs:
   terraform:
@@ -20,14 +26,14 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
         with:
-          terraform_version: 1.5.7 # Change this if needed
+          terraform_version: 1.5.7
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-access-key-id: ${{ secrets.LEO_ACCESS_KEY }}
           aws-secret-access-key: ${{ secrets.LEO_SECRET_KEY }}
-          aws-region: us-east-1  # Change based on your AWS region
+          aws-region: us-east-1
 
       - name: Initialize Terraform
         run: terraform init
@@ -40,18 +46,13 @@ jobs:
       - name: Plan Terraform
         run: terraform plan -out=tfplan
         working-directory: terraform
-        env:
-          TF_VAR_github_token: ${{ secrets.TOKEN_GIT }}
 
       - name: Apply Terraform
-        if: github.ref == 'refs/heads/main'
+        if: github.event.inputs.action == 'apply' || github.ref == 'refs/heads/main'
         run: terraform apply -auto-approve tfplan
         working-directory: terraform
-        env:
-          TF_VAR_github_token: ${{ secrets.TOKEN_GIT }}
 
       - name: Terraform Destroy
-        if: github.ref == 'destroy'
+        if: github.event.inputs.action == 'destroy'
         run: terraform destroy -auto-approve
-        env:
-          TF_VAR_github_token: ${{ secrets.GITHUB_TOKEN }}
+        working-directory: terraform
