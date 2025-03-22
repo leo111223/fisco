@@ -37,8 +37,13 @@ resource "aws_amplify_app" "plaid_app" {
   repository = var.repo_url
   oauth_token = var.github_token  # GitHub OAuth token for Amplify
   
-  enable_auto_branch_creation = true
-  
+  # enable_auto_branch_creation = true
+  auto_branch_creation_config {
+    enable_auto_build = true  
+    enable_pull_request_preview = false
+    framework = "React"
+    stage = "PRODUCTION"
+  }
   environment_variables = {
     PLAID_CLIENT_ID     = var.plaid_client_id
     PLAID_SECRET        = var.plaid_secret
