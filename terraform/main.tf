@@ -40,10 +40,11 @@ resource "aws_amplify_app" "plaid_app" {
   # enable_auto_branch_creation = true
   auto_branch_creation_config {
     enable_auto_build = true  
-    enable_pull_request_preview = false
+    # enable_pull_request_preview = false
     framework = "React"
     stage = "PRODUCTION"
   }
+  enable_branch_auto_deletion = true
   environment_variables = {
     PLAID_CLIENT_ID     = var.plaid_client_id
     PLAID_SECRET        = var.plaid_secret
@@ -97,6 +98,7 @@ resource "aws_amplify_branch" "main_branch" {
   branch_name = var.branch_name
   
   enable_auto_build = true
+  stage             = "PRODUCTION"
 }
 
 # DynamoDB Table
