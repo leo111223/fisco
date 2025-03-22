@@ -1,0 +1,59 @@
+.institutions-container {
+  padding: 20px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.institutions-container h2 {
+  margin-bottom: 20px;
+  color: #2c5282;
+}
+
+.institution-name {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.institution-logo {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+}
+
+.status-badge {
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.status-badge.connected {
+  background-color: #C6F6D5;
+  color: #2F855A;
+}
+
+.status-badge.pending {
+  background-color: #FEEBC8;
+  color: #C05621;
+}
+
+.products-list {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.product-badge {
+  background-color: #EBF4FF;
+  color: #4299E1;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 8px;
+} 

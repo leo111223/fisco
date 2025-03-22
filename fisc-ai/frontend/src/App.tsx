@@ -1,16 +1,28 @@
-import React, { useEffect, useContext, useCallback } from "react";
+import React, { useEffect, useContext, useCallback, useState } from "react";
+import { signOut as amplifySignOut } from '@aws-amplify/auth';
 
 import Header from "./Components/Headers";
 import Products from "./Components/ProductTypes/Products";
 import Items from "./Components/ProductTypes/Items";
 import Context from "./Context";
+import Sidebar from './Components/Sidebar';
+import ChatWidget from './Components/ChatWidget';
+import Institutions from './Components/Institutions';
 
-import styles from "./App.module.scss";
 import { CraCheckReportProduct } from "plaid";
+import { Amplify } from 'aws-amplify';
+import awsconfig from './aws-exports';
+import type { WithAuthenticatorProps } from '@aws-amplify/ui-react';
+import { withAuthenticator } from '@aws-amplify/ui-react';
+import '@aws-amplify/ui-react/styles.css';
+import './App.css';
 
-const App = () => {
+Amplify.configure(awsconfig);
+
+const App = ({ signOut, user }: WithAuthenticatorProps) => {
   const { linkSuccess, isPaymentInitiation, itemId, dispatch } =
     useContext(Context);
+  const [institutions, setInstitutions] = useState([]);
 
   const getInfo = useCallback(async () => {
     const response = await fetch("/api/info", { method: "POST" });
@@ -64,7 +76,7 @@ const App = () => {
   }, [dispatch]);
 
   const generateToken = useCallback(
-    async (isPaymentInitiation) => {
+    async (isPaymentInitiation: boolean) => {
       // Link tokens for 'payment_initiation' use a different creation flow in your backend.
       const path = isPaymentInitiation
         ? "/api/create_link_token_for_payment"
@@ -96,6 +108,26 @@ const App = () => {
     [dispatch]
   );
 
+  const fetchInstitutions = useCallback(async () => {
+    try {
+      const response = await fetch('/api/institutions', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch institutions');
+      }
+      
+      const data = await response.json();
+      setInstitutions(data.institutions);
+    } catch (error) {
+      console.error('Error fetching institutions:', error);
+    }
+  }, []);
+
   useEffect(() => {
     const init = async () => {
       const { paymentInitiation, isUserTokenFlow } = await getInfo(); // used to determine which path to take when generating token
@@ -119,23 +151,54 @@ const App = () => {
     init();
   }, [dispatch, generateToken, generateUserToken, getInfo]);
 
+  useEffect(() => {
+    fetchInstitutions();
+  }, [fetchInstitutions]);
+
+  const handleSignOut = async () => {
+    try {
+      await amplifySignOut();
+      if (signOut) {
+        signOut();
+      }
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
+  };
+
   return (
-    <div className={styles.App}>
-      <div className={styles.container}>
-        <Header />
-        {linkSuccess && (
+    <div className="app-container">
+      <Sidebar />
+      <div className="main-content">
+        <div className="top-header">
+          <div className="header-content">
+            <h1>Welcome, {user?.username}</h1>
+            <button 
+              className="signin-button"
+              onClick={handleSignOut}
+            >
+              Sign out
+            </button>
+          </div>
+        </div>
+
+        <div className="dashboard-content">
+          <Header />
+          {linkSuccess && (
             <>
-            <Products />
-            {!isPaymentInitiation && itemId && (
-              <>
-              <Items />
-              {/* Add a button for the simpleTransactionCall function */}
-              <button onClick={simpleTransactionCall}>Get Transactions</button>
-              </>
-            )}
+              <Institutions institutions={institutions} />
+              <Products />
+              {!isPaymentInitiation && itemId && (
+                <>
+                  <Items />
+                  <button onClick={simpleTransactionCall}>Get Transactions</button>
+                </>
+              )}
             </>
-        )}
+          )}
+        </div>
       </div>
+      <ChatWidget />
     </div>
   );
 };
@@ -148,5 +211,4 @@ const simpleTransactionCall = async () => {
 
 };
 
-
-export default App;
+export default withAuthenticator(App);

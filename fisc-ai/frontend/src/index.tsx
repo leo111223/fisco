@@ -1,21 +1,19 @@
 import React from "react";
-import ReactDOM from "react-dom";
+import { createRoot } from "react-dom/client";
 import App from "./App";
 import { QuickstartProvider } from "./Context";
 import reportWebVitals from "./reportWebVitals";
-import { Amplify } from 'aws-amplify';
-import awsconfig from './aws-exports';
 
-Amplify.configure(awsconfig);
+const container = document.getElementById("root");
+if (!container) throw new Error('Failed to find the root element');
+const root = createRoot(container);
 
-
-ReactDOM.render(
+root.render(
   <React.StrictMode>
     <QuickstartProvider>
       <App />
     </QuickstartProvider>
-  </React.StrictMode>,
-  document.getElementById("root")
+  </React.StrictMode>
 );
 
 // If you want to start measuring performance in your app, pass a function

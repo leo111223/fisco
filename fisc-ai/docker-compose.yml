@@ -64,14 +64,29 @@ services:
     environment:
       <<: *QUICKSTART_ENVIRONMENT
   frontend:
+    build: 
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:80"
     environment:
-      - REACT_APP_API_HOST
-    networks:
-      - "quickstart"
+      - REACT_APP_API_URL=http://localhost:4000
+      - REACT_APP_COGNITO_REGION=${AWS_REGION}
+      - REACT_APP_USER_POOL_ID=${COGNITO_USER_POOL_ID}
+      - REACT_APP_USER_POOL_WEB_CLIENT_ID=${COGNITO_CLIENT_ID}
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+  auth-service:
     build:
-      context: .
-      dockerfile: ./frontend/Dockerfile
-    ports: ["3000:3000"]
+      context: ./auth-service
+      dockerfile: Dockerfile.dev
+    ports:
+      - "4000:3000"
+    environment:
+      - AWS_REGION=${AWS_REGION}
+      - COGNITO_USER_POOL_ID=${COGNITO_USER_POOL_ID}
+      - COGNITO_CLIENT_ID=${COGNITO_CLIENT_ID}
 networks:
   quickstart:
     name: quickstart
