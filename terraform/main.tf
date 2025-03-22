@@ -35,7 +35,7 @@ resource "aws_amplify_app" "plaid_app" {
   name       = var.app_name
   platform   = "WEB"
   repository = var.repo_url
- 
+  oauth_token = var.github_token  # GitHub OAuth token for Amplify
   
   enable_auto_branch_creation = true
   
