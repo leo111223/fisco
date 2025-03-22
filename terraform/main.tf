@@ -34,7 +34,7 @@ resource "aws_iam_policy_attachment" "amplify_full_access" {
 resource "aws_amplify_app" "plaid_app" {
   name       = "FiscAI"
   repository = "https://github.com/leo111223/fisco.git"
-  # oauth_token = var.github_token  # GitHub OAuth token for Amplify
+  oauth_token = var.github_token  # GitHub OAuth token for Amplify
   
   # enable_auto_branch_creation = true
   auto_branch_creation_config {
