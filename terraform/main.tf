@@ -14,6 +14,12 @@ terraform {
   }
 }
 
+# S3 Bucket for Frontend Hosting
+resource "aws_s3_bucket" "receipt_bucket" {
+  bucket = "fiscai-frontend-receipts" # replace with your unique bucket name
+  force_destroy = true
+}
+
  
 provider "aws" {
   region = var.aws_region
