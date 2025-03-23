@@ -62,18 +62,17 @@ jobs:
         shell: bash
         run: |
             echo "Fetching API URL..."
-            raw_output=$(terraform output -raw api_gateway_url 2>/dev/null)
-            api_url=$(echo "$raw_output" | grep -Eo 'https://[^"]+')
+            raw_output=$(terraform output api_gateway_url 2>/dev/null)
+            # Clean URL only (grep filters out noise)
+            api_url=$(echo "$raw_output" | grep -Eo 'https://[^ ]+')
         
-            # Escape percent signs (required by GitHub Actions)
+            # Escape for GitHub ENV usage
             safe_url="${api_url//'%'/'%25'}"
             safe_url="${safe_url//$'\n'/'%0A'}"
             safe_url="${safe_url//$'\r'/'%0D'}"
         
             echo "REACT_APP_API_URL=$safe_url" >> $GITHUB_ENV
-            echo "Final Safe API URL: $safe_url"
-        
-        
+            echo "Cleaned API URL: $api_url"
         
         
         
@@ -81,12 +80,10 @@ jobs:
         working-directory: fisc-ai/frontend  # adjust if needed
         run: |
           echo "REACT_APP_API_URL=${{ env.REACT_APP_API_URL }}" > .env.production
+          cat .env.production
           npm install
           npm run build
   
-      - name: Print .env.production
-        run: cat .env.production
-        working-directory: fisc-ai/frontend
 
       - name: Terraform Destroy
         if: github.event.inputs.action == 'destroy'
