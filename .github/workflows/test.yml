@@ -2,7 +2,7 @@ name: Combined Infrastructure and Frontend Deployment
 
 on:
   push:
-    branches: [main]  #
+    branches: [amplify_branch]
     paths:
       - 'terraform/**'
       - 'fisc-ai/frontend/**'
@@ -40,7 +40,6 @@ jobs:
           aws-secret-access-key: ${{ secrets.LEO_SECRET_KEY }}
           aws-region: ${{ github.event.inputs.aws-region || 'us-east-1' }}
 
-      # Infrastructure Deployment Steps
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
 
@@ -52,33 +51,31 @@ jobs:
         run: terraform plan
         working-directory: terraform
         env:
-          TF_VAR_github_token: ${{ secrets.TOKEN_GIT }}
+            TF_VAR_github_token: ${{ secrets.TOKEN_GIT }}
 
       - name: Terraform Apply
         if: github.event.inputs.action != 'destroy'
         run: terraform apply -auto-approve
         working-directory: terraform
         env:
-          TF_VAR_github_token: ${{ secrets.TOKEN_GIT }}
+            TF_VAR_github_token: ${{ secrets.TOKEN_GIT }}
 
       - name: Terraform Destroy
         if: github.event.inputs.action == 'destroy'
         run: terraform destroy -auto-approve
         working-directory: terraform
         env:
-          TF_VAR_github_token: ${{ secrets.TOKEN_GIT }}
+            TF_VAR_github_token: ${{ secrets.TOKEN_GIT }}
 
-      # Capture Terraform outputs as environment variables
-      - name: Set Infrastructure Outputs as Environment Variables
+      - name: Set Terraform Outputs as Environment Variables
         if: github.event.inputs.action != 'destroy'
         run: |
-          echo "S3_BUCKET_NAME=$(terraform output -raw s3_bucket)" >> $GITHUB_ENV
-          echo "CLOUDFRONT_ID=$(terraform output -raw cloudfront_distribution_id)" >> $GITHUB_ENV
-          echo "COGNITO_USER_POOL_ID=$(terraform output -raw cognito_user_pool_id)" >> $GITHUB_ENV
-          echo "COGNITO_CLIENT_ID=$(terraform output -raw cognito_client_id)" >> $GITHUB_ENV
+          echo "S3_BUCKET_NAME=$(terraform output -raw s3_bucket)" >> $GITHUB_ENV || true
+          echo "CLOUDFRONT_ID=$(terraform output -raw cloudfront_distribution_id)" >> $GITHUB_ENV || true
+          echo "COGNITO_USER_POOL_ID=$(terraform output -raw cognito_user_pool_id)" >> $GITHUB_ENV || true
+          echo "COGNITO_CLIENT_ID=$(terraform output -raw cognito_client_id)" >> $GITHUB_ENV || true
         working-directory: terraform
 
-      # Frontend Deployment Steps (only run if not destroying)
       - name: Setup Node.js
         if: github.event.inputs.action != 'destroy'
         uses: actions/setup-node@v2
@@ -112,10 +109,11 @@ jobs:
           aws cloudfront create-invalidation \
             --distribution-id ${{ env.CLOUDFRONT_ID }} \
             --paths "/*"
-            
-      - name: Output Deployment URLs
+
+      - name: Output Deployment Info
         if: github.event.inputs.action != 'destroy'
         run: |
           echo "🚀 Frontend deployed successfully!"
-          echo "📱 Website URL: https://${{ env.CLOUDFRONT_ID }}.cloudfront.net"
-          echo "🔐 Cognito User Pool ID: ${{ env.COGNITO_USER_POOL_ID }}" 
+          echo "🌐 S3 Bucket: ${{ env.S3_BUCKET_NAME }}"
+          echo "📦 CloudFront ID: ${{ env.CLOUDFRONT_ID }}"
+          echo "🔐 Cognito Pool: ${{ env.COGNITO_USER_POOL_ID }}"
