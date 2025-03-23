@@ -13,6 +13,5 @@ plaid_client_id  = "67ad2ec20245ff0021df5364"
 plaid_secret     = "b87f4cfceb87f20dbdf89dc2602c2a"
 plaid_environment = "sandbox"
 
-
 lambda_function_name = "transaction_handler"
 dynamodb_table_name  = "transactions"
