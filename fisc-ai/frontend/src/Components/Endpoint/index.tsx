@@ -58,7 +58,11 @@ const Endpoint = (props: Props) => {
         setShowTable(true);
       }
     } catch (err) {
-      setError({ message: "Failed to fetch data." });
+      setError({
+        error_code: "FETCH_ERROR",
+        error_type: "ClientError",
+        display_message: "Failed to fetch data.",
+      });
     }
   
     setIsLoading(false);
