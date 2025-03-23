@@ -78,7 +78,10 @@ jobs:
         
             # For React frontend .env.production
             echo "REACT_APP_API_URL=$api_url" > ../fisc-ai/frontend/.env.production
-      
+            
+      - name: Debug .env.production
+        working-directory: fisc-ai/frontend
+        run: cat .env.production
   
 
       - name: Terraform Destroy
