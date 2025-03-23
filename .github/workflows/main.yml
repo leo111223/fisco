@@ -62,9 +62,11 @@ jobs:
         shell: bash
         run: |
             echo "Fetching API URL..."
-            api_url=$(terraform output -raw api_gateway_url 2>/dev/null)
-            echo "API URL is $api_url"
+            raw_output=$(terraform output api_gateway_url 2>/dev/null)
+            api_url=$(echo "$raw_output" | grep -Eo 'https://[^"]+')
             echo "REACT_APP_API_URL=$api_url" >> $GITHUB_ENV
+            echo " Cleaned API URL: $api_url"
+        
         
         
         
