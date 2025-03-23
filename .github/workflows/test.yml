@@ -51,16 +51,22 @@ jobs:
       - name: Terraform Plan
         run: terraform plan
         working-directory: terraform
+        env:
+          TF_VAR_github_token: ${{ secrets.TOKEN_GIT }}
 
       - name: Terraform Apply
         if: github.event.inputs.action != 'destroy'
         run: terraform apply -auto-approve
         working-directory: terraform
+        env:
+          TF_VAR_github_token: ${{ secrets.TOKEN_GIT }}
 
       - name: Terraform Destroy
         if: github.event.inputs.action == 'destroy'
         run: terraform destroy -auto-approve
         working-directory: terraform
+        env:
+          TF_VAR_github_token: ${{ secrets.TOKEN_GIT }}
 
       # Capture Terraform outputs as environment variables
       - name: Set Infrastructure Outputs as Environment Variables
