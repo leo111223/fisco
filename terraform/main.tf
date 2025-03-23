@@ -44,11 +44,11 @@ resource "aws_amplify_app" "plaid_app" {
     stage = "PRODUCTION"
   }
   enable_branch_auto_deletion = true
-  environment_variables = {
-    PLAID_CLIENT_ID     = var.plaid_client_id
-    PLAID_SECRET        = var.plaid_secret
-    PLAID_ENVIRONMENT   = var.plaid_environment
-  }
+  # environment_variables = {
+  #   PLAID_CLIENT_ID     = var.plaid_client_id
+  #   PLAID_SECRET        = var.plaid_secret
+  #   PLAID_ENVIRONMENT   = var.plaid_environment
+  # }
   
   iam_service_role_arn = data.aws_iam_role.amplify_role.arn
 
@@ -152,6 +152,9 @@ resource "aws_lambda_function" "transaction_handler" {
   environment {
     variables = {
       DYNAMODB_TABLE = aws_dynamodb_table.transactions.name
+      PLAID_CLIENT_ID   = var.plaid_client_id
+      PLAID_SECRET      = var.plaid_secret
+      PLAID_ENVIRONMENT = var.plaid_environment
     }
   }
 }
