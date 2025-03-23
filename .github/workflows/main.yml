@@ -82,13 +82,13 @@ jobs:
         id: get_api_url
         working-directory: terraform
         run: |
-          echo "Getting clean API URL..."
-          raw_output=$(terraform output -raw api_gateway_url 2>/dev/null)
-          echo "Cleaned API URL: $raw_output"
-          echo "REACT_APP_API_URL=$raw_output" >> $GITHUB_ENV
-          echo "REACT_APP_API_URL=$raw_output" > ../fisc-ai/frontend/.env.production
-    
-        
+          echo "🌐 Getting clean API URL..."
+          api_url=$(terraform output -raw api_gateway_url 2>/dev/null | tr -d '\n\r')
+          echo "✅ Cleaned API URL: $api_url"
+          echo "REACT_APP_API_URL=$api_url" >> $GITHUB_ENV
+          echo "REACT_APP_API_URL=$api_url" > ../fisc-ai/frontend/.env.production
+      
+          
         
       - name: Debug .env.production
         working-directory: fisc-ai/frontend
