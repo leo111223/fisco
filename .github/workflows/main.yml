@@ -59,9 +59,13 @@ jobs:
       - name: Get API Gateway URL from Terraform Output
         id: get_api_url
         working-directory: terraform
+        shell: bash
         run: |
-            api_url=$(terraform output -raw api_gateway_url 2> /dev/null)
+            echo "Fetching API URL..."
+            api_url=$(terraform output -raw api_gateway_url 2>/dev/null)
+            echo "API URL is $api_url"
             echo "REACT_APP_API_URL=$api_url" >> $GITHUB_ENV
+        
         
         
       - name: Build React Frontend with API URL
