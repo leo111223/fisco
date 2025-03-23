@@ -61,7 +61,7 @@ jobs:
         working-directory: terraform
         run: |
           api_url=$(terraform output -raw api_gateway_url)
-          echo "REACT_APP_API_URL=$api_url" >> $GITHUB_ENV
+          printf "REACT_APP_API_URL=$api_url" >> $GITHUB_ENV
         
       - name: Build React Frontend with API URL
         working-directory: fisc-ai/frontend  # adjust if needed
