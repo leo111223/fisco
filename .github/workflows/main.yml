@@ -63,16 +63,17 @@ jobs:
         run: |
             echo "Fetching API URL..."
             raw_output=$(terraform output api_gateway_url 2>/dev/null)
-            # Clean URL only (grep filters out noise)
             api_url=$(echo "$raw_output" | grep -Eo 'https://[^ ]+')
         
-            # Escape for GitHub ENV usage
+            # Write to GITHUB_ENV for later steps (escaped)
             safe_url="${api_url//'%'/'%25'}"
             safe_url="${safe_url//$'\n'/'%0A'}"
             safe_url="${safe_url//$'\r'/'%0D'}"
-        
             echo "REACT_APP_API_URL=$safe_url" >> $GITHUB_ENV
-            echo "Cleaned API URL: $api_url"
+        
+            # Write clean version to .env.production
+            echo "REACT_APP_API_URL=$api_url" > ../fisc-ai/frontend/.env.production
+        
         
         
         
