@@ -56,7 +56,6 @@ jobs:
         env:
           TF_VAR_github_token: ${{ secrets.TOKEN_GIT }}
       
-      
       - name: Get and Write Clean API URL
         id: get_api_url
         working-directory: terraform
@@ -64,22 +63,22 @@ jobs:
         run: |
             echo "🌐 Fetching clean API URL from Terraform output..."
         
-            # Get raw output string (might include noise or quotes)
             raw_output=$(terraform output -raw api_gateway_url 2>/dev/null)
         
-            # Strip extra text and keep only the https URL (first match)
-            api_url=$(echo "$raw_output" | grep -Eo 'https://[^[:space:]"]+')
+            # Strip any extra lines or garbage (for safety)
+            api_url=$(echo "$raw_output" | grep -Eo '^https://[^[:space:]]+')
         
-            echo "Cleaned API URL: $api_url"
+            echo "✅ Cleaned API URL: $api_url"
         
-            # For GitHub Actions env (escaped)
+            # For GitHub ENV
             safe_url="${api_url//'%'/'%25'}"
             safe_url="${safe_url//$'\n'/'%0A'}"
             safe_url="${safe_url//$'\r'/'%0D'}"
             echo "REACT_APP_API_URL=$safe_url" >> $GITHUB_ENV
         
-            # Write clean (not escaped) line to .env.production (1 line only!)
+            # For React frontend .env.production
             echo "REACT_APP_API_URL=$api_url" > ../fisc-ai/frontend/.env.production
+        
         
         
       - name: Debug .env.production
