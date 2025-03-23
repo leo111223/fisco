@@ -42,7 +42,7 @@ const Endpoint = (props: Props) => {
   // };
   const getData = async () => {
     setIsLoading(true);
-    const url = `${process.env.REACT_APP_API_URL}/${props.endpoint}`;
+    const url = `${process.env.REACT_APP_API_URL}/transactions`;
   
     try {
       const response = await fetch(url, { method: "GET" });
