@@ -1,0 +1,115 @@
+name: Combined Infrastructure and Frontend Deployment
+
+on:
+  push:
+    branches: [main]  #
+    paths:
+      - 'terraform/**'
+      - 'fisc-ai/frontend/**'
+  workflow_dispatch:
+    inputs:
+      action:
+        description: 'Terraform Action to Perform'
+        type: choice
+        options:
+          - apply
+          - destroy
+        default: 'apply'
+      aws-region:
+        description: 'AWS Region'
+        required: true
+        default: 'us-east-1'
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  deploy:
+    name: 'Deploy Infrastructure and Frontend'
+    runs-on: ubuntu-latest
+    env:
+      TF_VAR_aws_region: ${{ github.event.inputs.aws-region || 'us-east-1' }}
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.LEO_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.LEO_SECRET_KEY }}
+          aws-region: ${{ github.event.inputs.aws-region || 'us-east-1' }}
+
+      # Infrastructure Deployment Steps
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
+
+      - name: Terraform Init
+        run: terraform init
+        working-directory: terraform
+
+      - name: Terraform Plan
+        run: terraform plan
+        working-directory: terraform
+
+      - name: Terraform Apply
+        if: github.event.inputs.action != 'destroy'
+        run: terraform apply -auto-approve
+        working-directory: terraform
+
+      - name: Terraform Destroy
+        if: github.event.inputs.action == 'destroy'
+        run: terraform destroy -auto-approve
+        working-directory: terraform
+
+      # Capture Terraform outputs as environment variables
+      - name: Set Infrastructure Outputs as Environment Variables
+        if: github.event.inputs.action != 'destroy'
+        run: |
+          echo "S3_BUCKET_NAME=$(terraform output -raw s3_bucket)" >> $GITHUB_ENV
+          echo "CLOUDFRONT_ID=$(terraform output -raw cloudfront_distribution_id)" >> $GITHUB_ENV
+          echo "COGNITO_USER_POOL_ID=$(terraform output -raw cognito_user_pool_id)" >> $GITHUB_ENV
+          echo "COGNITO_CLIENT_ID=$(terraform output -raw cognito_client_id)" >> $GITHUB_ENV
+        working-directory: terraform
+
+      # Frontend Deployment Steps (only run if not destroying)
+      - name: Setup Node.js
+        if: github.event.inputs.action != 'destroy'
+        uses: actions/setup-node@v2
+        with:
+          node-version: '18'
+
+      - name: Install Frontend Dependencies
+        if: github.event.inputs.action != 'destroy'
+        run: |
+          cd fisc-ai/frontend
+          npm install --legacy-peer-deps
+
+      - name: Build Frontend
+        if: github.event.inputs.action != 'destroy'
+        run: |
+          cd fisc-ai/frontend
+          CI=false npm run build
+        env:
+          REACT_APP_COGNITO_REGION: 'us-east-1'
+          REACT_APP_USER_POOL_ID: ${{ env.COGNITO_USER_POOL_ID }}
+          REACT_APP_USER_POOL_WEB_CLIENT_ID: ${{ env.COGNITO_CLIENT_ID }}
+
+      - name: Deploy Frontend to S3
+        if: github.event.inputs.action != 'destroy'
+        run: |
+          aws s3 sync fisc-ai/frontend/build/ s3://${{ env.S3_BUCKET_NAME }}
+
+      - name: Invalidate CloudFront
+        if: github.event.inputs.action != 'destroy'
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id ${{ env.CLOUDFRONT_ID }} \
+            --paths "/*"
+            
+      - name: Output Deployment URLs
+        if: github.event.inputs.action != 'destroy'
+        run: |
+          echo "🚀 Frontend deployed successfully!"
+          echo "📱 Website URL: https://${{ env.CLOUDFRONT_ID }}.cloudfront.net"
+          echo "🔐 Cognito User Pool ID: ${{ env.COGNITO_USER_POOL_ID }}" 

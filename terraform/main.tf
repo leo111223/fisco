@@ -52,42 +52,42 @@ resource "aws_amplify_app" "plaid_app" {
   
   iam_service_role_arn = data.aws_iam_role.amplify_role.arn
 
-  build_spec = <<EOT
-version: 1
-applications:
-  - appRoot: fisc-ai/frontend
-    frontend:
-      phases:
-        preBuild:
-          commands:
-            - npm install
-        build:
-          commands:
-            - npm run build
-      artifacts:
-        baseDirectory: build
-        files:
-          - "**/*"
-      cache:
-        paths:
-          - node_modules/**/*
-  - appRoot: fisc-ai/python
-    backend:
-      phases:
-        preBuild:
-          commands:
-            - pip install -r requirements.txt
-        build:
-          commands:
-            - python server.py
-      artifacts:
-        baseDirectory: .
-        files:
-          - "**/*"
-      cache:
-        paths:
-          - .venv/**/*
-EOT
+#   build_spec = <<EOT
+# version: 1
+# applications:
+#   - appRoot: fisc-ai/frontend
+#     frontend:
+#       phases:
+#         preBuild:
+#           commands:
+#             - npm install
+#         build:
+#           commands:
+#             - npm run build
+#       artifacts:
+#         baseDirectory: build
+#         files:
+#           - "**/*"
+#       cache:
+#         paths:
+#           - node_modules/**/*
+#   - appRoot: fisc-ai/python
+#     backend:
+#       phases:
+#         preBuild:
+#           commands:
+#             - pip install -r requirements.txt
+#         build:
+#           commands:
+#             - python server.py
+#       artifacts:
+#         baseDirectory: .
+#         files:
+#           - "**/*"
+#       cache:
+#         paths:
+#           - .venv/**/*
+# EOT
   
 }
 
