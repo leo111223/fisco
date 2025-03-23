@@ -24,22 +24,46 @@ const Endpoint = (props: Props) => {
   const [error, setError] = useState<ErrorDataItem | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
+  // const getData = async () => {
+  //   setIsLoading(true);
+  //   const response = await fetch(`/api/${props.endpoint}`, { method: "GET" });
+  //   const data = await response.json();
+  //   if (data.error != null) {
+  //     setError(data.error);
+  //     setIsLoading(false);
+  //     return;
+  //   }
+  //   setTransformedData(props.transformData(data)); // transform data into proper format for each individual product
+  //   if (data.pdf != null) {
+  //     setPdf(data.pdf);
+  //   }
+  //   setShowTable(true);
+  //   setIsLoading(false);
+  // };
   const getData = async () => {
     setIsLoading(true);
-    const response = await fetch(`/api/${props.endpoint}`, { method: "GET" });
-    const data = await response.json();
-    if (data.error != null) {
-      setError(data.error);
-      setIsLoading(false);
-      return;
+    const url = `${process.env.REACT_APP_API_URL}/${props.endpoint}`;
+  
+    try {
+      const response = await fetch(url, { method: "GET" });
+      const data = await response.json();
+  
+      if (data.error != null) {
+        setError(data.error);
+      } else {
+        setTransformedData(props.transformData(data));
+        if (data.pdf != null) {
+          setPdf(data.pdf);
+        }
+        setShowTable(true);
+      }
+    } catch (err) {
+      setError({ message: "Failed to fetch data." });
     }
-    setTransformedData(props.transformData(data)); // transform data into proper format for each individual product
-    if (data.pdf != null) {
-      setPdf(data.pdf);
-    }
-    setShowTable(true);
+  
     setIsLoading(false);
   };
+  
 
   const getPdfName = () => {
     switch(props.name) {
