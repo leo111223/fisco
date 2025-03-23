@@ -56,34 +56,42 @@ jobs:
         env:
           TF_VAR_github_token: ${{ secrets.TOKEN_GIT }}
       
-      - name: Get API Gateway URL from Terraform Output
+      - name: Get and Write API URL
         id: get_api_url
         working-directory: terraform
         shell: bash
         run: |
-            echo "Fetching API URL..."
+            echo "Fetching clean API URL..."
+        
+            # 1. Get raw output from Terraform
             raw_output=$(terraform output api_gateway_url 2>/dev/null)
+        
+            # 2. Clean just the URL portion (remove any debug noise)
             api_url=$(echo "$raw_output" | grep -Eo 'https://[^ ]+')
         
-            # Write to GITHUB_ENV for later steps (escaped)
+            echo "Clean URL: $api_url"
+        
+            # 3. Escape special chars only for GITHUB_ENV use
             safe_url="${api_url//'%'/'%25'}"
             safe_url="${safe_url//$'\n'/'%0A'}"
             safe_url="${safe_url//$'\r'/'%0D'}"
+        
+            # 4. Save for GitHub Actions env
             echo "REACT_APP_API_URL=$safe_url" >> $GITHUB_ENV
         
-            # Write clean version to .env.production
+            # 5. Write clean URL to .env.production (this is the key fix)
             echo "REACT_APP_API_URL=$api_url" > ../fisc-ai/frontend/.env.production
         
         
         
-        
-      - name: Build React Frontend with API URL
-        working-directory: fisc-ai/frontend  # adjust if needed
+      - name: Build React Frontend
+        working-directory: fisc-ai/frontend
         run: |
-          echo "REACT_APP_API_URL=${{ env.REACT_APP_API_URL }}" > .env.production
-          cat .env.production
-          npm install
-          npm run build
+              echo "🔍 Checking .env.production..."
+              cat .env.production  # this should now be 1 line only
+              npm install
+              npm run build
+          
   
 
       - name: Terraform Destroy
