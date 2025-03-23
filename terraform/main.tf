@@ -57,7 +57,7 @@ resource "aws_amplify_app" "plaid_app" {
   # }
   
   iam_service_role_arn = data.aws_iam_role.amplify_role.arn
-  build_spec = file("${path.module}/build_spec.yaml")
+  # build_spec = file("${path.module}/build_spec.yaml")
 #   build_spec = <<EOT
 # version: 1
 # applications:
