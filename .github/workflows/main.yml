@@ -56,37 +56,28 @@ jobs:
         env:
           TF_VAR_github_token: ${{ secrets.TOKEN_GIT }}
       
-      # - name: Get and Write Clean API URL
-      #   id: get_api_url
-      #   working-directory: terraform
-      #   shell: bash
-      #   run: |
-      #       echo "Fetching clean API URL from Terraform output..."
-        
-      #       raw_output=$(terraform output -raw api_gateway_url 2>/dev/null)
-        
-      #       # Strip any extra lines or garbage (for safety)
-      #       api_url=$(echo "$raw_output" | grep -Eo '^https://[^[:space:]]+')
-        
-      #       echo "Cleaned API URL: $api_url"
-        
-      #       # For GitHub ENV
-      #       safe_url="${api_url//'%'/'%25'}"
-      #       safe_url="${safe_url//$'\n'/'%0A'}"
-      #       safe_url="${safe_url//$'\r'/'%0D'}"
-      #       echo "REACT_APP_API_URL=$safe_url" >> $GITHUB_ENV
-        
-      #       # For React frontend .env.production
-      #       echo "REACT_APP_API_URL=$api_url" > ../fisc-ai/frontend/.env.production
-      - name: Get Clean API Gateway URL from Terraform
+      - name: Get and Write Clean API URL
         id: get_api_url
         working-directory: terraform
+        shell: bash
         run: |
-          echo "🌐 Getting clean API URL..."
-          api_url=$(terraform output -raw api_gateway_url 2>/dev/null | tr -d '\n\r')
-          echo "✅ Cleaned API URL: $api_url"
-          echo "REACT_APP_API_URL=$api_url" >> $GITHUB_ENV
-          echo "REACT_APP_API_URL=$api_url" > ../fisc-ai/frontend/.env.production
+            echo "Fetching clean API URL from Terraform output..."
+        
+            raw_output=$(terraform output -raw api_gateway_url 2>/dev/null)
+        
+            # Strip any extra lines or garbage (for safety)
+            api_url=$(echo "$raw_output" | grep -Eo '^https://[^[:space:]]+')
+        
+            echo "Cleaned API URL: $api_url"
+        
+            # For GitHub ENV
+            safe_url="${api_url//'%'/'%25'}"
+            safe_url="${safe_url//$'\n'/'%0A'}"
+            safe_url="${safe_url//$'\r'/'%0D'}"
+            echo "REACT_APP_API_URL=$safe_url" >> $GITHUB_ENV
+        
+            # For React frontend .env.production
+            echo "REACT_APP_API_URL=$api_url" > ../fisc-ai/frontend/.env.production
       
           
         
