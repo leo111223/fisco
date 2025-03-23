@@ -55,6 +55,21 @@ jobs:
         working-directory: terraform
         env:
           TF_VAR_github_token: ${{ secrets.TOKEN_GIT }}
+      
+      - name: Get API Gateway URL from Terraform Output
+        id: get_api_url
+        run: |
+          cd terraform
+          echo "API_URL=$(terraform output -raw api_gateway_url)" >> $GITHUB_ENV
+  
+      - name: Build React Frontend with API URL
+        working-directory: fisc-ai/frontend  # adjust if needed
+        run: |
+          echo "REACT_APP_API_URL=${{ env.API_URL }}" > .env.production
+          npm install
+          npm run build
+  
+      
 
       - name: Terraform Destroy
         if: github.event.inputs.action == 'destroy'
