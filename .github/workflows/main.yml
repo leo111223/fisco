@@ -56,41 +56,36 @@ jobs:
         env:
           TF_VAR_github_token: ${{ secrets.TOKEN_GIT }}
       
-      - name: Get and Write API URL
+      
+      - name: Get and Write Clean API URL
         id: get_api_url
         working-directory: terraform
         shell: bash
         run: |
-            echo "Fetching clean API URL..."
+            echo "🌐 Fetching clean API URL from Terraform output..."
         
-            # 1. Get raw output from Terraform
-            raw_output=$(terraform output api_gateway_url 2>/dev/null)
+            # Get raw output string (might include noise or quotes)
+            raw_output=$(terraform output -raw api_gateway_url 2>/dev/null)
         
-            # 2. Clean just the URL portion (remove any debug noise)
-            api_url=$(echo "$raw_output" | grep -Eo 'https://[^ ]+')
+            # Strip extra text and keep only the https URL (first match)
+            api_url=$(echo "$raw_output" | grep -Eo 'https://[^[:space:]"]+')
         
-            echo "Clean URL: $api_url"
+            echo "Cleaned API URL: $api_url"
         
-            # 3. Escape special chars only for GITHUB_ENV use
+            # For GitHub Actions env (escaped)
             safe_url="${api_url//'%'/'%25'}"
             safe_url="${safe_url//$'\n'/'%0A'}"
             safe_url="${safe_url//$'\r'/'%0D'}"
-        
-            # 4. Save for GitHub Actions env
             echo "REACT_APP_API_URL=$safe_url" >> $GITHUB_ENV
         
-            # 5. Write clean URL to .env.production (this is the key fix)
+            # Write clean (not escaped) line to .env.production (1 line only!)
             echo "REACT_APP_API_URL=$api_url" > ../fisc-ai/frontend/.env.production
         
         
-        
-      - name: Build React Frontend
+      - name: Debug .env.production
         working-directory: fisc-ai/frontend
-        run: |
-              echo "🔍 Checking .env.production..."
-              cat .env.production  # this should now be 1 line only
-              npm install
-              npm run build
+        run: cat .env.production
+          
           
   
 
