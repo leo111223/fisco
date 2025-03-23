@@ -13,3 +13,18 @@ output "api_gateway_url" {
   description = "Root URL for API Gateway"
 }
 
+output "s3_bucket" {
+  value = aws_s3_bucket.receipt_bucket.id
+}
+
+output "cloudfront_distribution_id" {
+  value = aws_cloudfront_distribution.fiscai_distribution.id
+}
+
+output "cognito_user_pool_id" {
+  value = aws_cognito_user_pool.fiscai_user_pool.id
+}
+
+output "cognito_client_id" {
+  value = aws_cognito_user_pool_client.fiscai_user_pool_client.id
+}
