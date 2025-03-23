@@ -43,6 +43,46 @@ jobs:
         run: terraform validate
         working-directory: terraform
 
+      - name: Write build_spec.yaml for Amplify
+        run: |
+          mkdir -p terraform
+          cat <<'EOT' > terraform/build_spec.yaml
+          version: 1
+          applications:
+            - appRoot: fisc-ai/frontend
+              frontend:
+                phases:
+                  preBuild:
+                    commands:
+                      - npm install
+                  build:
+                    commands:
+                      - npm run build
+                artifacts:
+                  baseDirectory: build
+                  files:
+                    - "**/*"
+                cache:
+                  paths:
+                    - node_modules/**/*
+            - appRoot: fisc-ai/backend/python
+              backend:
+                phases:
+                  preBuild:
+                    commands:
+                      - pip install -r requirements.txt
+                  build:
+                    commands:
+                      - python server.py
+                artifacts:
+                  baseDirectory: .
+                  files:
+                    - "**/*"
+                cache:
+                  paths:
+                    - .venv/**/*
+          EOT
+
       - name: Plan Terraform
         run: terraform plan -out=tfplan
         working-directory: terraform
