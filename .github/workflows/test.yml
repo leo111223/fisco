@@ -1,24 +1,18 @@
 name: Combined Infrastructure and Frontend Deployment
 
 on:
-  push:
-    branches: [amplify_branch]
-    paths:
-      - 'terraform/**'
-      - 'fisc-ai/frontend/**'
-  workflow_dispatch:
-    inputs:
-      action:
-        description: 'Terraform Action to Perform'
-        type: choice
-        options:
-          - apply
-          - destroy
-        default: 'apply'
-      aws-region:
-        description: 'AWS Region'
-        required: true
-        default: 'us-east-1'
+    push:
+      branches:
+        - main
+    pull_request:
+      branches:
+        - main
+    workflow_dispatch:
+      inputs:
+        action:
+          description: 'Choose Terraform action (apply or destroy)'
+          required: true
+          default: 'apply'
 
 permissions:
   contents: read
