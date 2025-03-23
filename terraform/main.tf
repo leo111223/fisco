@@ -132,10 +132,16 @@ resource "aws_lambda_permission" "apigw" {
   source_arn    = "${aws_api_gateway_rest_api.finance_api.execution_arn}/*/*"
 }
 
+# S3 Bucket for Frontend Hosting
+resource "aws_s3_bucket" "receipt_bucket" {
+  bucket = "fiscai-frontend-receipts" # replace with your unique bucket name
+  force_destroy = true
+}
+
 # CloudFront Distribution
 resource "aws_cloudfront_distribution" "fiscai_distribution" {
   origin {
-    domain_name = data.aws_s3_bucket.existing_bucket.bucket_regional_domain_name
+    domain_name = aws_s3_bucket.receipt_bucket.bucket_regional_domain_name
     origin_id   = "s3-origin"
 
     s3_origin_config {
