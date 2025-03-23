@@ -41,7 +41,7 @@ resource "aws_amplify_app" "plaid_app" {
   name       = "FiscAI"
   repository = "https://github.com/leo111223/fisco.git"
   oauth_token = var.github_token  # GitHub OAuth token for Amplify
-  
+  platform = "WEB"
   # enable_auto_branch_creation = true
   auto_branch_creation_config {
     enable_auto_build = true  
@@ -57,44 +57,43 @@ resource "aws_amplify_app" "plaid_app" {
   # }
   
   iam_service_role_arn = data.aws_iam_role.amplify_role.arn
-
-  build_spec = <<EOT
-version: 1
-applications:
-  - appRoot: fisc-ai/frontend
-    frontend:
-      phases:
-        preBuild:
-          commands:
-            - npm install
-        build:
-          commands:
-            - npm run build
-      artifacts:
-        baseDirectory: build
-        files:
-          - "**/*"
-      cache:
-        paths:
-          - node_modules/**/*
-  - appRoot: fisc-ai/backend/python
-    backend:
-      phases:
-        preBuild:
-          commands:
-            - pip install -r requirements.txt
-        build:
-          commands:
-            - python server.py
-      artifacts:
-        baseDirectory: .
-        files:
-          - "**/*"
-      cache:
-        paths:
-          - .venv/**/*
-EOT
-  
+  build_spec = file("${path.module}/build_spec.yaml")
+#   build_spec = <<EOT
+# version: 1
+# applications:
+#   - appRoot: fisc-ai/frontend
+#     frontend:
+#       phases:
+#         preBuild:
+#           commands:
+#             - npm install
+#         build:
+#           commands:
+#             - npm run build
+#       artifacts:
+#         baseDirectory: build
+#         files:
+#           - "**/*"
+#       cache:
+#         paths:
+#           - node_modules/**/*
+#   - appRoot: fisc-ai/backend/python
+#     backend:
+#       phases:
+#         preBuild:
+#           commands:
+#             - pip install -r requirements.txt
+#         build:
+#           commands:
+#             - python server.py
+#       artifacts:
+#         baseDirectory: .
+#         files:
+#           - "**/*"
+#       cache:
+#         paths:
+#           - .venv/**/*
+# EOT
 }
 
 # AWS Amplify Branch (Deploys Specific GitHub Branch)
