@@ -62,6 +62,8 @@ const Endpoint = (props: Props) => {
         error_code: "FETCH_ERROR",
         error_type: "ClientError",
         display_message: "Failed to fetch data.",
+        error_message: "Request failed at fetch step.",
+        status_code: 500,
       });
     }
   
