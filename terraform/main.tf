@@ -14,12 +14,11 @@ terraform {
   }
 }
 
- 
 provider "aws" {
   region = var.aws_region
 }
 
-# IAM Role for AWS Amplify (Reference existing role instead of creating a new one)
+# IAM Role for AWS Amplify (Still keeping role in case needed)
 data "aws_iam_role" "amplify_role" {
   name = "amplify-service-role"
 }
@@ -30,72 +29,18 @@ resource "aws_iam_policy_attachment" "amplify_full_access" {
   policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess-Amplify"
 }
 
-# AWS Amplify App (With Plaid API Integration)
+# AWS Amplify App (Removed build_spec)
 resource "aws_amplify_app" "plaid_app" {
   name       = "FiscAI"
   repository = "https://github.com/leo111223/fisco.git"
-  oauth_token = var.github_token  # GitHub OAuth token for Amplify
-  
-  # enable_auto_branch_creation = true
-  auto_branch_creation_config {
-    enable_auto_build = true  
-    enable_pull_request_preview = false
-    framework = "React"
-    stage = "PRODUCTION"
-  }
-  enable_branch_auto_deletion = true
-  # environment_variables = {
-  #   PLAID_CLIENT_ID     = var.plaid_client_id
-  #   PLAID_SECRET        = var.plaid_secret
-  #   PLAID_ENVIRONMENT   = var.plaid_environment
-  # }
-  
+  oauth_token = var.github_token
   iam_service_role_arn = data.aws_iam_role.amplify_role.arn
-
-#   build_spec = <<EOT
-# version: 1
-# applications:
-#   - appRoot: fisc-ai/frontend
-#     frontend:
-#       phases:
-#         preBuild:
-#           commands:
-#             - npm install
-#         build:
-#           commands:
-#             - npm run build
-#       artifacts:
-#         baseDirectory: build
-#         files:
-#           - "**/*"
-#       cache:
-#         paths:
-#           - node_modules/**/*
-#   - appRoot: fisc-ai/python
-#     backend:
-#       phases:
-#         preBuild:
-#           commands:
-#             - pip install -r requirements.txt
-#         build:
-#           commands:
-#             - python server.py
-#       artifacts:
-#         baseDirectory: .
-#         files:
-#           - "**/*"
-#       cache:
-#         paths:
-#           - .venv/**/*
-# EOT
-  
+  enable_branch_auto_deletion = true
 }
 
-# AWS Amplify Branch (Deploys Specific GitHub Branch)
 resource "aws_amplify_branch" "main_branch" {
   app_id      = aws_amplify_app.plaid_app.id
   branch_name = var.branch_name
-  
   enable_auto_build = true
   stage             = "PRODUCTION"
 }
@@ -112,82 +57,63 @@ resource "aws_dynamodb_table" "transactions" {
   }
 }
 
-# IAM Role for Lambda
-resource "aws_iam_role" "lambda_exec" {
-  name = "lambda_exec_role"
-
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [{
-      Action = "sts:AssumeRole"
-      Effect = "Allow"
-      Principal = {
-        Service = "lambda.amazonaws.com"
-      }
-    }]
-  })
+# Existing S3 bucket for frontend
+data "aws_s3_bucket" "existing_bucket" {
+  bucket = "your-existing-s3-bucket-name"
 }
 
-# API Gateway
-resource "aws_api_gateway_rest_api" "finance_api" {
-  name        = "FinanceAPI"
-  description = "API Gateway for Financial Transactions"
-}
+resource "aws_cloudfront_distribution" "fiscai_distribution" {
+  origin {
+    domain_name = data.aws_s3_bucket.existing_bucket.bucket_regional_domain_name
+    origin_id   = "s3-origin"
 
-# API Gateway Resource (Transactions)
-resource "aws_api_gateway_resource" "transactions" {
-  rest_api_id = aws_api_gateway_rest_api.finance_api.id
-  parent_id   = aws_api_gateway_rest_api.finance_api.root_resource_id
-  path_part   = "transactions"
-}
-
-# Lambda Function
-resource "aws_lambda_function" "transaction_handler" {
-  function_name    = "transaction_handler"
-  role             = aws_iam_role.lambda_exec.arn
-  runtime         = "python3.8"
-  handler         = "lambda_function.lambda_handler"
-  filename        = "lambda_API.zip"
-
-  environment {
-    variables = {
-      DYNAMODB_TABLE = aws_dynamodb_table.transactions.name
-      PLAID_CLIENT_ID   = var.plaid_client_id
-      PLAID_SECRET      = var.plaid_secret
-      PLAID_ENVIRONMENT = var.plaid_environment
+    s3_origin_config {
+      origin_access_identity = ""
     }
+  }
+
+  enabled             = true
+  default_root_object = "index.html"
+
+  default_cache_behavior {
+    allowed_methods  = ["GET", "HEAD"]
+    cached_methods   = ["GET", "HEAD"]
+    target_origin_id = "s3-origin"
+
+    forwarded_values {
+      query_string = false
+
+      cookies {
+        forward = "none"
+      }
+    }
+
+    viewer_protocol_policy = "redirect-to-https"
+  }
+
+  restrictions {
+    geo_restriction {
+      restriction_type = "none"
+    }
+  }
+
+  viewer_certificate {
+    cloudfront_default_certificate = true
   }
 }
 
-# Attach necessary policies
-resource "aws_iam_policy_attachment" "lambda_execution" {
-  name       = "lambda_execution_policy"
-  roles      = [aws_iam_role.lambda_exec.name]
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+
+
+# Cognito User Pool
+resource "aws_cognito_user_pool" "fiscai_user_pool" {
+  name = "fiscai-user-pool"
 }
 
-# API Gateway Integration with Lambda
-resource "aws_api_gateway_method" "transactions_post" {
-  rest_api_id   = aws_api_gateway_rest_api.finance_api.id
-  resource_id   = aws_api_gateway_resource.transactions.id
-  http_method   = "POST"
-  authorization = "NONE"
+# Cognito User Pool Client
+resource "aws_cognito_user_pool_client" "fiscai_user_pool_client" {
+  name         = "fiscai-client"
+  user_pool_id = aws_cognito_user_pool.fiscai_user_pool.id
+  generate_secret = false
+  allowed_oauth_flows_user_pool_client = true
 }
 
-resource "aws_api_gateway_integration" "lambda_integration" {
-  rest_api_id             = aws_api_gateway_rest_api.finance_api.id
-  resource_id             = aws_api_gateway_resource.transactions.id
-  http_method             = aws_api_gateway_method.transactions_post.http_method
-  integration_http_method = "POST"
-  type                    = "AWS_PROXY"
-  uri                     = aws_lambda_function.transaction_handler.invoke_arn
-}
-
-# Grant API Gateway permission to invoke Lambda
-resource "aws_lambda_permission" "apigw" {
-  statement_id  = "AllowAPIGatewayInvoke"
-  action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.transaction_handler.function_name
-  principal     = "apigateway.amazonaws.com"
-  source_arn    = "${aws_api_gateway_rest_api.finance_api.execution_arn}/*/*"
-}
