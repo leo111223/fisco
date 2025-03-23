@@ -132,11 +132,6 @@ resource "aws_lambda_permission" "apigw" {
   source_arn    = "${aws_api_gateway_rest_api.finance_api.execution_arn}/*/*"
 }
 
-# Existing S3 bucket reference
-data "aws_s3_bucket" "existing_bucket" {
-  bucket = "your-existing-s3-bucket-name"
-}
-
 # CloudFront Distribution
 resource "aws_cloudfront_distribution" "fiscai_distribution" {
   origin {
