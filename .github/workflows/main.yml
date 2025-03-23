@@ -62,10 +62,17 @@ jobs:
         shell: bash
         run: |
             echo "Fetching API URL..."
-            raw_output=$(terraform output api_gateway_url 2>/dev/null)
+            raw_output=$(terraform output -raw api_gateway_url 2>/dev/null)
             api_url=$(echo "$raw_output" | grep -Eo 'https://[^"]+')
-            printf "REACT_APP_API_URL=%s\n" "$api_url" >> $GITHUB_ENV
-            echo " Cleaned API URL: $api_url"
+        
+            # Escape percent signs (required by GitHub Actions)
+            safe_url="${api_url//'%'/'%25'}"
+            safe_url="${safe_url//$'\n'/'%0A'}"
+            safe_url="${safe_url//$'\r'/'%0D'}"
+        
+            echo "REACT_APP_API_URL=$safe_url" >> $GITHUB_ENV
+            echo "Final Safe API URL: $safe_url"
+        
         
         
         
