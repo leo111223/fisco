@@ -104,6 +104,7 @@ jobs:
             --distribution-id ${{ env.CLOUDFRONT_ID }} \
             --paths "/*"
 
+            
       - name: Output Deployment Info
         if: github.event.inputs.action != 'destroy'
         run: |
