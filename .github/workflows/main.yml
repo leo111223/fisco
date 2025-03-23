@@ -84,7 +84,9 @@ jobs:
           npm install
           npm run build
   
-      
+      - name: Print .env.production
+        run: cat .env.production
+        working-directory: fisc-ai/frontend
 
       - name: Terraform Destroy
         if: github.event.inputs.action == 'destroy'
