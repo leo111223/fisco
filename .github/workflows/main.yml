@@ -43,6 +43,7 @@ jobs:
         run: terraform validate
         working-directory: terraform
 
+
       - name: Plan Terraform
         run: terraform plan -out=tfplan
         working-directory: terraform

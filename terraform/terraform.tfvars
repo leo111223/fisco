@@ -7,7 +7,7 @@ repo_url = "https://github.com/leo111223/fisco.git"
 app_name = "FiscAI"
 #branch_name = "amplify_branch"
 branch_name = "main"
-api_url = "https://api.example.com"
+# api_url = "https://api.example.com"
 
 plaid_client_id  = "67ad2ec20245ff0021df5364"
 plaid_secret     = "b87f4cfceb87f20dbdf89dc2602c2a"
