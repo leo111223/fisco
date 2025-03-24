@@ -27,25 +27,25 @@ resource "random_id" "bucket_suffix" {
   byte_length = 4
 }
 
-resource "aws_iam_role" "amplify_role" {
+data "aws_iam_role" "amplify_role" {
   name = "amplify-service-role"
 
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Action = "sts:AssumeRole"
-        Effect = "Allow"
-        Principal = {
-          Service = "amplify.amazonaws.com"
-        }
-      }
-    ]
-  })
+  # assume_role_policy = jsonencode({
+  #   Version = "2012-10-17"
+  #   Statement = [
+  #     {
+  #       Action = "sts:AssumeRole"
+  #       Effect = "Allow"
+  #       Principal = {
+  #         Service = "amplify.amazonaws.com"
+  #       }
+  #     }
+  #   ]
+  # })
 
-  tags = {
-    Environment = var.environment
-  }
+  # tags = {
+  #   Environment = var.environment
+  # }
 }
 
 resource "aws_iam_policy_attachment" "amplify_full_access" {
