@@ -25,7 +25,7 @@ amplifytools.xcconfig
 node_modules/
 dist/
 # Allow build folder explicitly (in case it's mistakenly ignored)
-!fisc-ai/build/
+# !fisc-ai/build/
 
 # ================================================================
 # Python Files and Caches
