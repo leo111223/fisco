@@ -172,7 +172,7 @@ resource "aws_api_gateway_resource" "transactions" {
 resource "aws_lambda_function" "transaction_handler" {
   function_name = "transaction_handler"
   role          = aws_iam_role.lambda_exec.arn
-  runtime       = "python3.8"
+  runtime       = "python3.9"
   handler       = "lambda_function.lambda_handler"
   filename      = "./build/lambda_API.zip"
 

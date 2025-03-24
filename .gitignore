@@ -26,5 +26,11 @@ amplifytools.xcconfig
 **/__pycache__
 **/.pytest_cache
 
-.terraform/
-.terraform.lock.hcl
+# Terraform
+**/.terraform
+**/.terraform.lock.hcl
+**/terraform.tfstate
+**/terraform.tfstate.backup
+**/terraform.tfvars
+**/terraform-provider-github
+**/terraform-provider-aws
