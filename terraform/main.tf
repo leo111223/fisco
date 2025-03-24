@@ -89,7 +89,7 @@ applications:
           - "**/*"
       cache:
         paths:
-          - .venv/**/*
+          - node_modules/**/*
 EOT
 
 # - appRoot: fisc-ai/backend/python
