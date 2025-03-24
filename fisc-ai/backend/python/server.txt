@@ -9,33 +9,6 @@ import uuid
 
 from dotenv import load_dotenv
 from flask import Flask, request, jsonify
-import os
-from plaid import Configuration, ApiClient
-from plaid.api import plaid_api
-
-# Load Plaid credentials from environment
-PLAID_CLIENT_ID = os.environ.get("PLAID_CLIENT_ID")
-PLAID_SECRET = os.environ.get("PLAID_SECRET")
-PLAID_ENVIRONMENT = os.environ.get("PLAID_ENVIRONMENT", "sandbox")
-
-# Configure base URL based on environment
-PLAID_HOSTS = {
-    "sandbox": "https://sandbox.plaid.com",
-    "development": "https://development.plaid.com",
-    "production": "https://production.plaid.com"
-}
-
-configuration = Configuration(
-    host=PLAID_HOSTS.get(PLAID_ENVIRONMENT, "https://sandbox.plaid.com"),
-    api_key={
-        'clientId': PLAID_CLIENT_ID,
-        'secret': PLAID_SECRET
-    }
-)
-
-api_client = ApiClient(configuration)
-client = plaid_api.PlaidApi(api_client)
-
 import plaid
 from plaid.model.payment_amount import PaymentAmount
 from plaid.model.payment_amount_currency import PaymentAmountCurrency
@@ -774,4 +747,3 @@ def format_error(e):
 
 if __name__ == '__main__':
     app.run(port=int(os.getenv('PORT', 8000)))
-
