@@ -74,40 +74,25 @@ applications:
       cache:
         paths:
           - node_modules/**/*
-  - appRoot: fisc-ai/node
-    backend:
-      phases:
-        preBuild:
-          commands:
-            - npm install 
-        build:
-          commands:
-            - npm run biuld
-      artifacts:
-        baseDirectory: .
-        files:
-          - "**/*"
-      cache:
-        paths:
-          - node_modules/**/*
+  - appRoot: fisc-ai/backend/python
+      backend:
+        phases:
+          preBuild:
+            commands:
+              - pip install -r requirements.txt
+          build:
+            commands:
+              - python server.py
+        artifacts:
+          baseDirectory: .
+          files:
+            - "**/*"
+        cache:
+          paths:
+            - .venv/**/*
 EOT
 
-# - appRoot: fisc-ai/backend/python
-#     backend:
-#       phases:
-#         preBuild:
-#           commands:
-#             - pip install -r requirements.txt
-#         build:
-#           commands:
-#             - python server.py
-#       artifacts:
-#         baseDirectory: .
-#         files:
-#           - "**/*"
-#       cache:
-#         paths:
-#           - .venv/**/*
+
 }
 
 # Amplify Main Branch
