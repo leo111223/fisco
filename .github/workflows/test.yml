@@ -10,10 +10,10 @@ on:
   workflow_dispatch:
     inputs:
       action:
-        description: 'Choose Terraform action (apply or destroy)'
+        description: 'Choose Terraform action (app or destroy)'
         required: true
         default: 'apply'
-        
+
 
 jobs:
   terraform:
