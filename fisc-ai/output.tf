@@ -42,6 +42,9 @@ output "write_queue_url" {
   value       = aws_sqs_queue.write_queue.url
 }
 
+output "api_gateway_url" {       #api url
+  value = "${aws_apigatewayv2_api.my_api.api_endpoint}/${aws_apigatewayv2_stage.my_stage.name}"
+}
 # Lambda Function Outputs
 output "transaction_handler_lambda_arn" {
   description = "The ARN of the Lambda function for transaction handling"
