@@ -27,7 +27,7 @@ resource "random_id" "bucket_suffix" {
   byte_length = 4
 }
 
-data "aws_iam_role" "amplify_role" {
+data "aws_iam_role" "amplify_role" {                  # iam rol for me
   name = "amplify-service-role"
 
   # assume_role_policy = jsonencode({
@@ -50,7 +50,7 @@ data "aws_iam_role" "amplify_role" {
 
 resource "aws_iam_policy_attachment" "amplify_full_access" {
   name       = "amplify-full-access"
-  roles      = [aws_iam_role.amplify_role.name]
+  roles      = [data.aws_iam_role.amplify_role.name]                    # iam rol for me
   policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess-Amplify"
 }
 
@@ -74,7 +74,7 @@ resource "aws_amplify_app" "plaid_app" {
     # REACT_APP_API_URL can be injected after deploy via GitHub Actions
   }
 
-  iam_service_role_arn = aws_iam_role.amplify_role.arn
+  iam_service_role_arn = data.aws_iam_role.amplify_role.arn             # iam rol for me
 
   build_spec = <<EOT
 version: 1
