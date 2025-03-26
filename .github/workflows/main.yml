@@ -1,18 +1,19 @@
-name: Terraform Deploy
+name: Terraform Deployment
 
 on:
   push:
     branches:
-      - main
+      - test
   pull_request:
     branches:
-      - main
+      - test
   workflow_dispatch:
     inputs:
       action:
         description: 'Choose Terraform action (apply or destroy)'
         required: true
         default: 'apply'
+
 
 jobs:
   terraform:
@@ -37,23 +38,22 @@ jobs:
 
       - name: Initialize Terraform
         run: terraform init
-        working-directory: terraform
+        working-directory: fisc-ai
 
       - name: Validate Terraform
         run: terraform validate
-        working-directory: terraform
-
+        working-directory: fisc-ai
 
       - name: Plan Terraform
         run: terraform plan -out=tfplan
-        working-directory: terraform
+        working-directory: fisc-ai
         env:
           TF_VAR_github_token: ${{ secrets.TOKEN_GIT }}
 
       - name: Apply Terraform
-        if: github.event.inputs.action == 'apply' || github.ref == 'refs/heads/main'
+        if: github.event.inputs.action == 'apply' || github.ref == 'refs/heads/test'
         run: terraform apply -auto-approve tfplan
-        working-directory: terraform
+        working-directory: fisc-ai
         env:
           TF_VAR_github_token: ${{ secrets.TOKEN_GIT }}
       
