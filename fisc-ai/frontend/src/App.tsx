@@ -18,7 +18,7 @@ import '@aws-amplify/ui-react/styles.css';
 import './App.css';
 
 Amplify.configure(awsconfig);
-//const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;     //leo
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;     //leo
 const App = ({ signOut, user }: WithAuthenticatorProps) => {
   const { linkSuccess, isPaymentInitiation, itemId, dispatch } =
     useContext(Context);

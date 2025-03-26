@@ -3,7 +3,7 @@ import { usePlaidLink } from "react-plaid-link";
 import Button from "plaid-threads/Button";
 
 import Context from "../../Context";
-
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;    //me
 const Link = () => {
   const { linkToken, isPaymentInitiation, isCraProductsExclusively, dispatch } =
     useContext(Context);
@@ -11,16 +11,17 @@ const Link = () => {
   const onSuccess = React.useCallback(
     (public_token: string) => {
       const exchangePublicTokenForAccessToken = async () => {
-        const response = await fetch(
-          `${process.env.REACT_APP_API_URL}/set_access_token`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ public_token }),
-          }
-        );
+        const response = await fetch(`${API_BASE_URL}/transactions`, { method: "POST" });
+        // const response = await fetch(
+        //   `${process.env.REACT_APP_API_URL}/set_access_token`,
+        //   {
+        //     method: "POST",
+        //     headers: {
+        //       "Content-Type": "application/json",
+        //     },
+        //     body: JSON.stringify({ public_token }),
+        //   }
+        // );
 
         if (!response.ok) {
           dispatch({
