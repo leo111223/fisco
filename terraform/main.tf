@@ -141,7 +141,7 @@ resource "aws_lambda_function" "transaction_handler" {
   function_name = "lambda_function"
   role          = aws_iam_role.lambda_exec.arn
   runtime       = "python3.11"
-  timeout       = 10
+  timeout       = 30
   handler       = "lambda_link_token.handler"
   filename      = "lambda_function.zip"
   # filename      = "lambda_API.zip"
