@@ -13,8 +13,8 @@ logger.setLevel(logging.INFO)
 PLAID_CLIENT_ID = os.environ["PLAID_CLIENT_ID"]
 PLAID_SECRET = os.environ["PLAID_SECRET"]
 PLAID_ENV = os.environ["PLAID_ENVIRONMENT"]
-REDIRECT_URI = os.environ.get("PLAID_REDIRECT_URI", "")
-WEBHOOK_URI = os.environ.get("PLAID_WEBHOOK_URI", "")
+# REDIRECT_URI = os.environ.get("PLAID_REDIRECT_URI", "")
+# WEBHOOK_URI = os.environ.get("PLAID_WEBHOOK_URI", "")
 
 # Initialize Plaid client
 plaid_client = Client(
