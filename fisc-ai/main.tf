@@ -168,24 +168,6 @@ resource "aws_api_gateway_resource" "transactions" {
   path_part   = "transactions"
 }
 
-# Lambda Function for Transaction Handling
-resource "aws_lambda_function" "transaction_handler" {
-  function_name = "transaction_handler"
-  role          = aws_iam_role.lambda_exec.arn
-  runtime       = "python3.9"
-  handler       = "lambda_function.lambda_handler"
-  filename      = "./build/lambda_API.zip"
-
-  environment {
-    variables = {
-      DYNAMODB_TABLE    = aws_dynamodb_table.transactions.name
-      PLAID_CLIENT_ID   = var.plaid_client_id
-      PLAID_SECRET      = var.plaid_secret_key
-      PLAID_ENVIRONMENT = var.plaid_environment
-    }
-  }
-}
-
 # Attach necessary policies
 resource "aws_iam_role_policy_attachment" "lambda_execution" {
   role       = aws_iam_role.lambda_exec.name
@@ -206,14 +188,16 @@ resource "aws_api_gateway_integration" "lambda_integration" {
   http_method             = aws_api_gateway_method.transactions_post.http_method
   integration_http_method = "POST"
   type                    = "AWS_PROXY"
-  uri                     = aws_lambda_function.transaction_handler.invoke_arn
+  # uri                     = aws_lambda_function.transaction_handler.invoke_arn
+  uri                     = aws_lambda_function.plaid_api_handler.invoke_arn
 }
 
 # Grant API Gateway permission to invoke Lambda
 resource "aws_lambda_permission" "apigw" {
   statement_id  = "AllowAPIGatewayInvoke"
   action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.transaction_handler.function_name
+  # function_name = aws_lambda_function.transaction_handler.function_name
+  function_name = aws_lambda_function.plaid_api_handler.function_name
   principal     = "apigateway.amazonaws.com"
   source_arn    = "${aws_api_gateway_rest_api.finance_api.execution_arn}/*/*"
 }
@@ -235,6 +219,13 @@ data "archive_file" "batch_writer_zip" {
   type        = "zip"
   source_dir  = "./backend/batch_writer" # Relative path to the batch writer folder
   output_path = "./build/batch_writer.zip"
+}
+
+data "archive_file" "plaid_api_handler_zip" {
+  type        = "zip"
+  source_dir  = "./backend/plaid_api_handler" # Relative path to the Plaid API folder
+  output_path = "./build/plaid_api_handler.zip"
+  
 }
 
 # DynamoDB Table to store Plaid data
@@ -424,5 +415,43 @@ resource "aws_lambda_function" "batch_writer" {
 
   tags = {
     Environment = var.environment
+  }
+}
+
+# # Lambda Function for Transaction Handling
+# resource "aws_lambda_function" "transaction_handler" {
+#   function_name = "transaction_handler"
+#   role          = aws_iam_role.lambda_exec.arn
+#   runtime       = "python3.9"
+#   handler       = "lambda_function.lambda_handler"
+#   timeout       = 60
+#   filename      = "./build/lambda_API.zip"
+
+#   environment {
+#     variables = {
+#       DYNAMODB_TABLE    = aws_dynamodb_table.transactions.name
+#       PLAID_CLIENT_ID   = var.plaid_client_id
+#       PLAID_SECRET      = var.plaid_secret_key
+#       PLAID_ENVIRONMENT = var.plaid_environment
+#     }
+#   }
+# }
+
+# Lambda Function for Transaction Handling
+resource "aws_lambda_function" "plaid_api_handler" {
+  function_name = "${var.environment}-plaid_api_handler"
+  role          = aws_iam_role.lambda_exec.arn
+  runtime       = "python3.11"
+  handler       = "lambda_link_token.handler"
+  timeout       = 120 # Increase timeout for Plaid API calls
+  filename      = "./build/plaid_api_handler.zip"
+
+  environment {
+    variables = {
+      DYNAMODB_TABLE    = aws_dynamodb_table.transactions.name
+      PLAID_CLIENT_ID   = var.plaid_client_id
+      PLAID_SECRET      = var.plaid_secret_key
+      PLAID_ENVIRONMENT = var.plaid_environment
+    }
   }
 }

@@ -43,9 +43,9 @@ output "write_queue_url" {
 }
 
 # Lambda Function Outputs
-output "transaction_handler_lambda_arn" {
+output "plaid_api_handler_lambda_arn" {
   description = "The ARN of the Lambda function for transaction handling"
-  value       = aws_lambda_function.transaction_handler.arn
+  value       = aws_lambda_function.plaid_api_handler.arn
 }
 
 output "api_function_lambda_arn" {
