@@ -64,7 +64,7 @@ applications:
         preBuild:
           commands:
             - npm install
-            - npm install vite --save-dev
+            - npm install vite --save-dev --legacy-peer-deps
         build:
           commands:
             - npm run build
