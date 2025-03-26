@@ -80,10 +80,10 @@ jobs:
             safe_url="${api_url//'%'/'%25'}"
             safe_url="${safe_url//$'\n'/'%0A'}"
             safe_url="${safe_url//$'\r'/'%0D'}"
-            echo "REACT_APP_API_URL=$safe_url" >> $GITHUB_ENV
+            echo "VITE_API_BASE_URL=$safe_url" >> $GITHUB_ENV
         
             # For React frontend .env.production
-            echo "REACT_APP_API_URL=$api_url" > ../fisc-ai/frontend/.env.production
+            echo "VITE_API_BASE_URL=$api_url" > ../fisc-ai/frontend/.env.production
             
       - name: Debug .env.production
         working-directory: fisc-ai/frontend

@@ -18,7 +18,7 @@ import '@aws-amplify/ui-react/styles.css';
 import './App.css';
 
 Amplify.configure(awsconfig);
-const API_BASE_URL = import.meta.env.REACT_APP_API_URL;     //leo
+const API_BASE_URL = import.meta.env.productrion.VITE_API_BASE_URL;     //leo
 const App = ({ signOut, user }: WithAuthenticatorProps) => {
   const { linkSuccess, isPaymentInitiation, itemId, dispatch } =
     useContext(Context);
@@ -27,7 +27,7 @@ const App = ({ signOut, user }: WithAuthenticatorProps) => {
   const getInfo = useCallback(async () => {
     const response = await fetch(`${API_BASE_URL}/transactions`, { method: "POST" });
 
-    // const response = await fetch("/api/info", { method: "POST" });
+    // const response = await fetch("/api/info", { method: "POST" });   leo
     if (!response.ok) {
       dispatch({ type: "SET_STATE", state: { backend: false } });
       return { paymentInitiation: false };
