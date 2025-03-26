@@ -57,32 +57,32 @@ jobs:
         env:
           TF_VAR_github_token: ${{ secrets.TOKEN_GIT }}
       
-      - name: Get and Write Clean API URL
-        id: get_api_url
-        working-directory: fisc-ai
-        shell: bash
-        run: |
-            echo "Fetching clean API URL from Terraform output..."
+      # - name: Get and Write Clean API URL
+      #   id: get_api_url
+      #   working-directory: fisc-ai
+      #   shell: bash
+      #   run: |
+      #       echo "Fetching clean API URL from Terraform output..."
         
-            raw_output=$(terraform output -raw api_gateway_url 2>/dev/null)
+      #       raw_output=$(terraform output -raw api_gateway_url 2>/dev/null)
         
-            # Strip any extra lines or garbage (for safety)
-            api_url=$(echo "$raw_output" | sed 's/::.*//' | grep -oE '^https://[^[:space:]]+')
+      #       # Strip any extra lines or garbage (for safety)
+      #       api_url=$(echo "$raw_output" | sed 's/::.*//' | grep -oE '^https://[^[:space:]]+')
         
-            echo "Cleaned API URL: $api_url"
+      #       echo "Cleaned API URL: $api_url"
         
-            # For GitHub ENV
-            safe_url="${api_url//'%'/'%25'}"
-            safe_url="${safe_url//$'\n'/'%0A'}"
-            safe_url="${safe_url//$'\r'/'%0D'}"
-            echo "REACT_APP_API_URL=$safe_url" >> $GITHUB_ENV
+      #       # For GitHub ENV
+      #       safe_url="${api_url//'%'/'%25'}"
+      #       safe_url="${safe_url//$'\n'/'%0A'}"
+      #       safe_url="${safe_url//$'\r'/'%0D'}"
+      #       echo "REACT_APP_API_URL=$safe_url" >> $GITHUB_ENV
         
-            # For React frontend .env.production
-            echo "REACT_APP_API_URL=$api_url" > ../fisc-ai/frontend/.env.production
+      #       # For React frontend .env.production
+      #       echo "REACT_APP_API_URL=$api_url" > ../fisc-ai/frontend/.env.production
             
-      - name: Debug .env.production
-        working-directory: fisc-ai/frontend
-        run: cat .env.production
+      # - name: Debug .env.production
+      #   working-directory: fisc-ai/frontend
+      #   run: cat .env.production
   
 
       - name: Terraform Destroy
