@@ -64,6 +64,7 @@ applications:
         preBuild:
           commands:
             - npm install
+            - npm install vite --save-dev
         build:
           commands:
             - npm run build
