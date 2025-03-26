@@ -61,7 +61,7 @@ resource "aws_amplify_app" "plaid_app" {
   repository   = "https://github.com/leo111223/fisco.git"
   oauth_token  = var.github_token
   platform     = "WEB"
-  iam_service_role_arn = data.aws_iam_role.amplify_role.arn
+  iam_service_role_arn = aws_iam_role.amplify_role.arn
   enable_branch_auto_deletion = true
 
   environment_variables = {
