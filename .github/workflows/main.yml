@@ -59,7 +59,7 @@ jobs:
       
       - name: Get and Write Clean API URL
         id: get_api_url
-        working-directory: terraform
+        working-directory: fisc-ai
         shell: bash
         run: |
             echo "Fetching clean API URL from Terraform output..."
@@ -87,7 +87,9 @@ jobs:
 
       - name: Terraform Destroy
         if: github.event.inputs.action == 'destroy'
-        run: terraform destroy -auto-approve
-        working-directory: terraform
+        run: |
+          terraform init
+          terraform destroy -auto-approve
+        working-directory: fisc-ai
         env:
           TF_VAR_github_token: ${{ secrets.TOKEN_GIT }}
