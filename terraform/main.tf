@@ -74,22 +74,22 @@ applications:
       cache:
         paths:
           - node_modules/**/*
-  - appRoot: fisc-ai/python
-      backend:
-        phases:
-          preBuild:
-            commands:
-              - pip install -r requirements.txt
-          build:
-            commands:
-              - python server.py
-        artifacts:
-          baseDirectory: .
-          files:
-            - "**/*"
-        cache:
-          paths:
-            - .venv/**/*
+  - appRoot: fisc-ai/backend/python
+    backend:
+      phases:
+        preBuild:
+          commands:
+            - pip install -r requirements.txt
+        build:
+          commands:
+            - python server.py
+      artifacts:
+        baseDirectory: .
+        files:
+          - "**/*"
+      cache:
+        paths:
+          - .venv/**/*
 EOT
 
 
