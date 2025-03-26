@@ -142,7 +142,8 @@ resource "aws_lambda_function" "transaction_handler" {
   role          = aws_iam_role.lambda_exec.arn
   runtime       = "python3.8"
   handler       = "lambda_function.lambda_handler"
-  filename      = "lambda_API.zip"
+  filename      = "lambda_function.zip"
+  # filename      = "lambda_API.zip"
 
   environment {
     variables = {
