@@ -15,3 +15,4 @@ plaid_environment = "sandbox"
 
 lambda_function_name = "transaction_handler"
 dynamodb_table_name  = "transactions"
+environment = "test-fiscai"

@@ -52,3 +52,9 @@ variable "dynamodb_table_name" {
   type        = string
   default     = "transactions"
 }
+
+variable "environment" {
+  description = "The deployment environment (e.g., dev, test, prod)"
+  type        = string
+  default     = "test"
+}
