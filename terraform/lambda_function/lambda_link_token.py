@@ -1,74 +1,61 @@
+import os
 import json
-import plaid
-from plaid.api.plaid_api import PlaidApi
-from plaid.model.sandbox_public_token_create_request import SandboxPublicTokenCreateRequest
-from plaid.model.item_public_token_exchange_request import ItemPublicTokenExchangeRequest
-from plaid.model.transactions_get_request import TransactionsGetRequest
-from plaid.model.transactions_get_request_options import TransactionsGetRequestOptions
+from plaid.api import plaid_api
+from plaid.model.link_token_create_request import LinkTokenCreateRequest
+from plaid.model.link_token_create_request_user import LinkTokenCreateRequestUser
 from plaid.model.products import Products
-from plaid.configuration import Configuration
-from plaid.api_client import ApiClient
-from datetime import datetime, timedelta
+from plaid.model.country_code import CountryCode
+# from plaid.model.language import Language
+from plaid import Configuration, ApiClient
 
-# Plaid API credentials
-PLAID_CLIENT_ID = "679dd136d378b10023942d78"  # Replace with your actual client ID
-PLAID_SECRET = "959c6a0ea2fd1deb626d707ca00d4f"        # Replace with your actual secret
-
-# Plaid environment configuration
-configuration = Configuration(
-    host="https://sandbox.plaid.com",  # Use "https://production.plaid.com" for production
-    api_key={
-        'clientId': PLAID_CLIENT_ID,
-        'secret': PLAID_SECRET,
-    }
-)
-api_client = ApiClient(configuration)
-client = PlaidApi(api_client)
-
-def lambda_handler(event, context):
+def handler(event, context):
     try:
-        # Step 1: Create a sandbox public token
-        # sandbox_request = SandboxPublicTokenCreateRequest(
-        #     institution_id="ins_109508",  # Sandbox institution ID (e.g., Chase)
-        #     initial_products=[Products("transactions")],  # Specify the product(s)
-        # )
-        # sandbox_response = client.sandbox_public_token_create(sandbox_request)
-        # public_token = sandbox_response['public_token']
+        # Load environment variables
+        print("Lambda triggered")
+        print("Initializing Plaid client...")
+        PLAID_CLIENT_ID = os.environ['PLAID_CLIENT_ID']
+        PLAID_SECRET = os.environ['PLAID_SECRET']
+        PLAID_ENV = os.environ['PLAID_ENVIRONMENT']
 
-        # # Step 2: Exchange the public token for an access token
-        # exchange_request = ItemPublicTokenExchangeRequest(public_token=public_token)
-        # exchange_response = client.item_public_token_exchange(exchange_request)
-        access_token = "link-sandbox-418ce4a6-0cad-4d3f-9ee2-6df46a0995ea"
-
-        # Step 3: Fetch transactions using the access token
-        end_date = datetime.now().date()
-        start_date = end_date - timedelta(days=30)  # Fetch transactions for the last 30 days
-
-        transactions_request = TransactionsGetRequest(
-            access_token=access_token,
-            start_date=start_date,
-            end_date=end_date,
-            options=TransactionsGetRequestOptions(
-                count=10,  # Number of transactions to fetch
-                offset=0    # Offset for pagination
-            )
+        # Set up Plaid configuration
+        config = Configuration(
+            host=f'https://{PLAID_ENV}.plaid.com',
+            api_key={
+                'clientId': PLAID_CLIENT_ID,
+                'secret': PLAID_SECRET,
+            }
         )
-        # transactions_response = client.transactions_get(transactions_request)
-        # transactions = transactions_response['transactions']
-
-        # Step 4: Return the transactions in the response
+        print("Creating Plaid client...")
+        api_client = ApiClient(configuration=config)
+        client = plaid_api.PlaidApi(api_client)
+        print("Building request object...")
+        # request = LinkTokenCreateRequest(
+        #     user=LinkTokenCreateRequestUser(client_user_id='unique_user_id'),
+        #     client_name='Finance Tracker App',
+        #     products=[Products('transactions')],
+        #     country_codes=[CountryCode('US')],
+        #     language=Language('en'),
+        # )
+        request = LinkTokenCreateRequest(
+            user=LinkTokenCreateRequestUser(client_user_id="demo-user"),
+            client_name="Finance Tracker App",
+            # products=[Products.TRANSACTIONS],
+            # products=["transactions"],
+            products=[Products("transactions")],
+            country_codes=[CountryCode('US')],
+            language="en",
+        )
+        print("Calling Plaid API...")
+        response = client.link_token_create(request)
+        print("Plaid response received.")
         return {
             'statusCode': 200,
-            'body': json.dumps({
-                # 'transactions': [transaction.to_dict() for transaction in transactions]
-                'acess_token': access_token
-            })
+            'body': json.dumps({'link_token': response['link_token']})
         }
+
     except Exception as e:
-        # Handle exceptions and return an error response
+        print("Error occurred:", str(e))
         return {
             'statusCode': 500,
-            'body': json.dumps({
-                'error': str(e)
-            })
+            'body': json.dumps({'error': str(e)})
         }
