@@ -18,16 +18,16 @@ import '@aws-amplify/ui-react/styles.css';
 import './App.css';
 
 Amplify.configure(awsconfig);
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;     //leo
+//const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;     //leo
 const App = ({ signOut, user }: WithAuthenticatorProps) => {
   const { linkSuccess, isPaymentInitiation, itemId, dispatch } =
     useContext(Context);
   const [institutions, setInstitutions] = useState([]);
 
   const getInfo = useCallback(async () => {
-    const response = await fetch(`${API_BASE_URL}/transactions`, { method: "POST" });
+    //const response = await fetch(`${API_BASE_URL}/transactions`, { method: "POST" });
 
-    // const response = await fetch("/api/info", { method: "POST" });   leo
+    const response = await fetch("/api/info", { method: "POST" });   
     if (!response.ok) {
       dispatch({ type: "SET_STATE", state: { backend: false } });
       return { paymentInitiation: false };
