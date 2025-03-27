@@ -211,6 +211,19 @@ resource "aws_api_gateway_rest_api" "finance_api" {
   description = "API Gateway for Financial Transactions"
 }
 
+resource "aws_api_gateway_deployment" "api_deployment" {
+  rest_api_id = aws_api_gateway_rest_api.finance_api.id
+
+  triggers = {
+    redeploy = timestamp()
+  }
+
+  depends_on = [
+    aws_api_gateway_integration.lambda_integration,
+    aws_api_gateway_method.transactions_post
+  ]
+}
+
 resource "aws_api_gateway_resource" "transactions" {
   rest_api_id = aws_api_gateway_rest_api.finance_api.id
   parent_id   = aws_api_gateway_rest_api.finance_api.root_resource_id
