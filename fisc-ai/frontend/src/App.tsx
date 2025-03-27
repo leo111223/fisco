@@ -24,7 +24,7 @@ Amplify.configure(awsconfig);
 
 //const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;     //leo
 
-console.log("API_BASE_URL:", API_BASE_URL);
+//console.log("API_BASE_URL:", API_BASE_URL);
 
 const App = ({ signOut, user }: WithAuthenticatorProps) => {
   const { linkSuccess, isPaymentInitiation, itemId, dispatch } =
@@ -36,7 +36,7 @@ const App = ({ signOut, user }: WithAuthenticatorProps) => {
   // Function to generate the Link Token
   const generateLinkToken = useCallback(async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/transaction`, {   //me edited  /create_link_token
+      const response = await fetch(`${API_BASE_URL}/create_link_token`, {   //me edited  /create_link_token
         method: "POST",
         headers: {
           "Content-Type": "application/json",
