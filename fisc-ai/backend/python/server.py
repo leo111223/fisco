@@ -6,36 +6,9 @@ import json
 import time
 from datetime import date, timedelta
 import uuid
-
+import requests
 from dotenv import load_dotenv
 from flask import Flask, request, jsonify
-import os
-from plaid import Configuration, ApiClient
-from plaid.api import plaid_api
-
-# Load Plaid credentials from environment
-PLAID_CLIENT_ID = os.environ.get("PLAID_CLIENT_ID")
-PLAID_SECRET = os.environ.get("PLAID_SECRET")
-PLAID_ENVIRONMENT = os.environ.get("PLAID_ENVIRONMENT", "sandbox")
-
-# Configure base URL based on environment
-PLAID_HOSTS = {
-    "sandbox": "https://sandbox.plaid.com",
-    "development": "https://development.plaid.com",
-    "production": "https://production.plaid.com"
-}
-
-configuration = Configuration(
-    host=PLAID_HOSTS.get(PLAID_ENVIRONMENT, "https://sandbox.plaid.com"),
-    api_key={
-        'clientId': PLAID_CLIENT_ID,
-        'secret': PLAID_SECRET
-    }
-)
-
-api_client = ApiClient(configuration)
-client = plaid_api.PlaidApi(api_client)
-
 import plaid
 from plaid.model.payment_amount import PaymentAmount
 from plaid.model.payment_amount_currency import PaymentAmountCurrency
@@ -229,6 +202,8 @@ def create_link_token_for_payment():
         return jsonify(linkResponse.to_dict())
     except plaid.ApiException as e:
         return json.loads(e.body)
+
+
 
 
 @app.route('/api/create_link_token', methods=['POST'])
@@ -773,5 +748,16 @@ def format_error(e):
                       response['error_message'], 'error_code': response['error_code'], 'error_type': response['error_type']}}
 
 if __name__ == '__main__':
-    app.run(port=int(os.getenv('PORT', 8000)))
+    # app.run(port=int(os.getenv('PORT', 8000)))
 
+
+# Test the create_link_token_for_payment endpoint
+    # url = "https://7o81y9tcsa.execute-api.us-east-1.amazonaws.com/dev/create_link_token"  # Replace <stage> with your API Gateway stage (e.g., 'dev' or 'prod')
+    # headers = {
+    #     "Content-Type": "application/json"
+    # }
+    # response = requests.post(url, headers=headers, json={})  # Add any required payload in the `json` parameter
+    # print("Test Response for create_link_token_for_payment:")
+    # print(response.json())
+
+    app.run(port=int(os.getenv('PORT', 8000)))

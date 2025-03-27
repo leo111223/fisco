@@ -116,7 +116,7 @@ applications:
       cache:
         paths:
           - node_modules/**/*
-  - appRoot: fisc-ai/python
+  - appRoot: fisc-ai/backend/python
     backend:
       phases:
         preBuild:

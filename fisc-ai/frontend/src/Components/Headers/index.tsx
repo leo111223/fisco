@@ -80,9 +80,9 @@ const Header = () => {
             </Callout>
           ) : linkToken === "" ? (
             <div className={styles.linkButton}>
-              <Button large disabled>
+              {/* <Button large disabled>
                 Loading...
-              </Button>
+              </Button> */}
             </div>
           ) : (
             <div className={styles.linkButton}>
