@@ -224,10 +224,11 @@ resource "aws_api_gateway_method" "transactions_post" {
   authorization = "NONE"
 }
 
-# resource "aws_api_gateway_deployment" "api_deployment" {
-#   rest_api_id = aws_api_gateway_rest_api.finance_api.id
-#   stage_name  = "prod"  
-# }
+resource "aws_api_gateway_stage" "api_stage" {
+  stage_name    = "prod"  
+  rest_api_id   = aws_api_gateway_rest_api.finance_api.id
+  deployment_id = aws_api_gateway_deployment.api_deployment.id
+}
 
 resource "aws_api_gateway_integration" "lambda_integration" {
   rest_api_id             = aws_api_gateway_rest_api.finance_api.id
