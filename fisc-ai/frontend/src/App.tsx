@@ -20,10 +20,10 @@ import { usePlaidLink } from "react-plaid-link";
 Amplify.configure(awsconfig);
 
 // const API_BASE_URL = "https://7o81y9tcsa.execute-api.us-east-1.amazonaws.com/dev";
-const API_BASE_URL = "https://g3tyo05xvk.execute-api.us-east-1.amazonaws.com/prod";
+//const API_BASE_URL = "https://g3tyo05xvk.execute-api.us-east-1.amazonaws.com/prod";
 
-//const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;     //leo
-
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;     //leo
+console.log("API_BASE_URL:", API_BASE_URL);
 
 const App = ({ signOut, user }: WithAuthenticatorProps) => {
   const { linkSuccess, isPaymentInitiation, itemId, dispatch } =
