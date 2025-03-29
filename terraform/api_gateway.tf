@@ -17,10 +17,17 @@ resource "aws_api_gateway_deployment" "api_deployment" {
   depends_on = [
     aws_api_gateway_integration.lambda_integration,
     aws_api_gateway_method.transactions_post,
+
     aws_api_gateway_integration.linked_token_lambda_integration,
     aws_api_gateway_method.linked_token_post,
+
     aws_api_gateway_integration.access_token_lambda_integration,
-    aws_api_gateway_method.access_token_post
+    aws_api_gateway_method.access_token_post,
+
+    aws_api_gateway_method.linked_token_options,
+    aws_api_gateway_integration.linked_token_options_integration,
+    aws_api_gateway_method.access_token_options,
+    aws_api_gateway_integration.access_token_options_integration,
   ]
 }
 # transaction resource
@@ -95,6 +102,10 @@ resource "aws_api_gateway_method" "linked_token_options" {
   resource_id   = aws_api_gateway_resource.linked_token.id
   http_method   = "OPTIONS"
   authorization = "NONE"
+
+  depends_on = [
+    aws_api_gateway_method.linked_token_options
+  ]
 }
 
 resource "aws_api_gateway_integration" "linked_token_options_integration" {
@@ -135,6 +146,10 @@ resource "aws_api_gateway_integration_response" "linked_token_options_integratio
   response_templates = {
     "application/json" = ""
   }
+
+  depends_on = [
+    aws_api_gateway_integration.linked_token_options_integration
+  ]
 }
 
 
@@ -150,6 +165,7 @@ resource "aws_api_gateway_method" "access_token_post" {
   resource_id   = aws_api_gateway_resource.access_token.id
   http_method   = "POST"
   authorization = "NONE"
+
 }
 
 resource "aws_api_gateway_integration" "access_token_lambda_integration" {
@@ -159,6 +175,7 @@ resource "aws_api_gateway_integration" "access_token_lambda_integration" {
   integration_http_method = "POST"
   type                    = "AWS_PROXY"
   uri                     = aws_lambda_function.access_token_handler.invoke_arn
+
 }
 
 resource "aws_lambda_permission" "access_token_apigw" {
@@ -174,6 +191,7 @@ resource "aws_api_gateway_method" "access_token_options" {
   resource_id   = aws_api_gateway_resource.access_token.id
   http_method   = "OPTIONS"
   authorization = "NONE"
+  depends_on = [aws_api_gateway_method.access_token_options]
 }
 
 resource "aws_api_gateway_integration" "access_token_options_integration" {
@@ -214,4 +232,5 @@ resource "aws_api_gateway_integration_response" "access_token_options_integratio
   response_templates = {
     "application/json" = ""
   }
+  depends_on = [aws_api_gateway_integration.access_token_options_integration]
 }
