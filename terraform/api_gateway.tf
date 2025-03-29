@@ -89,6 +89,55 @@ resource "aws_lambda_permission" "linked_token_apigw" {
   principal     = "apigateway.amazonaws.com"
   source_arn    = "${aws_api_gateway_rest_api.finance_api.execution_arn}/*/*"
 }
+#option method
+resource "aws_api_gateway_method" "linked_token_options" {
+  rest_api_id   = aws_api_gateway_rest_api.finance_api.id
+  resource_id   = aws_api_gateway_resource.linked_token.id
+  http_method   = "OPTIONS"
+  authorization = "NONE"
+}
+
+resource "aws_api_gateway_integration" "linked_token_options_integration" {
+  rest_api_id             = aws_api_gateway_rest_api.finance_api.id
+  resource_id             = aws_api_gateway_resource.linked_token.id
+  http_method             = aws_api_gateway_method.linked_token_options.http_method
+  type                    = "MOCK"
+  request_templates = {
+    "application/json" = "{\"statusCode\": 200}"
+  }
+}
+
+resource "aws_api_gateway_method_response" "linked_token_options_response" {
+  rest_api_id = aws_api_gateway_rest_api.finance_api.id
+  resource_id = aws_api_gateway_resource.linked_token.id
+  http_method = "OPTIONS"
+  status_code = "200"
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Headers" = true
+    "method.response.header.Access-Control-Allow-Methods" = true
+    "method.response.header.Access-Control-Allow-Origin"  = true
+  }
+}
+
+resource "aws_api_gateway_integration_response" "linked_token_options_integration_response" {
+  rest_api_id = aws_api_gateway_rest_api.finance_api.id
+  resource_id = aws_api_gateway_resource.linked_token.id
+  http_method = aws_api_gateway_method.linked_token_options.http_method
+  status_code = "200"
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
+    "method.response.header.Access-Control-Allow-Methods" = "'POST,OPTIONS'"
+    "method.response.header.Access-Control-Allow-Origin"  = "'*'"
+  }
+
+  response_templates = {
+    "application/json" = ""
+  }
+}
+
+
 #access token resource
 resource "aws_api_gateway_resource" "access_token" {
   rest_api_id = aws_api_gateway_rest_api.finance_api.id
@@ -118,4 +167,51 @@ resource "aws_lambda_permission" "access_token_apigw" {
   function_name = aws_lambda_function.access_token_handler.function_name
   principal     = "apigateway.amazonaws.com"
   source_arn    = "${aws_api_gateway_rest_api.finance_api.execution_arn}/*/*"
+}
+
+resource "aws_api_gateway_method" "access_token_options" {
+  rest_api_id   = aws_api_gateway_rest_api.finance_api.id
+  resource_id   = aws_api_gateway_resource.access_token.id
+  http_method   = "OPTIONS"
+  authorization = "NONE"
+}
+
+resource "aws_api_gateway_integration" "access_token_options_integration" {
+  rest_api_id             = aws_api_gateway_rest_api.finance_api.id
+  resource_id             = aws_api_gateway_resource.access_token.id
+  http_method             = aws_api_gateway_method.access_token_options.http_method
+  type                    = "MOCK"
+  request_templates = {
+    "application/json" = "{\"statusCode\": 200}"
+  }
+}
+
+resource "aws_api_gateway_method_response" "access_token_options_response" {
+  rest_api_id = aws_api_gateway_rest_api.finance_api.id
+  resource_id = aws_api_gateway_resource.access_token.id
+  http_method = "OPTIONS"
+  status_code = "200"
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Headers" = true
+    "method.response.header.Access-Control-Allow-Methods" = true
+    "method.response.header.Access-Control-Allow-Origin"  = true
+  }
+}
+
+resource "aws_api_gateway_integration_response" "access_token_options_integration_response" {
+  rest_api_id = aws_api_gateway_rest_api.finance_api.id
+  resource_id = aws_api_gateway_resource.access_token.id
+  http_method = aws_api_gateway_method.access_token_options.http_method
+  status_code = "200"
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
+    "method.response.header.Access-Control-Allow-Methods" = "'POST,OPTIONS'"
+    "method.response.header.Access-Control-Allow-Origin"  = "'*'"
+  }
+
+  response_templates = {
+    "application/json" = ""
+  }
 }
