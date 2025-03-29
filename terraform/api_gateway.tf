@@ -62,7 +62,7 @@ resource "aws_api_gateway_integration" "lambda_integration" {
   resource_id             = aws_api_gateway_resource.transactions.id
   http_method             = aws_api_gateway_method.transactions_post.http_method
   integration_http_method = "POST"
-  type                    = "AWS_PROXY"
+  type                    = "AWS"  #proxy
   uri                     = aws_lambda_function.transaction_handler.invoke_arn
 }
 
@@ -93,7 +93,7 @@ resource "aws_api_gateway_integration" "linked_token_lambda_integration" {
   resource_id             = aws_api_gateway_resource.linked_token.id
   http_method             = aws_api_gateway_method.linked_token_post.http_method
   integration_http_method = "POST"
-  type                    = "AWS_PROXY"
+  type                    = "AWS"  #rpoxy
   uri                     = aws_lambda_function.linked_token_handler.invoke_arn
 }
 
@@ -175,9 +175,8 @@ resource "aws_api_gateway_method_response" "linked_token_options_response" {
     "method.response.header.Access-Control-Allow-Origin"  = true
   }
   depends_on = [
-    aws_api_gateway_integration.linked_token_options_integration,
-    aws_api_gateway_method_response.linked_token_options_response  # <- critical!
-  ]  
+  aws_api_gateway_method.linked_token_options
+] 
 }
 
 resource "aws_api_gateway_integration_response" "linked_token_options_integration_response" {
