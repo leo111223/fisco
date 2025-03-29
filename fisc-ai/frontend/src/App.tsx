@@ -20,7 +20,7 @@ import { usePlaidLink } from "react-plaid-link";
 Amplify.configure(awsconfig);
 
 //const API_BASE_URL = "https://7o81y9tcsa.execute-api.us-east-1.amazonaws.com/dev";
-const API_BASE_URL = "https://sgul703lb7.execute-api.us-east-1.amazonaws.com/prod";
+const API_BASE_URL = "https://3pzi53su4i.execute-api.us-east-1.amazonaws.com/prod";
 
 
 //const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;     //leo
