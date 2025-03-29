@@ -111,9 +111,9 @@ resource "aws_api_gateway_method" "linked_token_options" {
   http_method   = "OPTIONS"
   authorization = "NONE"
 
-  depends_on = [
-    aws_api_gateway_method.linked_token_options
-  ]
+#   depends_on = [
+#     aws_api_gateway_method.linked_token_options
+#   ]
 }
 
 resource "aws_api_gateway_integration" "linked_token_options_integration" {
@@ -200,7 +200,7 @@ resource "aws_api_gateway_method" "access_token_options" {
   resource_id   = aws_api_gateway_resource.access_token.id
   http_method   = "OPTIONS"
   authorization = "NONE"
-  depends_on = [aws_api_gateway_method.access_token_options]
+#   depends_on = [aws_api_gateway_method.access_token_options]
 }
 
 resource "aws_api_gateway_integration" "access_token_options_integration" {
