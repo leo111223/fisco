@@ -66,6 +66,7 @@ resource "aws_lambda_permission" "apigw" {
   principal     = "apigateway.amazonaws.com"
   source_arn    = "${aws_api_gateway_rest_api.finance_api.execution_arn}/*/*"
 }
+
 #linked_token resource
 resource "aws_api_gateway_resource" "linked_token" {
   rest_api_id = aws_api_gateway_rest_api.finance_api.id
@@ -146,10 +147,11 @@ resource "aws_api_gateway_integration_response" "linked_token_options_integratio
   response_templates = {
     "application/json" = ""
   }
-
   depends_on = [
-    aws_api_gateway_integration.linked_token_options_integration
-  ]
+    aws_api_gateway_integration.linked_token_options_integration,
+    aws_api_gateway_method_response.linked_token_options_response  # <- critical!
+  ]  
+  
 }
 
 
@@ -232,5 +234,9 @@ resource "aws_api_gateway_integration_response" "access_token_options_integratio
   response_templates = {
     "application/json" = ""
   }
-  depends_on = [aws_api_gateway_integration.access_token_options_integration]
+  depends_on = [
+  aws_api_gateway_integration.access_token_options_integration,
+  aws_api_gateway_method_response.access_token_options_response
+  ]
+  
 }
