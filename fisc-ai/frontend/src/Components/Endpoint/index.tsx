@@ -24,52 +24,22 @@ const Endpoint = (props: Props) => {
   const [error, setError] = useState<ErrorDataItem | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  // const getData = async () => {
-  //   setIsLoading(true);
-  //   const response = await fetch(`/api/${props.endpoint}`, { method: "GET" });
-  //   const data = await response.json();
-  //   if (data.error != null) {
-  //     setError(data.error);
-  //     setIsLoading(false);
-  //     return;
-  //   }
-  //   setTransformedData(props.transformData(data)); // transform data into proper format for each individual product
-  //   if (data.pdf != null) {
-  //     setPdf(data.pdf);
-  //   }
-  //   setShowTable(true);
-  //   setIsLoading(false);
-  // };
   const getData = async () => {
     setIsLoading(true);
-    const url = `${process.env.REACT_APP_API_URL}/transactions`;
-  
-    try {
-      const response = await fetch(url, { method: "GET" });
-      const data = await response.json();
-  
-      if (data.error != null) {
-        setError(data.error);
-      } else {
-        setTransformedData(props.transformData(data));
-        if (data.pdf != null) {
-          setPdf(data.pdf);
-        }
-        setShowTable(true);
-      }
-    } catch (err) {
-      setError({
-        error_code: "FETCH_ERROR",
-        error_type: "ClientError",
-        display_message: "Failed to fetch data.",
-        error_message: "Request failed at fetch step.",
-        status_code: 500,
-      });
+    const response = await fetch(`/api/${props.endpoint}`, { method: "GET" });
+    const data = await response.json();
+    if (data.error != null) {
+      setError(data.error);
+      setIsLoading(false);
+      return;
     }
-  
+    setTransformedData(props.transformData(data)); // transform data into proper format for each individual product
+    if (data.pdf != null) {
+      setPdf(data.pdf);
+    }
+    setShowTable(true);
     setIsLoading(false);
   };
-  
 
   const getPdfName = () => {
     switch(props.name) {

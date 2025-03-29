@@ -3,38 +3,33 @@ import { usePlaidLink } from "react-plaid-link";
 import Button from "plaid-threads/Button";
 
 import Context from "../../Context";
-//const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;    //me
+
 const Link = () => {
   const { linkToken, isPaymentInitiation, isCraProductsExclusively, dispatch } =
     useContext(Context);
 
   const onSuccess = React.useCallback(
     (public_token: string) => {
+      // If the access_token is needed, send public_token to server
       const exchangePublicTokenForAccessToken = async () => {
-        //const response = await fetch(`${API_BASE_URL}/transactions`, { method: "POST" });
-        const response = await fetch(
-          `${process.env.REACT_APP_API_URL}/set_access_token`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ public_token }),
-          }
-        );
-
+        const response = await fetch("/api/set_access_token", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
+          },
+          body: `public_token=${public_token}`,
+        });
         if (!response.ok) {
           dispatch({
             type: "SET_STATE",
             state: {
-              itemId: "no item_id retrieved",
-              accessToken: "no access_token retrieved",
+              itemId: `no item_id retrieved`,
+              accessToken: `no access_token retrieved`,
               isItemAccess: false,
             },
           });
           return;
         }
-
         const data = await response.json();
         dispatch({
           type: "SET_STATE",
@@ -46,7 +41,11 @@ const Link = () => {
         });
       };
 
-      if (isPaymentInitiation || isCraProductsExclusively) {
+      // 'payment_initiation' products do not require the public_token to be exchanged for an access_token.
+      if (isPaymentInitiation) {
+        dispatch({ type: "SET_STATE", state: { isItemAccess: false } });
+      } else if (isCraProductsExclusively) {
+        // When only CRA products are enabled, only user_token is needed. access_token/public_token exchange is not needed.
         dispatch({ type: "SET_STATE", state: { isItemAccess: false } });
       } else {
         exchangePublicTokenForAccessToken();
@@ -65,6 +64,7 @@ const Link = () => {
   };
 
   if (window.location.href.includes("?oauth_state_id=")) {
+    // TODO: figure out how to delete this ts-ignore
     // @ts-ignore
     config.receivedRedirectUri = window.location.href;
     isOauth = true;
