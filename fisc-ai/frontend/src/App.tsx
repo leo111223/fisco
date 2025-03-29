@@ -37,7 +37,7 @@ const App = ({ signOut, user }: WithAuthenticatorProps) => {
   // Function to generate the Link Token
   const generateLinkToken = useCallback(async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/create_link_token`, {   //me edited  /create_link_token
+      const response = await fetch(`${API_BASE_URL}/linked_token`, {   //me edited  /create_link_token
         method: "POST",
         headers: {
           "Content-Type": "application/json",
