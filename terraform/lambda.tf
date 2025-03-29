@@ -1,4 +1,4 @@
-# Lambda Function
+# transaction handler
 resource "aws_lambda_function" "transaction_handler" {
   function_name = "transaction_handle"
   role          = aws_iam_role.lambda_exec.arn
@@ -6,7 +6,7 @@ resource "aws_lambda_function" "transaction_handler" {
   timeout       = 30
   handler       = "create_transactions.lambda_handler"
   filename      = "transaction.zip"
-  # filename      = "lambda_API.zip"
+ 
 
   environment {
     variables = {
