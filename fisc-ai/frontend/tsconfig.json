@@ -16,8 +16,8 @@
     "noEmit": true,
     // "types": ["vite/client"], //Leo edit
     
-    "jsx": "react-jsx",
-    "include": ["src", "vite-env.d.ts"]
+    "jsx": "react-jsx"
+    //"include": ["src", "vite-env.d.ts"]
   },
   "include": ["src", "index.js"]
 }

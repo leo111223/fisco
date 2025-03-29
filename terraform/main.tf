@@ -55,26 +55,6 @@ resource "aws_iam_policy_attachment" "amplify_full_access" {
   policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess-Amplify"
 }
 
-# resource "aws_iam_policy" "lambda_execution_policy" {
-#   name        = "lambda-execution-policy"
-#   description = "Allows Lambda functions to write logs to CloudWatch"
-
-#   policy = jsonencode({
-#     Version = "2012-10-17"
-#     Statement = [
-#       {
-#         Effect = "Allow"
-#         Action = [
-#           "logs:CreateLogGroup",
-#           "logs:CreateLogStream",
-#           "logs:PutLogEvents"
-#         ]
-#         Resource = "*"
-#       }
-#     ]
-#   })
-# }
-
 # Amplify App
 resource "aws_amplify_app" "plaid_app" {
   name         = "FiscAI"

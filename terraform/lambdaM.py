@@ -8,6 +8,7 @@ from plaid.model.country_code import CountryCode
 from plaid.model.language import Language
 from plaid import Configuration, ApiClient
 
+
 def handler(event, context):
     try:
         # Load environment variables
