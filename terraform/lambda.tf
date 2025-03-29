@@ -1,10 +1,10 @@
 # Lambda Function
 resource "aws_lambda_function" "transaction_handler" {
-  function_name = "lambda_function"
+  function_name = "transaction_handle"
   role          = aws_iam_role.lambda_exec.arn
   runtime       = "python3.11"
   timeout       = 30
-  handler       = "lambda_link_token.handler"
+  handler       = "create_transaction.handler"
   filename      = "transaction.zip"
   # filename      = "lambda_API.zip"
 
@@ -21,7 +21,7 @@ resource "aws_lambda_function" "transaction_handler" {
 resource "aws_lambda_function" "access_token_handler" {
   function_name = "access_token_handler"
   filename      = "access_token.zip"  # Update with your zip location
-  handler       = "main.handler"
+  handler       = "access_token.handler"
   runtime       = "python3.11"
   role          = aws_iam_role.lambda_exec.arn
   timeout       = 30
@@ -38,7 +38,7 @@ resource "aws_lambda_function" "access_token_handler" {
 resource "aws_lambda_function" "linked_token_handler" {
   function_name = "linked_token_handler"
   filename      = "linked_token.zip"  # Update with your zip location
-  handler       = "main.handler"
+  handler       = "linked_token.handler"
   runtime       = "python3.11"  # or nodejs18.x, etc.
   role          = aws_iam_role.lambda_exec.arn
   timeout       = 30
