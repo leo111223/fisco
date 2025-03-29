@@ -202,19 +202,19 @@ resource "aws_api_gateway_deployment" "api_deployment" {
   }
   depends_on = [
     aws_api_gateway_integration.lambda_integration,
-    aws_api_gateway_method.linked_token_post
+    aws_api_gateway_method.transactions_post
   ]
 }
 
-resource "aws_api_gateway_resource" "linked_token" {
+resource "aws_api_gateway_resource" "transactions" {
   rest_api_id = aws_api_gateway_rest_api.finance_api.id
   parent_id   = aws_api_gateway_rest_api.finance_api.root_resource_id
-  path_part   = "linked_token"
+  path_part   = "transactions"
 }
 
-resource "aws_api_gateway_method" "linked_token_post" {
+resource "aws_api_gateway_method" "transactions_post" {
   rest_api_id   = aws_api_gateway_rest_api.finance_api.id
-  resource_id   = aws_api_gateway_resource.linked_token.id
+  resource_id   = aws_api_gateway_resource.transactions.id
   http_method   = "POST"
   authorization = "NONE"
 }
@@ -227,8 +227,8 @@ resource "aws_api_gateway_stage" "api_stage" {
 
 resource "aws_api_gateway_integration" "lambda_integration" {
   rest_api_id             = aws_api_gateway_rest_api.finance_api.id
-  resource_id             = aws_api_gateway_resource.linked_token.id
-  http_method             = aws_api_gateway_method.linked_token_post.id
+  resource_id             = aws_api_gateway_resource.transactions.id
+  http_method             = aws_api_gateway_method.transactions_post.http_method
   integration_http_method = "POST"
   type                    = "AWS_PROXY"
   uri                     = aws_lambda_function.transaction_handler.invoke_arn
