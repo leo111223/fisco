@@ -36,6 +36,7 @@ resource "aws_api_gateway_deployment" "api_deployment" {
     aws_api_gateway_integration_response.access_token_options_integration_response,
   ]
 }
+
 # transaction resource
 resource "aws_api_gateway_resource" "transactions" {
   rest_api_id = aws_api_gateway_rest_api.finance_api.id
