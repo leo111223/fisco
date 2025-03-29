@@ -4,7 +4,7 @@ resource "aws_lambda_function" "transaction_handler" {
   role          = aws_iam_role.lambda_exec.arn
   runtime       = "python3.11"
   timeout       = 30
-  handler       = "create_transactions.handler"
+  handler       = "create_transactions.lambda_handler"
   filename      = "transaction.zip"
   # filename      = "lambda_API.zip"
 
@@ -21,7 +21,7 @@ resource "aws_lambda_function" "transaction_handler" {
 resource "aws_lambda_function" "access_token_handler" {
   function_name = "access_token_handler"
   filename      = "access_token.zip"  # Update with your zip location
-  handler       = "access_token.handler"
+  handler       = "access_token.lambda_handler"
   runtime       = "python3.11"
   role          = aws_iam_role.lambda_exec.arn
   timeout       = 30
