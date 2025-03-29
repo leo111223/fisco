@@ -19,8 +19,8 @@ import './App.css';
 import { usePlaidLink } from "react-plaid-link";
 Amplify.configure(awsconfig);
 
-//const API_BASE_URL = "https://7o81y9tcsa.execute-api.us-east-1.amazonaws.com/dev";
-const API_BASE_URL = "https://3pzi53su4i.execute-api.us-east-1.amazonaws.com/prod";
+// const API_BASE_URL = "https://7o81y9tcsa.execute-api.us-east-1.amazonaws.com/dev";
+ const API_BASE_URL = "https://3pzi53su4i.execute-api.us-east-1.amazonaws.com/prod";
 
 
 //const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;     //leo
@@ -37,20 +37,24 @@ const App = ({ signOut, user }: WithAuthenticatorProps) => {
   // Function to generate the Link Token
   const generateLinkToken = useCallback(async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/linked_token`, {   //me edited  /create_link_token
+      const response = await fetch(`${API_BASE_URL}/linked_token`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
       });
-
+  
+      console.log("Response status:", response.status);
+  
       if (!response.ok) {
+        const errorText = await response.text(); // Read the response body for error logging
+        console.error("Response body:", errorText);
         throw new Error("Failed to generate link token");
       }
-
-      const data = await response.json();
+  
+      const data = await response.json(); // Parse the response body as JSON
       const parsedBody = JSON.parse(data.body);
-
+  
       if (parsedBody.link_token) {
         setLinkToken(parsedBody.link_token); // Save the link token
         localStorage.setItem("link_token", parsedBody.link_token); // Save it for OAuth flow

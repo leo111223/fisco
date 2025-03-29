@@ -4,16 +4,17 @@ resource "aws_api_gateway_rest_api" "finance_api" {
   name        = "FinanceAPI"
   description = "API Gateway for Financial Transactions"
 }
-
 resource "aws_api_gateway_deployment" "api_deployment" {
   rest_api_id = aws_api_gateway_rest_api.finance_api.id
 
   triggers = {
     redeploy = timestamp()
   }
+
   lifecycle {
     create_before_destroy = true
   }
+
   depends_on = [
     aws_api_gateway_integration.lambda_integration,
     aws_api_gateway_method.transactions_post,
@@ -26,8 +27,13 @@ resource "aws_api_gateway_deployment" "api_deployment" {
 
     aws_api_gateway_method.linked_token_options,
     aws_api_gateway_integration.linked_token_options_integration,
+    aws_api_gateway_method_response.linked_token_options_response,
+    aws_api_gateway_integration_response.linked_token_options_integration_response,
+
     aws_api_gateway_method.access_token_options,
     aws_api_gateway_integration.access_token_options_integration,
+    aws_api_gateway_method_response.access_token_options_response,
+    aws_api_gateway_integration_response.access_token_options_integration_response,
   ]
 }
 # transaction resource
