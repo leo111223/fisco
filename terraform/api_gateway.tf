@@ -137,6 +137,10 @@ resource "aws_api_gateway_method_response" "linked_token_options_response" {
     "method.response.header.Access-Control-Allow-Methods" = true
     "method.response.header.Access-Control-Allow-Origin"  = true
   }
+  depends_on = [
+    aws_api_gateway_integration.linked_token_options_integration,
+    aws_api_gateway_method_response.linked_token_options_response  # <- critical!
+  ]  
 }
 
 resource "aws_api_gateway_integration_response" "linked_token_options_integration_response" {
@@ -224,6 +228,10 @@ resource "aws_api_gateway_method_response" "access_token_options_response" {
     "method.response.header.Access-Control-Allow-Methods" = true
     "method.response.header.Access-Control-Allow-Origin"  = true
   }
+  depends_on = [
+  aws_api_gateway_integration.access_token_options_integration,
+  aws_api_gateway_method_response.access_token_options_response
+  ]
 }
 
 resource "aws_api_gateway_integration_response" "access_token_options_integration_response" {
