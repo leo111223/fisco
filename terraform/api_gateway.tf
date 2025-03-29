@@ -97,6 +97,42 @@ resource "aws_api_gateway_integration" "linked_token_lambda_integration" {
   uri                     = aws_lambda_function.linked_token_handler.invoke_arn
 }
 
+resource "aws_api_gateway_integration_response" "linked_token_post_integration_response" {
+  rest_api_id = aws_api_gateway_rest_api.finance_api.id
+  resource_id = aws_api_gateway_resource.linked_token.id
+  http_method = aws_api_gateway_method.linked_token_post.http_method
+  status_code = "200"
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+    "method.response.header.Access-Control-Allow-Methods" = "'POST,OPTIONS'"
+    "method.response.header.Access-Control-Allow-Origin"  = "'*'" # Added this line
+  }
+
+  response_templates = {
+    "application/json" = ""
+  }
+
+  depends_on = [
+    aws_api_gateway_integration.linked_token_lambda_integration,
+    aws_api_gateway_method_response.linked_token_post_response
+  ]
+}
+
+resource "aws_api_gateway_method_response" "linked_token_post_response" {
+  rest_api_id = aws_api_gateway_rest_api.finance_api.id
+  resource_id = aws_api_gateway_resource.linked_token.id
+  http_method = aws_api_gateway_method.linked_token_post.http_method
+  status_code = "200"
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Headers" = true
+    "method.response.header.Access-Control-Allow-Methods" = true
+    "method.response.header.Access-Control-Allow-Origin"  = true
+  }
+}
+
+
 resource "aws_lambda_permission" "linked_token_apigw" {
   statement_id  = "AllowAPIGatewayInvokeLinkedToken"
   action        = "lambda:InvokeFunction"
@@ -104,6 +140,7 @@ resource "aws_lambda_permission" "linked_token_apigw" {
   principal     = "apigateway.amazonaws.com"
   source_arn    = "${aws_api_gateway_rest_api.finance_api.execution_arn}/*/*"
 }
+
 #option method
 resource "aws_api_gateway_method" "linked_token_options" {
   rest_api_id   = aws_api_gateway_rest_api.finance_api.id
@@ -150,7 +187,7 @@ resource "aws_api_gateway_integration_response" "linked_token_options_integratio
   status_code = "200"
 
   response_parameters = {
-    "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
+    "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
     "method.response.header.Access-Control-Allow-Methods" = "'POST,OPTIONS'"
     "method.response.header.Access-Control-Allow-Origin"  = "'*'"
   }
@@ -241,7 +278,7 @@ resource "aws_api_gateway_integration_response" "access_token_options_integratio
   status_code = "200"
 
   response_parameters = {
-    "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
+    "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
     "method.response.header.Access-Control-Allow-Methods" = "'POST,OPTIONS'"
     "method.response.header.Access-Control-Allow-Origin"  = "'*'"
   }
