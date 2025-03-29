@@ -83,11 +83,11 @@ jobs:
             echo "VITE_API_BASE_URL=$safe_url" >> $GITHUB_ENV
         
             # For React frontend .env.production
-            echo "VITE_API_BASE_URL=$api_url" > ../fisc-ai/frontend/.env.production
+            echo "VITE_API_BASE_URL=$api_url" > ../fisc-ai/frontend/.env
             
-      - name: Debug .env.production
+      - name: Debug .env
         working-directory: fisc-ai/frontend
-        run: cat .env.production
+        run: cat .env
   
 
       - name: Terraform Destroy
