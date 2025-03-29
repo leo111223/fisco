@@ -38,7 +38,7 @@ resource "aws_lambda_function" "access_token_handler" {
 resource "aws_lambda_function" "linked_token_handler" {
   function_name = "linked_token_handler"
   filename      = "linked_token.zip"  # Update with your zip location
-  handler       = "lambda_linked_token.handler"
+  handler       = "lambda_link_token.handler"
   runtime       = "python3.11"  # or nodejs18.x, etc.
   role          = aws_iam_role.lambda_exec.arn
   timeout       = 30
