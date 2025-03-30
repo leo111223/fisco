@@ -72,6 +72,12 @@ jobs:
           echo "api_url=$API_URL"
           echo "api_url=$API_URL" >> $GITHUB_ENV
 
+      - name: Write API URL to Frontend .env
+        working-directory: fisc-ai/frontend
+        run: |
+          echo "Writing API URL to .env file..."
+          echo "VITE_API_BASE_URL=${{ env.api_url }}" > .env
+          cat .env
   
       # - name: Get and Write Clean API URL
       #   id: get_api_url2
