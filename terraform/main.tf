@@ -67,6 +67,7 @@ resource "aws_amplify_app" "plaid_app" {
   environment_variables = {
     REACT_APP_ENV        = "production"
     REACT_APP_PLAID_ENV  = var.plaid_environment
+    VITE_API_BASE_URL   = var.api_url       ##
   }
 
   auto_branch_creation_config {
@@ -127,6 +128,7 @@ resource "aws_amplify_branch" "main_branch" {
   environment_variables = {
     REACT_APP_ENV       = "production"
     REACT_APP_PLAID_ENV = var.plaid_environment
+    VITE_API_BASE_URL   = var.api_url
   }
 }
 
