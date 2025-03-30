@@ -24,6 +24,7 @@ Amplify.configure(awsconfig);
 
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;     //leo
+console.log("API_BASE_URL:", API_BASE_URL); //leo
 if (!API_BASE_URL) {
   console.error("VITE_API_BASE_URL is not defined! Make sure you created your .env file and restarted Vite.");
 }
