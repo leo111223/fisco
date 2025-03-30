@@ -65,7 +65,7 @@ jobs:
         id: get_api_url
         working-directory: terraform
         run: |
-          API_URL=$(terraform output -raw api_gateway_url)
+          API_URL=$(terraform output -raw api_url)
           echo "api_url=$API_URL"
           echo "api_url=$API_URL" >> $GITHUB_ENV
 
