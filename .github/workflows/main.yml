@@ -44,37 +44,31 @@ jobs:
         working-directory: terraform
 
 
-      - name: Plan Terraform
-        run: terraform plan -out=tfplan
-        
-        working-directory: terraform
-        env:
-          TF_VAR_github_token: ${{ secrets.TOKEN_GIT }}
-
-
-
-      # - name: Apply Terraform
-      #   if: github.event.inputs.action == 'apply' || github.ref == 'refs/heads/main'
-      #   # run: terraform apply -auto-approve tfplan
-      #   run: terraform apply -auto-approve -var-file="terraform.tfvars"
-      #   working-directory: terraform
-      #   env:
-      #     TF_VAR_github_token: ${{ secrets.TOKEN_GIT }}
-
+      # ✅ Get the API URL from Terraform output (before plan/apply)
       - name: Get API URL Output
         id: get_api_url
         working-directory: terraform
         run: |
+          echo "Fetching API URL from Terraform output..."
           API_URL=$(terraform output -raw api_url)
           echo "api_url=$API_URL"
           echo "api_url=$API_URL" >> $GITHUB_ENV
 
-      - name: Apply Terraform (with API URL)
-        if: github.event.inputs.action == 'apply' || github.ref == 'refs/heads/main'
-        run: terraform apply -auto-approve -var="api_url=${{ env.api_url }}" -var-file="terraform.tfvars"
+      # Plan Terraform using the dynamically injected api_url
+      - name: Plan Terraform
+        run: terraform plan -out=tfplan -var="api_url=${{ env.api_url }}" -var-file="terraform.tfvars"
         working-directory: terraform
         env:
           TF_VAR_github_token: ${{ secrets.TOKEN_GIT }}
+
+      # ✅ Apply Terraform using the same tfplan and injected api_url
+      - name: Apply Terraform (with API URL)
+        if: github.event.inputs.action == 'apply' || github.ref == 'refs/heads/main'
+        run: terraform apply -auto-approve tfplan
+        working-directory: terraform
+        env:
+          TF_VAR_github_token: ${{ secrets.TOKEN_GIT }}
+
   
       # - name: Get and Write Clean API URL
       #   id: get_api_url2
