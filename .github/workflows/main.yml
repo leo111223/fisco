@@ -76,7 +76,7 @@ jobs:
         working-directory: fisc-ai/frontend
         run: |
           echo "Writing API URL to .env file..."
-          echo "VITE_API_BASE_URL=${{ env.api_url }}" > .env
+          echo "VITE_API_BASE_URL=${{ env.api_url }}" > .env.production
           cat .env
   
       # - name: Get and Write Clean API URL
