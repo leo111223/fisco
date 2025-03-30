@@ -78,7 +78,7 @@ jobs:
         run: |
           echo "Writing API URL to .env file..."
           echo "VITE_API_BASE_URL=${{ env.api_url }}" > .env.production
-          cat .env
+          cat .env.production
   
       # - name: Get and Write Clean API URL
       #   id: get_api_url2
