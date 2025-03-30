@@ -67,7 +67,8 @@ jobs:
         working-directory: terraform
         run: |
           echo "Fetching API URL from Terraform output..."
-          API_URL=$(terraform output -raw api_url)
+          raw_output=$(terraform output -raw api_url)
+          API_URL=$(echo "$raw_output" | sed 's/::.*//' | grep -oE '^https://[^[:space:]]+')
           echo "api_url=$API_URL"
           echo "api_url=$API_URL" >> $GITHUB_ENV
 
