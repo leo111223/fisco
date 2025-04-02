@@ -8,8 +8,6 @@ import Context from "./Context";
 import Sidebar from './Components/Sidebar';
 import ChatWidget from './Components/ChatWidget';
 import Institutions from './Components/Institutions';
-import Transactions from './Components/Transactions';
-import Dashboard from './views/Dashboard';
 
 import { CraCheckReportProduct } from "plaid";
 import { Amplify } from 'aws-amplify';
@@ -21,128 +19,82 @@ import './App.css';
 import { usePlaidLink } from "react-plaid-link";
 Amplify.configure(awsconfig);
 
-//const API_BASE_URL = "https://7o81y9tcsa.execute-api.us-east-1.amazonaws.com/dev"; // manas
-
+// const API_BASE_URL = "https://7o81y9tcsa.execute-api.us-east-1.amazonaws.com/dev";
 const API_BASE_URL = "https://rf59517zr9.execute-api.us-east-1.amazonaws.com/prod";
+
+//console.log(import.meta.env)
+
+//const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;     //leo
+
+//console.log("Base URL:", import.meta.env.VITE_API_BASE_URL);
+
+
 const App = ({ signOut, user }: WithAuthenticatorProps) => {
   const { linkSuccess, isPaymentInitiation, itemId, dispatch } =
     useContext(Context);
   const [linkToken, setLinkToken] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [institutions, setInstitutions] = useState([]);
-  const [accessToken, setAccessToken] = useState<string | null>(null);
-  const [activeView, setActiveView] = useState('dashboard');
-  const [transactions, setTransactions] = useState([]);
 
-  // First, create an initialization function
-  const initializeApp = useCallback(async () => {
+  // Function to generate the Link Token
+  const generateLinkToken = useCallback(async () => {
     try {
-      console.log("🚀 Initializing app...");
-      
-      // Generate access token
-      const accessTokenResponse = await fetch(`${API_BASE_URL}/access_token`, {
+      const response = await fetch(`${API_BASE_URL}/linked_token`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
       });
-
-      if (!accessTokenResponse.ok) {
-        throw new Error("Failed to generate access token");
-      }
-
-      const accessTokenData = await accessTokenResponse.json();
-      const parsedAccessData = JSON.parse(accessTokenData.body);
-      const token = parsedAccessData.access_token || parsedAccessData.acess_token;
-      
-      if (token) {
-        console.log(" Access token received:", token);
-        setAccessToken(token);
-        localStorage.setItem("access_token", token);
-      }
-
-      // Generate link token
-      const linkTokenResponse = await fetch(`${API_BASE_URL}/linked_token`, {    //linked token
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (!linkTokenResponse.ok) {
+  
+      console.log("Response status:", response.status);
+  
+      if (!response.ok) {
+        const errorText = await response.text(); // Read the response body for error logging
+        console.error("Response body:", errorText);
         throw new Error("Failed to generate link token");
       }
-
-      const linkTokenData = await linkTokenResponse.json();
-      const parsedLinkData = JSON.parse(linkTokenData.body);
-
-      if (parsedLinkData.link_token) {
-        console.log("✅ Link token received");
-        setLinkToken(parsedLinkData.link_token);
-        localStorage.setItem("link_token", parsedLinkData.link_token);
+  
+      const data = await response.json(); // Parse the response body as JSON
+      const parsedBody = JSON.parse(data.body);
+  
+      if (parsedBody.link_token) {
+        setLinkToken(parsedBody.link_token); // Save the link token
+        localStorage.setItem("link_token", parsedBody.link_token); // Save it for OAuth flow
+      } else {
+        throw new Error("Link token not found in response");
       }
+    } catch (err: any) {
+      console.error("Error generating link token:", err);
+      setError(err.message || "An error occurred");
+    }
+  }, []);
 
-      // Fetch transactions
-      if (token) {
-        try {
-          const transactionsResponse = await fetch(
-            `${API_BASE_URL}/create_transaction?access_token=${token}`,   //transactions
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              }
-            }
-          );
-
-          if (!transactionsResponse.ok) {
-            const errorData = await transactionsResponse.json();
-            console.error("Transaction fetch error:", errorData);
-            throw new Error(`Failed to fetch transactions: ${errorData.error || transactionsResponse.statusText}`);
-          }
-
-          const transactionsData = await transactionsResponse.json();
-          console.log(" Transactions fetched:", transactionsData);
-          
-          // Check if the response has the expected structure
-          if (transactionsData.transactions) {
-            setTransactions(transactionsData.transactions);
-          } else {
-            console.error("Unexpected response structure:", transactionsData);
-            throw new Error("Invalid response format from server");
-          }
-        } catch (error) {
-          console.error("Error fetching transactions:", error);
-          setError(error instanceof Error ? error.message : "Failed to fetch transactions");
-        }
-      }
-
-      // Fetch institutions
-      const institutionsResponse = await fetch(`${API_BASE_URL}/institutions`, {
+  // Fetch institutions
+  const fetchInstitutions = useCallback(async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/institutions`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
         },
       });
 
-      if (!institutionsResponse.ok) {
+      if (!response.ok) {
         throw new Error("Failed to fetch institutions");
       }
 
-      const institutionsData = await institutionsResponse.json();
-      console.log(" Institutions fetched");
-      setInstitutions(institutionsData.institutions);
-
+      const data = await response.json();
+      setInstitutions(data.institutions);
     } catch (error) {
-      console.error("Error:", error);
-      setError(error instanceof Error ? error.message : "An error occurred during initialization");
+      console.error("Error fetching institutions:", error);
     }
   }, []);
 
-  // Single useEffect for initialization
+  // Fetch the link token when the component loads
   useEffect(() => {
-    initializeApp();
-  }, [initializeApp]);
+    generateLinkToken();
+    fetchInstitutions();
+  }, [generateLinkToken, fetchInstitutions]);
 
   const handleSignOut = async () => {
     try {
@@ -155,80 +107,9 @@ const App = ({ signOut, user }: WithAuthenticatorProps) => {
     }
   };
 
-  const renderContent = () => {
-    switch (activeView) {
-      case 'dashboard':
-        return (
-          <Dashboard 
-            error={error}
-            linkToken={linkToken}
-            accessToken={accessToken}
-            setAccessToken={setAccessToken}
-            API_BASE_URL={API_BASE_URL}
-          />
-        );
-
-      case 'transactions':
-        return (
-          <div className="view-container">
-            <h2>Transactions</h2>
-            {accessToken ? (
-              <Transactions 
-                accessToken={accessToken}
-                API_BASE_URL={API_BASE_URL}
-              />
-            ) : (
-              <p>Please wait while we connect to your bank account...</p>
-            )}
-          </div>
-        );
-
-      case 'bank-accounts':
-        return (
-          <div className="view-container">
-            <h2>Bank Accounts</h2>
-            <Institutions institutions={institutions} />
-          </div>
-        );
-
-      case 'analytics':
-        return (
-          <div className="view-container">
-            <h2>Analytics</h2>
-            {/* Add your analytics component here */}
-          </div>
-        );
-
-      case 'profile':
-        return (
-          <div className="view-container">
-            <h2>Profile</h2>
-            <div className="profile-info">
-              <p>Username: {user?.username}</p>
-              {/* Add more profile information */}
-            </div>
-          </div>
-        );
-
-      case 'settings':
-        return (
-          <div className="view-container">
-            <h2>Settings</h2>
-            {/* Add your settings component here */}
-          </div>
-        );
-
-      default:
-        return <div>Page not found</div>;
-    }
-  };
-
   return (
     <div className="app-container">
-      <Sidebar 
-        activeView={activeView}
-        onNavigate={setActiveView}
-      />
+      <Sidebar />
       <div className="main-content">
         <div className="top-header">
           <div className="header-content">
@@ -240,11 +121,49 @@ const App = ({ signOut, user }: WithAuthenticatorProps) => {
         </div>
 
         <div className="dashboard-content">
-          {renderContent()}
+          <Header />
+          {error && <p style={{ color: "red" }}>Error: {error}</p>}
+          {!linkToken && <p>Loading Link UI...</p>}
+          {linkToken && (
+            <div>
+              <p>Link Token Generated Successfully!</p>
+              <PlaidLink linkToken={linkToken} />
+            </div>
+          )}
+            <Institutions institutions={institutions} />
+            <Products />
+            {!isPaymentInitiation && itemId && (
+            <>
+              <Items />
+              {/* <button onClick={simpleTransactionCall}>Get Transactions</button> */}
+            </>
+            )}
         </div>
       </div>
       <ChatWidget />
     </div>
+  );
+};
+
+// Plaid Link Component
+const PlaidLink = ({ linkToken }: { linkToken: string }) => {
+  const onSuccess = (publicToken: string, metadata: any) => {
+    console.log("Public Token:", publicToken);
+    console.log("Metadata:", metadata);
+    // Send the public token to your backend for further processing
+  };
+
+  const config = {
+    token: linkToken, // The link token generated from your backend
+    onSuccess, // Callback function when the user successfully links their account
+  };
+
+  const { open, ready } = usePlaidLink(config);
+
+  return (
+    <button onClick={() => open()} disabled={!ready}>
+      Open Plaid Link
+    </button>
   );
 };
 
