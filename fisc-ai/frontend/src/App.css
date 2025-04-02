@@ -61,4 +61,26 @@
   margin-bottom: 24px;
   color: #2c5282;
   font-size: 1.8rem;
+}
+
+.sidebar-item {
+  padding: 15px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.sidebar-item:hover {
+  background-color: #f5f5f5;
+}
+
+.sidebar-item.active {
+  background-color: #e0e0e0;
+  font-weight: bold;
+}
+
+.transactions-container {
+  padding: 20px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 } 
