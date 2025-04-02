@@ -40,7 +40,7 @@ const App = ({ signOut, user }: WithAuthenticatorProps) => {
       console.log("🚀 Initializing app...");
       
       // Generate access token
-      const accessTokenResponse = await fetch(`${API_BASE_URL}/create_public_token`, {
+      const accessTokenResponse = await fetch(`${API_BASE_URL}/access_token`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -62,7 +62,7 @@ const App = ({ signOut, user }: WithAuthenticatorProps) => {
       }
 
       // Generate link token
-      const linkTokenResponse = await fetch(`${API_BASE_URL}/linked_token`, {    //lnked token
+      const linkTokenResponse = await fetch(`${API_BASE_URL}/linked_token`, {    //linked token
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -86,7 +86,7 @@ const App = ({ signOut, user }: WithAuthenticatorProps) => {
       if (token) {
         try {
           const transactionsResponse = await fetch(
-            `${API_BASE_URL}/create_transaction?access_token=${token}`,
+            `${API_BASE_URL}/create_transaction?access_token=${token}`,   //transactions
             {
               method: "POST",
               headers: {
@@ -102,7 +102,7 @@ const App = ({ signOut, user }: WithAuthenticatorProps) => {
           }
 
           const transactionsData = await transactionsResponse.json();
-          console.log("✅ Transactions fetched:", transactionsData);
+          console.log(" Transactions fetched:", transactionsData);
           
           // Check if the response has the expected structure
           if (transactionsData.transactions) {
@@ -130,7 +130,7 @@ const App = ({ signOut, user }: WithAuthenticatorProps) => {
       }
 
       const institutionsData = await institutionsResponse.json();
-      console.log("✅ Institutions fetched");
+      console.log(" Institutions fetched");
       setInstitutions(institutionsData.institutions);
 
     } catch (error) {
