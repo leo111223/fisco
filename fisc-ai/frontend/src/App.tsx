@@ -23,7 +23,7 @@ Amplify.configure(awsconfig);
 
 //const API_BASE_URL = "https://7o81y9tcsa.execute-api.us-east-1.amazonaws.com/dev"; // manas
 
-const API_BASE_URL = "https://rf59517zr9.execute-api.us-east-1.amazonaws.com/prod";
+const API_BASE_URL = "https://rf59517zr9.execute-api.us-east-1.amazonaws.com/prod";  //leo
 const App = ({ signOut, user }: WithAuthenticatorProps) => {
   const { linkSuccess, isPaymentInitiation, itemId, dispatch } =
     useContext(Context);
@@ -86,7 +86,7 @@ const App = ({ signOut, user }: WithAuthenticatorProps) => {
       if (token) {
         try {
           const transactionsResponse = await fetch(
-            `${API_BASE_URL}/create_transaction?access_token=${token}`,   //transactions
+            `${API_BASE_URL}/_transaction?access_token=${token}`,   //transactions
             {
               method: "POST",
               headers: {
