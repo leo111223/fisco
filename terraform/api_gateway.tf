@@ -115,7 +115,7 @@ resource "aws_api_gateway_integration_response" "linked_token_post_integration_r
 
   depends_on = [
     aws_api_gateway_integration.linked_token_lambda_integration,
-    aws_api_gateway_method_response.linked_token_post_response
+    //aws_api_gateway_method_response.linked_token_post_response
   ]
 }
 
@@ -196,7 +196,7 @@ resource "aws_api_gateway_integration_response" "linked_token_options_integratio
   }
   depends_on = [
     aws_api_gateway_integration.linked_token_options_integration,
-    aws_api_gateway_method_response.linked_token_options_response  # <- critical!
+    //aws_api_gateway_method_response.linked_token_options_response  # <- critical!
   ]  
   
 }
