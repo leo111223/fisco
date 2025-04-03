@@ -43,15 +43,7 @@ jobs:
         run: terraform validate
         working-directory: terraform
 
-      - name: Get API URL Output
-        id: get_api_url
-        working-directory: terraform
-        run: |
-          echo "Fetching API URL from Terraform output..."
-          raw_output=$(terraform output -raw api_url)
-          API_URL=$(echo "$raw_output" | sed 's/::.*//' | grep -oE '^https://[^[:space:]]+')
-          echo "api_url=$API_URL"
-          echo "api_url=$API_URL" >> $GITHUB_ENV
+ 
 
       
 
@@ -71,7 +63,15 @@ jobs:
           TF_VAR_github_token: ${{ secrets.TOKEN_GIT }}
       
         # Get the API URL from Terraform output (before plan/apply)
-      
+      - name: Get API URL Output
+        id: get_api_url
+        working-directory: terraform
+        run: |
+          echo "Fetching API URL from Terraform output..."
+          raw_output=$(terraform output -raw api_url)
+          API_URL=$(echo "$raw_output" | sed 's/::.*//' | grep -oE '^https://[^[:space:]]+')
+          echo "api_url=$API_URL"
+          echo "api_url=$API_URL" >> $GITHUB_ENV
 
       - name: Write API URL to Frontend .env
         working-directory: fisc-ai/frontend
