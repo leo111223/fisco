@@ -270,6 +270,19 @@ resource "aws_api_gateway_method_response" "access_token_options_response" {
   ]
 }
 
+resource "aws_api_gateway_method_response" "access_token_post_response" {
+  rest_api_id = aws_api_gateway_rest_api.finance_api.id
+  resource_id = aws_api_gateway_resource.access_token.id
+  http_method = aws_api_gateway_method.access_token_post.http_method
+  status_code = "200"
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Headers" = true
+    "method.response.header.Access-Control-Allow-Methods" = true
+    "method.response.header.Access-Control-Allow-Origin"  = true
+  }
+}
+
 resource "aws_api_gateway_integration_response" "access_token_options_integration_response" {
   rest_api_id = aws_api_gateway_rest_api.finance_api.id
   resource_id = aws_api_gateway_resource.access_token.id
