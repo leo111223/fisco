@@ -148,9 +148,9 @@ resource "aws_api_gateway_method" "linked_token_options" {
   http_method   = "OPTIONS"
   authorization = "NONE"
 
-#   depends_on = [
-#     aws_api_gateway_method.linked_token_options
-#   ]
+  depends_on = [
+    aws_api_gateway_method.linked_token_options
+  ]
 }
 
 resource "aws_api_gateway_integration" "linked_token_options_integration" {
@@ -225,6 +225,28 @@ resource "aws_api_gateway_integration" "access_token_lambda_integration" {
   type                    = "AWS" #proxy
   uri                     = aws_lambda_function.access_token_handler.invoke_arn
 
+}
+
+resource "aws_api_gateway_integration_response" "access_token_post_integration_response" {
+  rest_api_id = aws_api_gateway_rest_api.finance_api.id
+  resource_id = aws_api_gateway_resource.access_token.id
+  http_method = aws_api_gateway_method.access_token_post.http_method
+  status_code = "200"
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+    "method.response.header.Access-Control-Allow-Methods" = "'POST,OPTIONS'"
+    "method.response.header.Access-Control-Allow-Origin"  = "'*'" # Allow all origins or specify your frontend URL
+  }
+
+  response_templates = {
+    "application/json" = ""
+  }
+
+  depends_on = [
+    aws_api_gateway_integration.access_token_lambda_integration,
+    aws_api_gateway_method_response.access_token_post_response
+  ]
 }
 
 resource "aws_lambda_permission" "access_token_apigw" {
@@ -304,24 +326,4 @@ resource "aws_api_gateway_integration_response" "access_token_options_integratio
   ]
   
 }
-resource "aws_api_gateway_integration_response" "access_token_post_integration_response" {
-  rest_api_id = aws_api_gateway_rest_api.finance_api.id
-  resource_id = aws_api_gateway_resource.access_token.id
-  http_method = aws_api_gateway_method.access_token_post.http_method
-  status_code = "200"
 
-  response_parameters = {
-    "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
-    "method.response.header.Access-Control-Allow-Methods" = "'POST,OPTIONS'"
-    "method.response.header.Access-Control-Allow-Origin"  = "'*'" # Allow all origins or specify your frontend URL
-  }
-
-  response_templates = {
-    "application/json" = ""
-  }
-
-  depends_on = [
-    aws_api_gateway_integration.access_token_lambda_integration,
-    aws_api_gateway_method_response.access_token_post_response
-  ]
-}
