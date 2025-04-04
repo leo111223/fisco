@@ -43,13 +43,12 @@ jobs:
         run: terraform validate
         working-directory: terraform
 
- 
-
+   
       
 
       # Plan Terraform using the dynamically injected api_url
       - name: Plan Terraform
-        run: terraform plan -out=tfplan -var="api_url=${{ env.api_url }}" -var-file="terraform.tfvars"
+        run: terraform plan -out=tfplan 
         working-directory: terraform
         env:
           TF_VAR_github_token: ${{ secrets.TOKEN_GIT }}
@@ -62,55 +61,39 @@ jobs:
         env:
           TF_VAR_github_token: ${{ secrets.TOKEN_GIT }}
       
-        # Get the API URL from Terraform output (before plan/apply)
-      - name: Get API URL Output
-        id: get_api_url
+        
+      
+      - name: Get and Write Clean API URL
+        id: get_api_url2
         working-directory: terraform
+        shell: bash
         run: |
-          echo "Fetching API URL from Terraform output..."
-          raw_output=$(terraform output -raw api_url)
-          API_URL=$(echo "$raw_output" | sed 's/::.*//' | grep -oE '^https://[^[:space:]]+')
-          echo "api_url=$API_URL"
-          echo "api_url=$API_URL" >> $GITHUB_ENV
-
-      - name: Write API URL to Frontend .env
-        working-directory: fisc-ai/frontend
-        run: |
-          echo "Writing API URL to .env file..."
-          echo "VITE_API_BASE_URL=${{ env.api_url }}" > .env.production
-          cat .env.production
-  
-      # - name: Get and Write Clean API URL
-      #   id: get_api_url2
-      #   working-directory: terraform
-      #   shell: bash
-      #   run: |
-      #       echo "Fetching clean API URL from Terraform output..."
+            echo "Fetching clean API URL from Terraform output..."
         
-      #       raw_output=$(terraform output -raw api_gateway_url 2>/dev/null)
+            raw_output=$(terraform output -raw api_gateway_url 2>/dev/null)
         
-      #       # Strip any extra lines or garbage (for safety)
-      #       api_url=$(echo "$raw_output" | sed 's/::.*//' | grep -oE '^https://[^[:space:]]+')
+            # Strip any extra lines or garbage (for safety)
+            api_url=$(echo "$raw_output" | sed 's/::.*//' | grep -oE '^https://[^[:space:]]+')
         
-      #       echo "Cleaned API URL: $api_url"
+            echo "Cleaned API URL: $api_url"
         
-      #       # For GitHub ENV
-      #       safe_url="${api_url//'%'/'%25'}"
-      #       safe_url="${safe_url//$'\n'/'%0A'}"
-      #       safe_url="${safe_url//$'\r'/'%0D'}"
-      #       echo "VITE_API_BASE_URL=$safe_url" >> $GITHUB_ENV
+            # For GitHub ENV
+            safe_url="${api_url//'%'/'%25'}"
+            safe_url="${safe_url//$'\n'/'%0A'}"
+            safe_url="${safe_url//$'\r'/'%0D'}"
+            echo "VITE_API_BASE_URL=$safe_url" >> $GITHUB_ENV
         
-      #       # For React frontend .env.production
-      #       echo "VITE_API_BASE_URL=$api_url" > ../fisc-ai/frontend/.env
+            # For React frontend .env.production
+            echo "VITE_API_BASE_URL=$api_url" > ../fisc-ai/frontend/.env
             
-      # - name: Debug .env
-      #   working-directory: fisc-ai/frontend
-      #   run: cat .env
+      - name: Debug .env
+        working-directory: fisc-ai/frontend
+        run: cat .env
   
 
       - name: Terraform Destroy
         if: github.event.inputs.action == 'destroy'
-        run: terraform destroy -auto-approve -var="api_url=${{ env.api_url }}"
+        run: terraform destroy -auto-approve 
         working-directory: terraform
         env:
           TF_VAR_github_token: ${{ secrets.TOKEN_GIT }}
