@@ -17,10 +17,6 @@ variable "github_token" {
   sensitive   = true
 }
 
-# variable "api_url" {
-#   description = "API Base URL for the React App"
-# }
-
 variable "branch_name" {
   description = "Git Branch Name"
   default     = "main"
@@ -59,8 +55,8 @@ variable "environment" {
   default     = "test"
 }
 
-variable "api_url" {
-  type        = string
-  description = "API Gateway base URL"
-}
+# variable "api_url" {
+#   type        = string
+#   description = "API Gateway base URL"
+# }
 
