@@ -66,6 +66,93 @@ resource "aws_api_gateway_integration" "lambda_integration" {
   uri                     = aws_lambda_function.transaction_handler.invoke_arn
 }
 
+resource "aws_api_gateway_method_response" "transactions_post_response" {
+  rest_api_id = aws_api_gateway_rest_api.finance_api.id
+  resource_id = aws_api_gateway_resource.transactions.id
+  http_method = aws_api_gateway_method.transactions_post.http_method
+  status_code = "200"
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Headers" = true
+    "method.response.header.Access-Control-Allow-Methods" = true
+    "method.response.header.Access-Control-Allow-Origin"  = true
+  }
+}
+
+resource "aws_api_gateway_integration_response" "transactions_post_integration_response" {
+  rest_api_id = aws_api_gateway_rest_api.finance_api.id
+  resource_id = aws_api_gateway_resource.transactions.id
+  http_method = aws_api_gateway_method.transactions_post.http_method
+  status_code = "200"
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+    "method.response.header.Access-Control-Allow-Methods" = "'POST,OPTIONS'"
+    "method.response.header.Access-Control-Allow-Origin"  = "'*'" # Allow all origins or specify your frontend URL
+  }
+
+  response_templates = {
+    "application/json" = ""
+  }
+
+  depends_on = [
+    aws_api_gateway_integration.lambda_integration,
+    aws_api_gateway_method_response.transactions_post_response
+  ]
+}
+
+resource "aws_api_gateway_method" "transactions_options" {
+  rest_api_id   = aws_api_gateway_rest_api.finance_api.id
+  resource_id   = aws_api_gateway_resource.transactions.id
+  http_method   = "OPTIONS"
+  authorization = "NONE"
+}
+
+resource "aws_api_gateway_integration" "transactions_options_integration" {
+  rest_api_id             = aws_api_gateway_rest_api.finance_api.id
+  resource_id             = aws_api_gateway_resource.transactions.id
+  http_method             = aws_api_gateway_method.transactions_options.http_method
+  type                    = "MOCK"
+  request_templates = {
+    "application/json" = "{\"statusCode\": 200}"
+  }
+}
+
+resource "aws_api_gateway_method_response" "transactions_options_response" {
+  rest_api_id = aws_api_gateway_rest_api.finance_api.id
+  resource_id = aws_api_gateway_resource.transactions.id
+  http_method = aws_api_gateway_method.transactions_options.http_method
+  status_code = "200"
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Headers" = true
+    "method.response.header.Access-Control-Allow-Methods" = true
+    "method.response.header.Access-Control-Allow-Origin"  = true
+  }
+}
+
+resource "aws_api_gateway_integration_response" "transactions_options_integration_response" {
+  rest_api_id = aws_api_gateway_rest_api.finance_api.id
+  resource_id = aws_api_gateway_resource.transactions.id
+  http_method = aws_api_gateway_method.transactions_options.http_method
+  status_code = "200"
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+    "method.response.header.Access-Control-Allow-Methods" = "'POST,OPTIONS'"
+    "method.response.header.Access-Control-Allow-Origin"  = "'*'"
+  }
+
+  response_templates = {
+    "application/json" = ""
+  }
+
+  depends_on = [
+    aws_api_gateway_integration.transactions_options_integration,
+    aws_api_gateway_method_response.transactions_options_response
+  ]
+}
+
 resource "aws_lambda_permission" "apigw" {
   statement_id  = "AllowAPIGatewayInvoke"
   action        = "lambda:InvokeFunction"
