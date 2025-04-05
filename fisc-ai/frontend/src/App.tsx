@@ -86,7 +86,7 @@ const App = ({ signOut, user }: WithAuthenticatorProps) => {
       if (token) {
         try {
           const transactionsResponse = await fetch(
-            `${API_BASE_URL}/_transaction?access_token=${token}`,   //transactions
+            `${API_BASE_URL}/transactions?access_token=${token}`,   //_transaction
             {
               method: "POST",
               headers: {
