@@ -61,12 +61,15 @@ jobs:
   
       - name: Check Terraform Output
         run: |
-          RAW_URL=$(terraform output -raw api_gateway_url || echo "")
+          RAW_URL=$(terraform output -raw api_gateway_url 2>/dev/null || echo "")
+
           if [ -z "$RAW_URL" ]; then
-            echo "API Gateway URL not found. Skipping update step."
+            echo "api_gateway_url is empty. Did you forget to run terraform apply?"
             exit 1
           fi
-              echo "API_GW_BASE_URL=$RAW_URL" >> $GITHUB_ENV
+
+          echo "API_GW_BASE_URL=$RAW_URL" >> $GITHUB_ENV
+
 
       - name: Update Frontend API URLs
         run: |
