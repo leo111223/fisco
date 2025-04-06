@@ -54,17 +54,17 @@ jobs:
         run: terraform apply -auto-approve tfplan
         working-directory: terraform
  
-      - name: Get Terraform outputs
-        run: |
-            RAW_URL=$(terraform output -raw api_gateway_url | tr -d '\n\"')
-            echo "API_GW_BASE_URL=$RAW_URL" >> $GITHUB_ENV
+      # - name: Get Terraform outputs
+      #   run: |
+      #       RAW_URL=$(terraform output -raw api_gateway_url | tr -d '\n\"')
+      #       echo "API_GW_BASE_URL=$RAW_URL" >> $GITHUB_ENV
 
-      - name: Update Frontend API URLs
-        run: |
-            sed -i "s|REPLACE_WITH_API_GW_BASE_URL|${API_GW_BASE_URL}|g" fisc-ai/frontend/src/App.tsx
-            echo "Final URL from Terraform: $API_GW_BASE_URL"
-            echo "Updated line(s):"
-            grep "${API_GW_BASE_URL}" fisc-ai/frontend/src/App.tsx
+      # - name: Update Frontend API URLs
+      #   run: |
+      #       sed -i "s|REPLACE_WITH_API_GW_BASE_URL|${API_GW_BASE_URL}|g" fisc-ai/frontend/src/App.tsx
+      #       echo "Final URL from Terraform: $API_GW_BASE_URL"
+      #       echo "Updated line(s):"
+      #       grep "${API_GW_BASE_URL}" fisc-ai/frontend/src/App.tsx
       - name: Terraform Destroy
         if: github.event.inputs.action == 'destroy'
         run: terraform destroy -auto-approve
