@@ -50,7 +50,7 @@ jobs:
         working-directory: terraform
 
       - name: Apply Terraform 
-        if: github.event.inputs.action == 'apply' 
+        if: github.event.inputs.action == 'apply' || github.ref == 'refs/heads/main'
         run: terraform apply -auto-approve tfplan
         working-directory: terraform
  
@@ -61,15 +61,12 @@ jobs:
   
       - name: Check Terraform Output
         run: |
-          RAW_URL=$(terraform output -raw api_gateway_url | tr -d '\n\"')
-
+          RAW_URL=$(terraform output -raw api_gateway_url || echo "")
           if [ -z "$RAW_URL" ]; then
-            echo "Terraform output 'api_gateway_url' is missing or empty"
+            echo "API Gateway URL not found. Skipping update step."
             exit 1
           fi
-
-          echo "API_GW_BASE_URL=$RAW_URL" >> $GITHUB_ENV
-
+              echo "API_GW_BASE_URL=$RAW_URL" >> $GITHUB_ENV
 
       - name: Update Frontend API URLs
         run: |
