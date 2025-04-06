@@ -62,6 +62,7 @@ jobs:
       - name: Update Frontend API URLs
         run: |
             sed -i "s|REPLACE_WITH_API_GW_BASE_URL|${API_GW_BASE_URL}|g" fisc-ai/frontend/src/App.tsx
+            echo "Final URL from Terraform: $API_GW_BASE_URL"
             echo "Updated line(s):"
             grep "${API_GW_BASE_URL}" fisc-ai/frontend/src/App.tsx
       - name: Terraform Destroy
