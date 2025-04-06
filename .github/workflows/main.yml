@@ -54,26 +54,13 @@ jobs:
         run: terraform apply -auto-approve tfplan
         working-directory: terraform
  
-      # - name: Get Terraform outputs
-      #   run: |
-      #       RAW_URL=$(terraform output -raw api_gateway_url | tr -d '\n\"')
-      #       echo "API_GW_BASE_URL=$RAW_URL" >> $GITHUB_ENV
-  
-      - name: Check Terraform Output
+      - name: Get Terraform outputs
         run: |
-          RAW_URL=$(terraform output -raw api_gateway_url 2>/dev/null || true)
-
-          if [ -z "$RAW_URL" ]; then
-            echo "api_gateway_url is empty or not defined in Terraform state."
-            exit 1
-          fi
-
-          echo "API_GW_BASE_URL=$RAW_URL" >> $GITHUB_ENV
-
+            RAW_URL=$(terraform output -raw api_gateway_url | tr -d '\n\"')
+            echo "API_GW_BASE_URL=$RAW_URL" >> $GITHUB_ENV
 
       - name: Update Frontend API URLs
         run: |
-            echo "API_GW_BASE_URL=${API_GW_BASE_URL}"
             sed -i "s|REPLACE_WITH_API_GW_BASE_URL|${API_GW_BASE_URL}|g" fisc-ai/frontend/src/App.tsx
             echo "Updated line(s):"
             grep "${API_GW_BASE_URL}" fisc-ai/frontend/src/App.tsx
