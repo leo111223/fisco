@@ -18,6 +18,7 @@ resource "aws_lambda_function" "transaction_handler" {
   }
 }
 
+#access token handler
 resource "aws_lambda_function" "access_token_handler" {
   function_name = "access_token_handler"
   filename      = "access_token.zip"  # Update with your zip location
@@ -35,6 +36,7 @@ resource "aws_lambda_function" "access_token_handler" {
   }
 }
 
+#linked token handler
 resource "aws_lambda_function" "linked_token_handler" {
   function_name = "linked_token_handler"
   filename      = "linked_token.zip"  # Update with your zip location
@@ -48,6 +50,25 @@ resource "aws_lambda_function" "linked_token_handler" {
       PLAID_CLIENT_ID    = var.plaid_client_id
       PLAID_SECRET       = var.plaid_secret
       PLAID_ENVIRONMENT  = var.plaid_environment
+    }
+  }
+}
+
+# Lambda function
+# NEEDS FOLLOWING:
+# Textract DetectDocumentText permission
+# S3 GetObject and PutObject permissions
+# Trigger on S3 ObjectCreated
+resource "aws_lambda_function" "textract_lambda" {
+  function_name    = "textractProcessor"
+  runtime         = "python3.9"
+  handler         = "lambda_function.lambda_handler"
+  role            = aws_iam_role.lambda_exec.arn
+  timeout         = 30
+  filename        = "textract.zip"
+  environment {
+    variables = {
+      DEST_BUCKET = "fiscai-textract-output"
     }
   }
 }
@@ -68,7 +89,6 @@ resource "aws_iam_role" "lambda_exec" {
     }]
   })
 }
-
 
 
 # Lambda Policy
