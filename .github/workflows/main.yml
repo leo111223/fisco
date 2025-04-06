@@ -54,19 +54,19 @@ jobs:
         run: terraform apply -auto-approve tfplan
         working-directory: terraform
  
-      - name: Get Terraform outputs
-        run: |
-            RAW_URL=$(terraform output -raw api_gateway_url | tr -d '\n\"')
-            echo "API_GW_BASE_URL=$RAW_URL" >> $GITHUB_ENV
-  
-      # - name: Check Terraform Output
+      # - name: Get Terraform outputs
       #   run: |
-      #     RAW_URL=$(terraform output -raw api_gateway_url || echo "")
-      #     if [ -z "$RAW_URL" ]; then
-      #       echo "API Gateway URL not found. Skipping update step."
-      #       exit 1
-      #     fi
-      #         echo "API_GW_BASE_URL=$RAW_URL" >> $GITHUB_ENV
+      #       RAW_URL=$(terraform output -raw api_gateway_url | tr -d '\n\"')
+      #       echo "API_GW_BASE_URL=$RAW_URL" >> $GITHUB_ENV
+  
+      - name: Check Terraform Output
+        run: |
+          RAW_URL=$(terraform output -raw api_gateway_url || echo "")
+          if [ -z "$RAW_URL" ]; then
+            echo "API Gateway URL not found. Skipping update step."
+            exit 1
+          fi
+              echo "API_GW_BASE_URL=$RAW_URL" >> $GITHUB_ENV
 
       - name: Update Frontend API URLs
         run: |
