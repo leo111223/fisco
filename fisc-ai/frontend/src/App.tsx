@@ -23,7 +23,9 @@ Amplify.configure(awsconfig);
 
 //const API_BASE_URL = "https://7o81y9tcsa.execute-api.us-east-1.amazonaws.com/dev"; // manas
 
-const API_BASE_URL = "https://mqza9ii5gi.execute-api.us-east-1.amazonaws.com/prod";  //leo
+//const API_BASE_URL = "https://mqza9ii5gi.execute-api.us-east-1.amazonaws.com/prod";  //leo
+
+export const API_BASE_URL = "REPLACE_WITH_API_GW_BASE_URL";
 const App = ({ signOut, user }: WithAuthenticatorProps) => {
   const { linkSuccess, isPaymentInitiation, itemId, dispatch } =
     useContext(Context);
