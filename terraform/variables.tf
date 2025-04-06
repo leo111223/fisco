@@ -55,8 +55,5 @@ variable "environment" {
   default     = "test"
 }
 
-# variable "api_url" {
-#   type        = string
-#   description = "API Gateway base URL"
-# }
+
 
