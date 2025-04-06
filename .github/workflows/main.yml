@@ -61,7 +61,7 @@ jobs:
   
       - name: Check Terraform Output
         run: |
-          RAW_URL=$(terraform output -raw api_gateway_url || true)
+          RAW_URL=$(terraform output -raw api_gateway_url | tr -d '\n\"')
 
           if [ -z "$RAW_URL" ]; then
             echo "Terraform output 'api_gateway_url' is missing or empty"
