@@ -23,6 +23,7 @@ Amplify.configure(awsconfig);
 
 
 export const API_BASE_URL = "REPLACE_WITH_API_GW_BASE_URL";
+
 const App = ({ signOut, user }: WithAuthenticatorProps) => {
   const { linkSuccess, isPaymentInitiation, itemId, dispatch } =
     useContext(Context);

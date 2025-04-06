@@ -46,7 +46,7 @@ jobs:
 
 
       - name: Plan Terraform
-        run: terraform plan -out=tfplan 
+        run: terraform plan -out=tfplan -var-file="terraform.tfvars"
         working-directory: terraform
 
       - name: Apply Terraform 
