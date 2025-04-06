@@ -61,10 +61,10 @@ jobs:
   
       - name: Check Terraform Output
         run: |
-          RAW_URL=$(terraform output -raw api_gateway_url 2>/dev/null || echo "")
+          RAW_URL=$(terraform output -raw api_gateway_url 2>/dev/null || true)
 
           if [ -z "$RAW_URL" ]; then
-            echo "api_gateway_url is empty. Did you forget to run terraform apply?"
+            echo "api_gateway_url is empty or not defined in Terraform state."
             exit 1
           fi
 
