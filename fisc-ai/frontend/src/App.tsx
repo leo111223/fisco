@@ -21,8 +21,8 @@ import './App.css';
 import { usePlaidLink } from "react-plaid-link";
 Amplify.configure(awsconfig);
 
-const API_BASE_URL = "https://7o81y9tcsa.execute-api.us-east-1.amazonaws.com/dev"; // manas
-// const API_BASE_URL = "https://3pzi53su4i.execute-api.us-east-1.amazonaws.com/prod"; // LEO
+//const API_BASE_URL = "https://7o81y9tcsa.execute-api.us-east-1.amazonaws.com/dev"; // manas
+const API_BASE_URL = "https://fxw9qtmmwj.execute-api.us-east-1.amazonaws.com/prod" // LEO
 
 const App = ({ signOut, user }: WithAuthenticatorProps) => {
   const { linkSuccess, isPaymentInitiation, itemId, dispatch } =
@@ -47,7 +47,7 @@ const App = ({ signOut, user }: WithAuthenticatorProps) => {
       console.log("🚀 Initializing app...");
       
       // Generate access token
-      const accessTokenResponse = await fetch(`${API_BASE_URL}/create_public_token`, {
+      const accessTokenResponse = await fetch(`${API_BASE_URL}/access_token`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -69,7 +69,7 @@ const App = ({ signOut, user }: WithAuthenticatorProps) => {
       }
 
       // Generate link token
-      const linkTokenResponse = await fetch(`${API_BASE_URL}/create_link_token`, {
+      const linkTokenResponse = await fetch(`${API_BASE_URL}/linked_token`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

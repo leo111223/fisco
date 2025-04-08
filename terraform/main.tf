@@ -144,4 +144,22 @@ resource "aws_dynamodb_table" "transactions" {
   }
 }
 
+# DynamoDB Table for Accounts
+resource "aws_dynamodb_table" "accounts" {
+  name         = "fiscai_accounts"  # Name of the accounts table
+  billing_mode = "PAY_PER_REQUEST"
+  hash_key     = "user_id"
+  range_key    = "account_id"
+
+  attribute {
+    name = "user_id"
+    type = "S"
+  }
+
+  attribute {
+    name = "account_id"
+    type = "S"
+  }
+}
+
 
