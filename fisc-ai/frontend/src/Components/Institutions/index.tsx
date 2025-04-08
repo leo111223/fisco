@@ -5,10 +5,10 @@ import './Institutions.css';
 export interface InstitutionData {
   institution_id: string;
   name: string;
-  // Add other fields you expect from Plaid
-  logo?: string;
+  logo?: string | null;
   products?: string[];
   status?: string;
+  accounts?: any[];
 }
 
 interface InstitutionsProps {
@@ -16,6 +16,8 @@ interface InstitutionsProps {
 }
 
 export default function Institutions({ institutions = [] }: InstitutionsProps) {
+  console.log('Institutions component received data:', institutions);
+  
   return (
     <div className="institutions-container">
       <h2>Connected Banks</h2>
@@ -32,7 +34,7 @@ export default function Institutions({ institutions = [] }: InstitutionsProps) {
           {institutions.length ? (
             institutions.map((institution) => (
               <Institution 
-                key={institution.institution_id} 
+                key={`institution-${institution.institution_id}`}
                 institution={institution}
               />
             ))

@@ -21,15 +21,22 @@ import './App.css';
 import { usePlaidLink } from "react-plaid-link";
 Amplify.configure(awsconfig);
 
-const API_BASE_URL = "https://fxw9qtmmwj.execute-api.us-east-1.amazonaws.com/prod"
-//export const API_BASE_URL = "REPLACE_WITH_API_GW_BASE_URL";
+const API_BASE_URL = "https://7o81y9tcsa.execute-api.us-east-1.amazonaws.com/dev"; // manas
+// const API_BASE_URL = "https://3pzi53su4i.execute-api.us-east-1.amazonaws.com/prod"; // LEO
 
 const App = ({ signOut, user }: WithAuthenticatorProps) => {
   const { linkSuccess, isPaymentInitiation, itemId, dispatch } =
     useContext(Context);
   const [linkToken, setLinkToken] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [institutions, setInstitutions] = useState([]);
+  const [institutions, setInstitutions] = useState<Array<{
+    institution_id: string;
+    name: string;
+    logo?: string | null;
+    products?: string[];
+    status?: string;
+    accounts: any[];
+  }>>([]);
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [activeView, setActiveView] = useState('dashboard');
   const [transactions, setTransactions] = useState([]);
@@ -40,7 +47,7 @@ const App = ({ signOut, user }: WithAuthenticatorProps) => {
       console.log("🚀 Initializing app...");
       
       // Generate access token
-      const accessTokenResponse = await fetch(`${API_BASE_URL}/access_token`, {   //create_public_token
+      const accessTokenResponse = await fetch(`${API_BASE_URL}/create_public_token`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -56,13 +63,13 @@ const App = ({ signOut, user }: WithAuthenticatorProps) => {
       const token = parsedAccessData.access_token || parsedAccessData.acess_token;
       
       if (token) {
-        console.log(" Access token received:", token);
+        console.log("✅ Access token received:", token);
         setAccessToken(token);
         localStorage.setItem("access_token", token);
       }
 
       // Generate link token
-      const linkTokenResponse = await fetch(`${API_BASE_URL}/linked_token`, {    //create_link_token
+      const linkTokenResponse = await fetch(`${API_BASE_URL}/create_link_token`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -83,55 +90,83 @@ const App = ({ signOut, user }: WithAuthenticatorProps) => {
       }
 
       // Fetch transactions
-      if (token) {
-        try {
-          const transactionsResponse = await fetch(
-            `${API_BASE_URL}/transactions?access_token=${token}`,   //_transaction
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              }
-            }
-          );
+      // if (token) {
+      //   try {
+      //     const transactionsResponse = await fetch(
+      //       `${API_BASE_URL}/create_transaction?access_token=${token}`,
+      //       {
+      //         method: "POST",
+      //         headers: {
+      //           "Content-Type": "application/json",
+      //         }
+      //       }
+      //     );
 
-          if (!transactionsResponse.ok) {
-            const errorData = await transactionsResponse.json();
-            console.error("Transaction fetch error:", errorData);
-            throw new Error(`Failed to fetch transactions: ${errorData.error || transactionsResponse.statusText}`);
-          }
+      //     if (!transactionsResponse.ok) {
+      //       const errorData = await transactionsResponse.json();
+      //       console.error("Transaction fetch error:", errorData);
+      //       throw new Error(`Failed to fetch transactions: ${errorData.error || transactionsResponse.statusText}`);
+      //     }
 
-          const transactionsData = await transactionsResponse.json();
-          console.log(" Transactions fetched:", transactionsData);
+      //     const transactionsData = await transactionsResponse.json();
+      //     console.log("✅ Transactions fetched:", transactionsData);
           
-          // Check if the response has the expected structure
-          if (transactionsData.transactions) {
-            setTransactions(transactionsData.transactions);
-          } else {
-            console.error("Unexpected response structure:", transactionsData);
-            throw new Error("Invalid response format from server");
-          }
-        } catch (error) {
-          console.error("Error fetching transactions:", error);
-          setError(error instanceof Error ? error.message : "Failed to fetch transactions");
-        }
-      }
+      //     // Check if the response has the expected structure
+      //     if (transactionsData.transactions) {
+      //       setTransactions(transactionsData.transactions);
+      //     } else {
+      //       console.error("Unexpected response structure:", transactionsData);
+      //       throw new Error("Invalid response format from server");
+      //     }
+      //   } catch (error) {
+      //     console.error("Error fetching transactions:", error);
+      //     setError(error instanceof Error ? error.message : "Failed to fetch transactions");
+      //   }
+      // }
 
       // Fetch institutions
-      const institutionsResponse = await fetch(`${API_BASE_URL}/institutions`, {
-        method: "GET",
+
+      const getAccountsResponse = await fetch(`${API_BASE_URL}/get_accounts?access_token=${token}&user_id=${user?.username}`, {
+        method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
+        body: JSON.stringify({}) // Empty body since data is in query params
       });
 
-      if (!institutionsResponse.ok) {
-        throw new Error("Failed to fetch institutions");
+      if (!getAccountsResponse.ok) {
+        throw new Error("Failed to fetch accounts");
       }
 
-      const institutionsData = await institutionsResponse.json();
-      console.log(" Institutions fetched");
-      setInstitutions(institutionsData.institutions);
+      const accountsData = await getAccountsResponse.json();
+      console.log("✅ Accounts fetched");
+      console.log(accountsData);
+      
+      // Group accounts by institution
+      const institutionsMap = new Map();
+      
+      accountsData.accounts.accounts.forEach((account: any) => {
+        const institutionId = account.institution_id || accountsData.accounts.item.institution_id;
+        const institutionName = account.institution_name || accountsData.accounts.item.institution_name;
+        
+        if (!institutionsMap.has(institutionId)) {
+          institutionsMap.set(institutionId, {
+            institution_id: institutionId,
+            name: institutionName,
+            logo: null,
+            products: account.products || accountsData.accounts.item.products || [],
+            status: 'Connected',
+            accounts: []
+          });
+        }
+        institutionsMap.get(institutionId).accounts.push(account);
+      });
+      
+      // Convert map to array
+      const institutions = Array.from(institutionsMap.values());
+      console.log("Transformed institutions:", institutions);
+      
+      setInstitutions(institutions);
 
     } catch (error) {
       console.error("Error:", error);
@@ -176,6 +211,7 @@ const App = ({ signOut, user }: WithAuthenticatorProps) => {
               <Transactions 
                 accessToken={accessToken}
                 API_BASE_URL={API_BASE_URL}
+                userId={user?.username || ''}
               />
             ) : (
               <p>Please wait while we connect to your bank account...</p>
@@ -186,7 +222,6 @@ const App = ({ signOut, user }: WithAuthenticatorProps) => {
       case 'bank-accounts':
         return (
           <div className="view-container">
-            <h2>Bank Accounts</h2>
             <Institutions institutions={institutions} />
           </div>
         );
