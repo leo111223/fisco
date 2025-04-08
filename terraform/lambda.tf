@@ -76,8 +76,8 @@ resource "aws_lambda_function" "textract_lambda" {
 ## new update
 
 # Create Account Handler
-resource "aws_lambda_function" "create_account_handler" {
-  function_name = "create_account_handler"
+resource "aws_lambda_function" "get_accounts_handler" {
+  function_name = "get_accounts_handler"
   filename      = "create_account.zip"  # Update with the location of your deployment package
   handler       = "create_accounts_lambda.handler"  # Update with your handler function
   runtime       = "python3.11"  # Update with your preferred runtime
