@@ -94,6 +94,24 @@ resource "aws_lambda_function" "get_accounts_handler" {
   }
 }
 
+# Query Lex Handler
+resource "aws_lambda_function" "query_lex_handler" {
+  function_name = "query_lex_handler"
+  filename      = "query_lex.zip"  # Update with the location of your deployment package
+  handler       = "query_lex.lambda_handler"  # Update with your handler function
+  runtime       = "python3.11"  # Update with your preferred runtime
+  role          = aws_iam_role.lambda_exec.arn
+  timeout       = 30
+
+  environment {
+    variables = {
+      LEX_BOT_NAME    = var.lex_bot_name
+      LEX_BOT_ALIAS   = var.lex_bot_alias
+      AWS_REGION      = var.aws_region
+    }
+  }
+}
+
 
 # Lambda Role
 resource "aws_iam_role" "lambda_exec" {
