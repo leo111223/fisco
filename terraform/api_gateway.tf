@@ -469,6 +469,10 @@ resource "aws_api_gateway_integration_response" "get_accounts_get_integration_re
   response_templates = {
     "application/json" = ""
   }
+
+  depends_on = [
+    aws_api_gateway_integration.get_accounts_get_integration
+  ]
 }
 
 # POST method for /get_accounts
@@ -516,6 +520,10 @@ resource "aws_api_gateway_integration_response" "get_accounts_post_integration_r
   response_templates = {
     "application/json" = ""
   }
+
+  depends_on = [
+    aws_api_gateway_integration.get_accounts_get_integration
+  ]
 }
 
 # OPTIONS method for /get_accounts
@@ -564,4 +572,8 @@ resource "aws_api_gateway_integration_response" "get_accounts_options_integratio
   response_templates = {
     "application/json" = ""
   }
+
+  depends_on = [
+    aws_api_gateway_integration.get_accounts_get_integration
+  ]
 }
