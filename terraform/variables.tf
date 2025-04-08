@@ -55,5 +55,13 @@ variable "environment" {
   default     = "test"
 }
 
+variable "lex_bot_name" {
+  description = "The name of the Lex bot"
+  type        = string
+}
 
+variable "lex_bot_alias" {
+  description = "The alias of the Lex bot"
+  type        = string
+}
 
