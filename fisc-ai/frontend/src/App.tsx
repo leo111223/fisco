@@ -21,7 +21,7 @@ import './App.css';
 import { usePlaidLink } from "react-plaid-link";
 Amplify.configure(awsconfig);
 
-const API_BASE_URL = "https://fr7dpci675.execute-api.us-east-1.amazonaws.com/prod"
+const API_BASE_URL = "https://fxw9qtmmwj.execute-api.us-east-1.amazonaws.com/prod"
 //export const API_BASE_URL = "REPLACE_WITH_API_GW_BASE_URL";
 
 const App = ({ signOut, user }: WithAuthenticatorProps) => {
