@@ -79,7 +79,7 @@ resource "aws_lambda_function" "textract_lambda" {
 resource "aws_lambda_function" "create_account_handler" {
   function_name = "create_account_handler"
   filename      = "create_account.zip"  # Update with the location of your deployment package
-  handler       = "create_accounts_lambda.lambda_handler"  # Update with your handler function
+  handler       = "create_accounts_lambda.handler"  # Update with your handler function
   runtime       = "python3.11"  # Update with your preferred runtime
   role          = aws_iam_role.lambda_exec.arn
   timeout       = 30
