@@ -430,6 +430,12 @@ resource "aws_api_gateway_method" "get_accounts_get" {
   resource_id   = aws_api_gateway_resource.get_accounts.id
   http_method   = "GET"
   authorization = "NONE"
+
+
+  request_parameters = {
+    "method.request.querystring.access_token" = true
+    "method.request.querystring.user_id"      = true
+  }
 }
 
 resource "aws_api_gateway_integration" "get_accounts_get_integration" {
@@ -437,8 +443,13 @@ resource "aws_api_gateway_integration" "get_accounts_get_integration" {
   resource_id             = aws_api_gateway_resource.get_accounts.id
   http_method             = aws_api_gateway_method.get_accounts_get.http_method
   integration_http_method = "POST"
-  type                    = "AWS"
+  type                    = "AWS_PROXY"
   uri                     = aws_lambda_function.get_accounts_handler.invoke_arn
+
+  request_parameters = {
+  "integration.request.querystring.access_token" = "method.request.querystring.access_token"
+  "integration.request.querystring.user_id"      = "method.request.querystring.user_id"
+  }
 }
 
 resource "aws_api_gateway_method_response" "get_accounts_get_response" {
@@ -499,7 +510,7 @@ resource "aws_api_gateway_integration" "get_accounts_post_integration" {
   request_parameters = {
   "integration.request.querystring.access_token" = "method.request.querystring.access_token"
   "integration.request.querystring.user_id"      = "method.request.querystring.user_id"
-}
+  }
 }
 
 resource "aws_api_gateway_method_response" "get_accounts_post_response" {
@@ -543,6 +554,11 @@ resource "aws_api_gateway_method" "get_accounts_options" {
   resource_id   = aws_api_gateway_resource.get_accounts.id
   http_method   = "OPTIONS"
   authorization = "NONE"
+
+  request_parameters = {
+    "method.request.querystring.access_token" = true
+    "method.request.querystring.user_id"      = true
+  }
 }
 
 resource "aws_api_gateway_integration" "get_accounts_options_integration" {
@@ -552,6 +568,11 @@ resource "aws_api_gateway_integration" "get_accounts_options_integration" {
   type                    = "MOCK"
   request_templates = {
     "application/json" = "{\"statusCode\": 200}"
+  }
+
+  request_parameters = {
+  "integration.request.querystring.access_token" = "method.request.querystring.access_token"
+  "integration.request.querystring.user_id"      = "method.request.querystring.user_id"
   }
 }
 
@@ -568,23 +589,23 @@ resource "aws_api_gateway_method_response" "get_accounts_options_response" {
   }
 }
 
-resource "aws_api_gateway_integration_response" "get_accounts_options_integration_response" {
-  rest_api_id = aws_api_gateway_rest_api.finance_api.id
-  resource_id = aws_api_gateway_resource.get_accounts.id
-  http_method = aws_api_gateway_method.get_accounts_options.http_method
-  status_code = "200"
+# resource "aws_api_gateway_integration_response" "get_accounts_options_integration_response" {
+#   rest_api_id = aws_api_gateway_rest_api.finance_api.id
+#   resource_id = aws_api_gateway_resource.get_accounts.id
+#   http_method = aws_api_gateway_method.get_accounts_options.http_method
+#   status_code = "200"
 
-  response_parameters = {
-    "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
-    "method.response.header.Access-Control-Allow-Methods" = "'GET,POST,OPTIONS'"
-    "method.response.header.Access-Control-Allow-Origin"  = "'*'"
-  }
+#   response_parameters = {
+#     "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+#     "method.response.header.Access-Control-Allow-Methods" = "'GET,POST,OPTIONS'"
+#     "method.response.header.Access-Control-Allow-Origin"  = "'*'"
+#   }
 
-  response_templates = {
-    "application/json" = ""
-  }
+#   response_templates = {
+#     "application/json" = ""
+#   }
 
-  depends_on = [
-    aws_api_gateway_integration.get_accounts_get_integration
-  ]
-}
+#   depends_on = [
+#     aws_api_gateway_integration.get_accounts_get_integration
+#   ]
+# }
