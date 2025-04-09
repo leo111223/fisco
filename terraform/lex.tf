@@ -44,17 +44,33 @@ resource "aws_lexv2models_bot" "finance_assistant" {
   # Removed test_bot_alias block as it is not valid here
 }
 
-resource "aws_lexv2models_bot_alias" "finance_assistant_alias" {
-  bot_id      = aws_lexv2models_bot.finance_assistant.id
-  bot_alias_name = "testAlias"
-  bot_version = "DRAFT"
+resource "null_resource" "create_lex_alias" {
+  provisioner "local-exec" {
+    command = <<EOT
+    aws lexv2-models create-bot-alias \
+      --bot-id ${aws_lexv2models_bot.finance_assistant.id} \
+      --bot-alias-name "financeAssistantAlias" \
+      --bot-version "DRAFT" \
+      --bot-alias-locale-settings '{"en_US":{"enabled":true}}'
+    EOT
+  }
 
-  bot_alias_locale_settings = {
-    "en_US" = {
-      enabled = true
-    }
+  triggers = {
+    always_run = timestamp()
   }
 }
+
+# resource "aws_lexv2models_bot_alias" "finance_assistant_alias" {
+#   bot_id      = aws_lexv2models_bot.finance_assistant.id
+#   bot_alias_name = "testAlias"
+#   bot_version = "DRAFT"
+
+#   bot_alias_locale_settings = {
+#     "en_US" = {
+#       enabled = true
+#     }
+#   }
+# }
 
 resource "aws_lexv2models_bot_locale" "english_locale" {
   bot_id      = aws_lexv2models_bot.finance_assistant.id
