@@ -34,7 +34,8 @@ resource "aws_iam_role_policy" "lex_policy" {
 
 resource "aws_lexv2models_bot" "finance_assistant" {
   name                     = "financeAssistant"
-  role_arn                 = var.lex_role_arn
+  //role_arn                 = var.lex_role_arn
+  role_arn = aws_iam_role.lex_service_role.arn
   data_privacy {
     child_directed = false
   }
