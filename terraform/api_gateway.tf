@@ -38,6 +38,16 @@ resource "aws_api_gateway_deployment" "api_deployment" {
     aws_api_gateway_integration.access_token_options_integration,
     aws_api_gateway_method_response.access_token_options_response,
     aws_api_gateway_integration_response.access_token_options_integration_response,
+
+    aws_api_gateway_method.get_accounts_get,
+    aws_api_gateway_integration.get_accounts_get_integration,
+    aws_api_gateway_method_response.get_accounts_get_response,
+    aws_api_gateway_integration_response.get_accounts_get_integration_response,
+
+    aws_api_gateway_method.get_accounts_post,
+    aws_api_gateway_integration.get_accounts_post_integration,
+    aws_api_gateway_method_response.get_accounts_post_response, 
+    
   ]
 }
 
