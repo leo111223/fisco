@@ -55,6 +55,11 @@ variable "environment" {
   default     = "test"
 }
 
+variable "lex_role_arn" {
+  description = "IAM Role ARN used by Lex"
+  type        = string
+}
+
 # variable "lex_bot_name" {
 #   description = "The name of the Lex bot"
 #   type        = string

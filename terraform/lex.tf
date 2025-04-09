@@ -1,6 +1,6 @@
-
 resource "aws_iam_role" "lex_service_role" {
-  name = "lex_service_role"
+  name = "LexServiceRole"
+
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [{
@@ -13,81 +13,70 @@ resource "aws_iam_role" "lex_service_role" {
   })
 }
 
-resource "aws_lexv2_bot" "finance_assistant" {
-  name                     = "FinanceAssistant"
-  role_arn                 = aws_iam_role.lex_service_role.arn
+resource "aws_iam_role_policy" "lex_policy" {
+  name = "LexServicePolicy"
+  role = aws_iam_role.lex_service_role.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "lambda:InvokeFunction"
+        ]
+        Resource = "*"  # You can scope this to your specific Lambda ARN for security
+      }
+    ]
+  })
+}
+
+resource "aws_lexv2models_bot" "finance_assistant" {
+  name                     = "financeAssistant"
+  role_arn                 = var.lex_role_arn
   data_privacy {
     child_directed = false
   }
   idle_session_ttl_in_seconds = 300
-  bot_locale {
-    locale_id        = "en_US"
-    nlu_confidence_threshold = 0.4
-    voice_settings {
-      voice_id = "Joanna"
-    }
-  }
+  description                 = "Lex V2 bot for finance tracking"
+
+  # Removed test_bot_alias block as it is not valid here
 }
 
-resource "aws_lexv2_bot_alias" "finance_assistant_alias" {
-  name        = "live"
-  bot_id      = aws_lexv2_bot.finance_assistant.id
-  bot_version = "DRAFT"
+resource "aws_lexv2models_bot_locale" "english_locale" {
+  bot_id      = aws_lexv2models_bot.finance_assistant.id
+  locale_id   = "en_US"
+  description = "English (US) locale for Finance Assistant"
+  n_lu_intent_confidence_threshold = 0.4
+  bot_version                      = "DRAFT"
+
+  voice_settings {
+    voice_id = "Joanna"
+  }
+
+  depends_on = [aws_lexv2models_bot.finance_assistant]
 }
 
-
-resource "aws_lexv2_intent" "get_budget_advice" {
-  name       = "GetBudgetAdviceIntent"
-  bot_id     = aws_lexv2_bot.finance_assistant.id
-  bot_version = "DRAFT"
-  locale_id  = "en_US"
-
-  sample_utterances {
-    utterance = "How is my spending this month?"
-  }
-  sample_utterances {
-    utterance = "Can you help me budget?"
-  }
-  sample_utterances {
-    utterance = "What should I spend less on?"
-  }
-
-  dialog_code_hook {
-    enabled = true
-  }
-
-  fulfillment_code_hook {
-    enabled = true
-  }
-}
+# resource "aws_lexv2models_intent" "get_transactions_intent" {
+#   name        = "GetTransactions"
+#   bot_id      = aws_lexv2models_bot.finance_assistant.id
+#   bot_version = "DRAFT"
+#   locale_id   = "en_US"
 
 
-resource "aws_lexv2_intent" "greeting_intent" {
-  name       = "GreetingIntent"
-  bot_id     = aws_lexv2_bot.finance_assistant.id
-  bot_version = "DRAFT"
-  locale_id  = "en_US"
+#   sample_utterances {
+#     utterance = "Show me my recent transactions"
+#   }
 
-  sample_utterances {
-    utterance = "Hello"
-  }
-  sample_utterances {
-    utterance = "Hi there"
-  }
-  sample_utterances {
-    utterance = "How are you doing?"
-  }
-  sample_utterances {
-    utterance = "What's up?"
-  }
-  sample_utterances {
-    utterance = "Hey"
-  }
-  sample_utterances {
-    utterance = "What can I help you with?"
-  }
+#   sample_utterances {
+#     utterance = "What did I spend last week?"
+#   }
 
-  fulfillment_activity {
-    type = "CodeHook"
-  }
-}
+#   fulfillment_code_hook {
+#     enabled = true
+#   }
+
+#   depends_on = [
+#     aws_lexv2models_bot_locale.english_locale
+#   ]
+# }
