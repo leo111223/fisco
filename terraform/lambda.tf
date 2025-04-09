@@ -103,13 +103,14 @@ resource "aws_lambda_function" "query_lex_handler" {
   role          = aws_iam_role.lambda_exec.arn
   timeout       = 30
 
+  
   environment {
-    variables = {
-      LEX_BOT_NAME    = var.lex_bot_name
-      LEX_BOT_ALIAS   = var.lex_bot_alias
-      AWS_REGION      = var.aws_region
-    }
+  variables = {
+    LEX_BOT_NAME  = aws_lexv2_bot.lex_bot.id
+    LEX_BOT_ALIAS = aws_lexv2_bot_alias.lex_alias.id
+    AWS_REGION    = var.aws_region
   }
+}
 }
 
 
