@@ -54,6 +54,37 @@ resource "aws_lambda_function" "linked_token_handler" {
   }
 }
 
+
+## new update
+
+# Create Account Handler
+resource "aws_lambda_function" "get_accounts_handler" {
+  function_name = "get_accounts_handler"
+  filename      = "create_account.zip"  # Update with the location of your deployment package
+  handler       = "create_accounts_lambda.lambda_handler"  # Update with your handler function
+  runtime       = "python3.9"  # Update with your preferred runtime
+  role          = aws_iam_role.lambda_exec.arn
+  timeout       = 30
+
+  environment {
+    variables = {
+      STAGE = "prod"
+      PLAID_CLIENT_ID    = var.plaid_client_id
+      PLAID_SECRET       = var.plaid_secret
+      PLAID_ENVIRONMENT  = var.plaid_environment
+      DYNAMODB_TABLE     = aws_dynamodb_table.accounts.name  # Example DynamoDB table for storing accounts
+    }
+  }
+}
+
+resource "aws_lambda_permission" "get_accounts_apigw" {
+  statement_id  = "AllowAPIGatewayInvokeGetAccounts"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.get_accounts_handler.function_name
+  principal     = "apigateway.amazonaws.com"
+  source_arn    = "${aws_api_gateway_rest_api.finance_api.execution_arn}/*/*"
+}
+
 # Lambda function
 # NEEDS FOLLOWING:
 # Textract DetectDocumentText permission
@@ -72,28 +103,6 @@ resource "aws_lambda_function" "textract_lambda" {
     }
   }
 }
-
-## new update
-
-# Create Account Handler
-resource "aws_lambda_function" "get_accounts_handler" {
-  function_name = "get_accounts_handler"
-  filename      = "create_account.zip"  # Update with the location of your deployment package
-  handler       = "create_accounts_lambda.lambda_handler"  # Update with your handler function
-  runtime       = "python3.9"  # Update with your preferred runtime
-  role          = aws_iam_role.lambda_exec.arn
-  timeout       = 30
-
-  environment {
-    variables = {
-      PLAID_CLIENT_ID    = var.plaid_client_id
-      PLAID_SECRET       = var.plaid_secret
-      PLAID_ENVIRONMENT  = var.plaid_environment
-      DYNAMODB_TABLE     = aws_dynamodb_table.accounts.name  # Example DynamoDB table for storing accounts
-    }
-  }
-}
-
 # Query Lex Handler
 # resource "aws_lambda_function" "query_lex_handler" {
 #   function_name = "query_lex_handler"
