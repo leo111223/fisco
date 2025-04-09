@@ -14,10 +14,9 @@ output "s3_bucket" {
 }
 
 output "lex_bot_id" {
-  value = aws_lexv2_bot.finance_assistant.id
+  value = aws_lexv2models_bot.finance_assistant.id
 }
 
 output "lex_bot_alias_id" {
-  value = aws_lexv2_bot_alias.finance_assistant_alias.id
+  value = aws_lexv2models_bot.finance_assistant.test_bot_alias[0].bot_alias_id
 }
-
