@@ -44,7 +44,6 @@ resource "aws_lexv2models_bot" "finance_assistant" {
 
   # Removed test_bot_alias block as it is not valid here
 }
-
 resource "null_resource" "create_lex_alias" {
   provisioner "local-exec" {
     command = <<EOT
@@ -58,7 +57,6 @@ resource "null_resource" "create_lex_alias" {
       aws lexv2-models create-bot-alias \
         --bot-id ${aws_lexv2models_bot.finance_assistant.id} \
         --bot-alias-name "financeAssistantAlias" \
-        --bot-version "$VERSION" \
         --bot-version-locale-specification '{"en_US":{"sourceBotVersion":"'"$VERSION"'"}}'
     EOT
     interpreter = ["bash", "-c"]
@@ -70,6 +68,7 @@ resource "null_resource" "create_lex_alias" {
 
   depends_on = [aws_lexv2models_bot_locale.english_locale]
 }
+
 
 
 # resource "aws_lexv2models_bot_alias" "finance_assistant_alias" {
