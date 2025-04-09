@@ -483,8 +483,8 @@ resource "aws_api_gateway_method" "get_accounts_post" {
   authorization = "NONE"
 
   request_parameters = {
-    "integration.request.querystring.access_token" = true
-    "integration.request.querystring.user_id"      = true
+    "method.request.querystring.access_token" = true
+    "method.request.querystring.user_id"      = true
   }
 }
 
@@ -497,9 +497,9 @@ resource "aws_api_gateway_integration" "get_accounts_post_integration" {
   uri                     = aws_lambda_function.get_accounts_handler.invoke_arn
 
   request_parameters = {
-    "method.request.querystring.access_token" = true
-    "method.request.querystring.user_id"      = true
-  }
+  "integration.request.querystring.access_token" = "method.request.querystring.access_token"
+  "integration.request.querystring.user_id"      = "method.request.querystring.user_id"
+}
 }
 
 resource "aws_api_gateway_method_response" "get_accounts_post_response" {
