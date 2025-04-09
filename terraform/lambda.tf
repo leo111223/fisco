@@ -140,3 +140,9 @@ resource "aws_iam_policy_attachment" "lambda_execution" {
   roles      = [aws_iam_role.lambda_exec.name]
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 }
+
+resource "aws_iam_policy_attachment" "lambda_dynamodb_full_access" {
+  name       = "lambda_dynamodb_full_access_policy"
+  roles      = [aws_iam_role.lambda_exec.name]
+  policy_arn = "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess"
+}
