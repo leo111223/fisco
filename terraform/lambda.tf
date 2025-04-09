@@ -106,11 +106,11 @@ resource "aws_lambda_function" "query_lex_handler" {
   
   environment {
   variables = {
-    LEX_BOT_NAME  = aws_lexv2_bot.lex_bot.id
-    LEX_BOT_ALIAS = aws_lexv2_bot_alias.lex_alias.id
+    LEX_BOT_NAME  = aws_lex_bot.greeting_bot.name
+    LEX_BOT_ALIAS = aws_lex_bot_alias.greeting_alias.name
     AWS_REGION    = var.aws_region
   }
-}
+  }
 }
 
 

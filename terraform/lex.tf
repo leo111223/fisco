@@ -1,39 +1,79 @@
-resource "aws_lexv2_bot" "lex_bot" {
-  name         = "MyLexBot"
-  role_arn     = aws_iam_role.lex_role.arn
-  data_privacy {
-    child_directed = false
+resource "aws_lex_intent" "greet_intent" {
+  name              = "GreetIntent"
+  sample_utterances = ["Hi", "Hello", "Hey"]
+
+  conclusion_statement {
+    message {
+      content_type = "PlainText"
+      content      = "Hello! How can I help you today?"
+    }
   }
+
+  fulfillment_activity {
+    type = "ReturnIntent"  # This just ends the intent with the response, no Lambda needed
+  }
+}
+
+
+resource "aws_lex_bot" "greeting_bot" {
+  name             = "GreetingBot"
+  locale           = "en-US"
+  child_directed   = false
+  voice_id         = "Joanna"
+  process_behavior = "BUILD"
+
+  intent {
+    intent_name    = aws_lex_intent.greet_intent.name
+    intent_version = "$LATEST"
+  }
+
+  abort_statement {
+    message {
+      content_type = "PlainText"
+      content      = "Sorry, I couldn't understand that."
+    }
+  }
+
+  clarification_prompt {
+    max_attempts = 2
+
+    message {
+      content_type = "PlainText"
+      content      = "Can you please repeat that?"
+    }
+  }
+
   idle_session_ttl_in_seconds = 300
-  # ... more config ...
 }
 
-resource "aws_lexv2_bot_alias" "lex_alias" {
-  bot_id      = aws_lexv2_bot.lex_bot.id
-  name        = "LiveAlias"
-  description = "Alias for production"
-  bot_version = "$LATEST"
-}
 
-resource "aws_iam_role" "lex_role" {
-  name = "lex_execution_role"
+
+
+
+resource "aws_iam_role" "lex_execution_role" {
+  name = "LexV1ExecutionRole"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
-    Statement = [
-      {
-        Effect = "Allow",
-        Principal = {
-          Service = "lex.amazonaws.com"
-        },
-        Action = "sts:AssumeRole"
-      }
-    ]
+    Statement = [{
+      Effect = "Allow",
+      Principal = {
+        Service = "lex.amazonaws.com"
+      },
+      Action = "sts:AssumeRole"
+    }]
   })
 }
 
-resource "aws_iam_policy_attachment" "lex_logging" {
-  name       = "attach-lex-logging"
-  roles      = [aws_iam_role.lex_role.name]
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonLexFullAccess"
+resource "aws_iam_role_policy_attachment" "lex_policy_attach" {
+  role       = aws_iam_role.lex_execution_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonLexFullAccess"
 }
+
+resource "aws_lex_bot_alias" "greeting_alias" {
+  name   = "live"
+  bot_name = aws_lex_bot.greeting_bot.name
+  bot_version = "$LATEST"
+}
+
+
