@@ -514,27 +514,28 @@ resource "aws_api_gateway_method_response" "get_accounts_post_response" {
     "method.response.header.Access-Control-Allow-Origin"  = true
   }
 }
+# post integration response
 
-resource "aws_api_gateway_integration_response" "get_accounts_post_integration_response" {
-  rest_api_id = aws_api_gateway_rest_api.finance_api.id
-  resource_id = aws_api_gateway_resource.get_accounts.id
-  http_method = aws_api_gateway_method.get_accounts_post.http_method
-  status_code = "200"
+# resource "aws_api_gateway_integration_response" "get_accounts_post_integration_response" {
+#   rest_api_id = aws_api_gateway_rest_api.finance_api.id
+#   resource_id = aws_api_gateway_resource.get_accounts.id
+#   http_method = aws_api_gateway_method.get_accounts_post.http_method
+#   status_code = "200"
 
-  response_parameters = {
-    "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
-    "method.response.header.Access-Control-Allow-Methods" = "'POST,OPTIONS'"
-    "method.response.header.Access-Control-Allow-Origin"  = "'*'"
-  }
+#   response_parameters = {
+#     "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+#     "method.response.header.Access-Control-Allow-Methods" = "'POST,OPTIONS'"
+#     "method.response.header.Access-Control-Allow-Origin"  = "'*'"
+#   }
 
-  response_templates = {
-    "application/json" = ""
-  }
+#   response_templates = {
+#     "application/json" = ""
+#   }
 
-  depends_on = [
-    aws_api_gateway_integration.get_accounts_get_integration
-  ]
-}
+#   depends_on = [
+#     aws_api_gateway_integration.get_accounts_get_integration
+#   ]
+# }
 
 # OPTIONS method for /get_accounts
 resource "aws_api_gateway_method" "get_accounts_options" {
