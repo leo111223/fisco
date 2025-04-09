@@ -493,12 +493,12 @@ resource "aws_api_gateway_integration" "get_accounts_post_integration" {
   resource_id             = aws_api_gateway_resource.get_accounts.id
   http_method             = aws_api_gateway_method.get_accounts_post.http_method
   integration_http_method = "POST"
-  type                    = "AWS"
+  type                    = "AWS_PROXY"
   uri                     = aws_lambda_function.get_accounts_handler.invoke_arn
 
   request_parameters = {
-    "integration.request.querystring.access_token" = "method.request.querystring.access_token"
-    "integration.request.querystring.user_id"      = "method.request.querystring.user_id"
+    "method.request.querystring.access_token" = true
+    "method.request.querystring.user_id"      = true
   }
 }
 
