@@ -434,7 +434,7 @@ resource "aws_api_gateway_method" "get_accounts_get" {
 
   request_parameters = {
     "method.request.querystring.access_token" = true
-    "method.request.querystring.user_id"      = true
+    //"method.request.querystring.user_id"      = true
   }
 }
 
@@ -448,7 +448,7 @@ resource "aws_api_gateway_integration" "get_accounts_get_integration" {
 
   request_parameters = {
   "integration.request.querystring.access_token" = "method.request.querystring.access_token"
-  "integration.request.querystring.user_id"      = "method.request.querystring.user_id"
+  //"integration.request.querystring.user_id"      = "method.request.querystring.user_id"
   }
 }
 
@@ -458,11 +458,11 @@ resource "aws_api_gateway_method_response" "get_accounts_get_response" {
   http_method = aws_api_gateway_method.get_accounts_get.http_method
   status_code = "200"
 
-  # response_parameters = {
-  #   "method.response.header.Access-Control-Allow-Headers" = true
-  #   "method.response.header.Access-Control-Allow-Methods" = true
-  #   "method.response.header.Access-Control-Allow-Origin"  = true
-  # }
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Headers" = true
+    "method.response.header.Access-Control-Allow-Methods" = true
+    "method.response.header.Access-Control-Allow-Origin"  = true
+  }
 }
 
 # resource "aws_api_gateway_integration_response" "get_accounts_get_integration_response" {
@@ -495,7 +495,7 @@ resource "aws_api_gateway_method" "get_accounts_post" {
 
   request_parameters = {
     "method.request.querystring.access_token" = true
-    "method.request.querystring.user_id"      = true
+    //"method.request.querystring.user_id"      = true
   }
 }
 
@@ -509,7 +509,7 @@ resource "aws_api_gateway_integration" "get_accounts_post_integration" {
 
   request_parameters = {
   "integration.request.querystring.access_token" = "method.request.querystring.access_token"
-  "integration.request.querystring.user_id"      = "method.request.querystring.user_id"
+  //"integration.request.querystring.user_id"      = "method.request.querystring.user_id"
   }
 }
 
@@ -519,11 +519,11 @@ resource "aws_api_gateway_method_response" "get_accounts_post_response" {
   http_method = aws_api_gateway_method.get_accounts_post.http_method
   status_code = "200"
 
-  # response_parameters = {
-  #   "method.response.header.Access-Control-Allow-Headers" = true
-  #   "method.response.header.Access-Control-Allow-Methods" = true
-  #   "method.response.header.Access-Control-Allow-Origin"  = true
-  # }
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Headers" = true
+    "method.response.header.Access-Control-Allow-Methods" = true
+    "method.response.header.Access-Control-Allow-Origin"  = true
+  }
 }
 
 # OPTIONS method for /get_accounts
@@ -535,7 +535,7 @@ resource "aws_api_gateway_method" "get_accounts_options" {
 
   request_parameters = {
     "method.request.querystring.access_token" = true
-    "method.request.querystring.user_id"      = true
+    //"method.request.querystring.user_id"      = true
   }
 }
 
@@ -550,7 +550,7 @@ resource "aws_api_gateway_integration" "get_accounts_options_integration" {
 
   request_parameters = {
   "integration.request.querystring.access_token" = "method.request.querystring.access_token"
-  "integration.request.querystring.user_id"      = "method.request.querystring.user_id"
+  //"integration.request.querystring.user_id"      = "method.request.querystring.user_id"
   }
 }
 
@@ -560,11 +560,11 @@ resource "aws_api_gateway_method_response" "get_accounts_options_response" {
   http_method = aws_api_gateway_method.get_accounts_options.http_method
   status_code = "200"
 
-  # response_parameters = {
-  #   "method.response.header.Access-Control-Allow-Headers" = true
-  #   "method.response.header.Access-Control-Allow-Methods" = true
-  #   "method.response.header.Access-Control-Allow-Origin"  = true
-  # }
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Headers" = true
+    "method.response.header.Access-Control-Allow-Methods" = true
+    "method.response.header.Access-Control-Allow-Origin"  = true
+  }
 }
 
 resource "aws_lambda_permission" "get_accounts_apigw" {
