@@ -483,8 +483,8 @@ resource "aws_api_gateway_method" "get_accounts_post" {
   authorization = "NONE"
 
   request_parameters = {
-    "integration.request.querystring.access_token" = "method.request.querystring.access_token"
-    "integration.request.querystring.user_id"      = "method.request.querystring.user_id"
+    "integration.request.querystring.access_token" = true
+    "integration.request.querystring.user_id"      = true
   }
 }
 
