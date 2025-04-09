@@ -434,7 +434,7 @@ resource "aws_api_gateway_method" "get_accounts_get" {
 
   request_parameters = {
     "method.request.querystring.access_token" = true
-    //"method.request.querystring.user_id"      = true
+    "method.request.querystring.user_id"      = true
   }
 }
 
@@ -448,7 +448,7 @@ resource "aws_api_gateway_integration" "get_accounts_get_integration" {
 
   request_parameters = {
   "integration.request.querystring.access_token" = "method.request.querystring.access_token"
-  //"integration.request.querystring.user_id"      = "method.request.querystring.user_id"
+  "integration.request.querystring.user_id"      = "method.request.querystring.user_id"
   }
 }
 
@@ -495,7 +495,7 @@ resource "aws_api_gateway_method" "get_accounts_post" {
 
   request_parameters = {
     "method.request.querystring.access_token" = true
-    //"method.request.querystring.user_id"      = true
+    "method.request.querystring.user_id"      = true
   }
 }
 
@@ -509,7 +509,7 @@ resource "aws_api_gateway_integration" "get_accounts_post_integration" {
 
   request_parameters = {
   "integration.request.querystring.access_token" = "method.request.querystring.access_token"
-  //"integration.request.querystring.user_id"      = "method.request.querystring.user_id"
+  "integration.request.querystring.user_id"      = "method.request.querystring.user_id"
   }
 }
 
@@ -555,7 +555,7 @@ resource "aws_api_gateway_method" "get_accounts_options" {
 
   request_parameters = {
     "method.request.querystring.access_token" = true
-    //"method.request.querystring.user_id"      = true
+    "method.request.querystring.user_id"      = true
   }
 }
 
@@ -570,7 +570,7 @@ resource "aws_api_gateway_integration" "get_accounts_options_integration" {
 
   request_parameters = {
   "integration.request.querystring.access_token" = "method.request.querystring.access_token"
-  //"integration.request.querystring.user_id"      = "method.request.querystring.user_id"
+  "integration.request.querystring.user_id"      = "method.request.querystring.user_id"
   }
 }
 
