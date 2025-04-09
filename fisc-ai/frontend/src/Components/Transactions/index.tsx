@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Table, TableHead, TableRow, TableCell, TableBody } from '@aws-amplify/ui-react';
 import styles from './Transactions.module.css';
 
 interface Transaction {
@@ -7,6 +8,14 @@ interface Transaction {
   amount: number;
   category: string[];
   id?: string;
+  merchant_name: string | null;
+  logo_url: string | null;
+  pending: boolean;
+  personal_finance_category: {
+    primary: string;
+    detailed: string;
+    confidence_level: string;
+  };
 }
 
 interface Receipt {
@@ -30,42 +39,62 @@ const Transactions = ({ accessToken, API_BASE_URL, userId }: TransactionsProps) 
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [uploadStatus, setUploadStatus] = useState<string>('');
 
-  // we need to fetch the transactions from the backend
+  const formatAmount = (amount: number) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+    }).format(amount);
+  };
 
-  // const fetchTransactions = async () => {
-  // try {
-  //   const transactionsResponse = await fetch(
-  //     `${API_BASE_URL}/create_transaction?access_token=${accessToken}&user_id=${userId}`,
-  //     {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       }
-  //     }
-  //   );
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', { 
+      month: 'short', 
+      day: '2-digit', 
+      year: 'numeric' 
+    });
+  };
 
-  //   if (!transactionsResponse.ok) {
-  //     const errorData = await transactionsResponse.json();
-  //     console.error("Transaction fetch error:", errorData);
-  //     throw new Error(`Failed to fetch transactions: ${errorData.error || transactionsResponse.statusText}`);
-  //   }
+  const fetchTransactions = async () => {
+    try {
+      setIsLoading(true);
+      const transactionsResponse = await fetch(
+        `${API_BASE_URL}/create_transaction?access_token=${accessToken}&user_id=${userId}`,
+        {
+          method: "POST", 
+          headers: {
+            "Content-Type": "application/json",
+          }
+        }
+      );
 
-  //   const transactionsData = await transactionsResponse.json();
-  //   console.log("✅ Transactions fetched:", transactionsData);
-    
-  //   // Check if the response has the expected structure
-  //   if (transactionsData.transactions) {
-  //     setTransactions(transactionsData.transactions);
-  //   } else {
-  //     console.error("Unexpected response structure:", transactionsData);
-  //     throw new Error("Invalid response format from server");
-  //   }
-  // } catch (error) {
-  //   console.error("Error fetching transactions:", error);
-  //   setError(error instanceof Error ? error.message : "Failed to fetch transactions");
-  //   setIsLoading(false);
-  // }
-  // }
+      if (!transactionsResponse.ok) {
+        const errorData = await transactionsResponse.json();
+        console.error("Transaction fetch error:", errorData);
+        throw new Error(`Failed to fetch transactions: ${errorData.error || transactionsResponse.statusText}`);
+      }
+
+      const transactionsData = await transactionsResponse.json();
+      console.log("✅ Transactions fetched:", transactionsData);
+      
+      if (transactionsData.transactions) {
+        setTransactions(transactionsData.transactions);
+      } else {
+        console.error("Unexpected response structure:", transactionsData);
+        throw new Error("Invalid response format from server");
+      }
+    } catch (error) {
+      console.error("Error fetching transactions:", error);
+      setError(error instanceof Error ? error.message : "Failed to fetch transactions");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchTransactions();
+  }, [accessToken, userId]);
+
   const handleReceiptUpload = async (file: File) => {
     try {
       const formData = new FormData();
@@ -94,12 +123,10 @@ const Transactions = ({ accessToken, API_BASE_URL, userId }: TransactionsProps) 
     <div className="transactions-container">
       <div className="transactions-header">
         <div className="header-left">
-          <div className="access-token-container">
+          {/* <div className="access-token-container">
             <p>🔐 Access Token:</p>
-            <p className="access-token">
-              {accessToken}
-            </p>
-          </div>
+            <p className="access-token">{accessToken}</p>
+          </div> */}
           <h2>Your Transactions</h2>
         </div>
         
@@ -113,7 +140,54 @@ const Transactions = ({ accessToken, API_BASE_URL, userId }: TransactionsProps) 
         </div>
       </div>
 
-      {/* Simple Upload Modal */}
+      {isLoading ? (
+        <p>Loading transactions...</p>
+      ) : error ? (
+        <p className="error-message">{error}</p>
+      ) : (
+        <Table highlightOnHover={true} variation="striped">
+          <TableHead>
+            <TableRow>
+              <TableCell as="th">Date</TableCell>
+              <TableCell as="th">Merchant</TableCell>
+              <TableCell as="th">Category</TableCell>
+              <TableCell as="th">Amount</TableCell>
+              <TableCell as="th">Status</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {transactions.length ? (
+              transactions.map((transaction) => (
+                <TableRow key={transaction.id}>
+                  <TableCell>{formatDate(transaction.date)}</TableCell>
+                  <TableCell>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      {transaction.logo_url && (
+                        <img
+                          src={transaction.logo_url}
+                          alt={transaction.merchant_name || transaction.name}
+                          style={{ width: '24px', height: '24px', borderRadius: '50%' }}
+                        />
+                      )}
+                      {transaction.merchant_name || transaction.name}
+                    </div>
+                  </TableCell>
+                  <TableCell>{transaction.personal_finance_category?.primary || transaction.category[0]}</TableCell>
+                  <TableCell style={{ color: transaction.amount < 0 ? '#d32f2f' : '#2e7d32' }}>
+                    {formatAmount(transaction.amount)}
+                  </TableCell>
+                  <TableCell>{transaction.pending ? 'Pending' : 'Completed'}</TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={5}>No transactions found</TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      )}
+
       {showUploadModal && (
         <div className="modal-overlay">
           <div className="modal-content">
@@ -150,4 +224,4 @@ const Transactions = ({ accessToken, API_BASE_URL, userId }: TransactionsProps) 
   );
 };
 
-export default Transactions; 
+export default Transactions;
