@@ -47,7 +47,7 @@ resource "aws_api_gateway_deployment" "api_deployment" {
     aws_api_gateway_method.get_accounts_post,
     aws_api_gateway_integration.get_accounts_post_integration,
     aws_api_gateway_method_response.get_accounts_post_response, 
-    
+
   ]
 }
 
@@ -76,7 +76,7 @@ resource "aws_api_gateway_integration" "lambda_integration" {
   resource_id             = aws_api_gateway_resource.transactions.id
   http_method             = aws_api_gateway_method.transactions_post.http_method
   integration_http_method = "POST"
-  type                    = "AWS"  #proxy
+  type                    = "AWS_PROXY"  #proxy
   uri                     = aws_lambda_function.transaction_handler.invoke_arn
 }
 
