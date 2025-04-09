@@ -48,8 +48,6 @@ resource "aws_lex_bot" "greeting_bot" {
 
 
 
-
-
 resource "aws_iam_role" "lex_execution_role" {
   name = "LexV1ExecutionRole"
 
