@@ -85,12 +85,12 @@ resource "aws_lambda_function" "query_lex_handler" {
   runtime       = "python3.9"
   role          = aws_iam_role.lambda_exec.arn
   timeout       = 30
-  environment {
+ environment {
   variables = {
     LEX_BOT_ID       = aws_lexv2models_bot.finance_assistant.id
-    LEX_BOT_ALIAS_ID = aws_lexv2models_bot.finance_assistant.test_bot_alias[0].bot_alias_id
+    LEX_BOT_ALIAS_ID = aws_lexv2models_bot_alias.finance_assistant_alias.id
   }
-  }
+}
 }
 
 resource "aws_lambda_permission" "allow_lex_invoke_lambda" {

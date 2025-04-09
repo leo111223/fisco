@@ -43,6 +43,18 @@ resource "aws_lexv2models_bot" "finance_assistant" {
   # Removed test_bot_alias block as it is not valid here
 }
 
+resource "aws_lexv2models_bot_alias" "finance_assistant_alias" {
+  bot_id      = aws_lexv2models_bot.finance_assistant.id
+  bot_alias_name = "testAlias"
+  bot_version = "DRAFT"
+
+  bot_alias_locale_settings = {
+    "en_US" = {
+      enabled = true
+    }
+  }
+}
+
 resource "aws_lexv2models_bot_locale" "english_locale" {
   bot_id      = aws_lexv2models_bot.finance_assistant.id
   locale_id   = "en_US"
