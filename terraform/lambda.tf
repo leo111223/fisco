@@ -77,6 +77,23 @@ resource "aws_lambda_function" "get_accounts_handler" {
   }
 }
 
+# lex lambda and permission
+resource "aws_lambda_function" "query_lex_handler" {
+  function_name = "query_lex_handler"
+  filename      = "query_lex.zip"          # replace with your zip file
+  handler       = "query_lex.lambda_handler"
+  runtime       = "python3.9"
+  role          = aws_iam_role.lambda_exec.arn
+  timeout       = 30
+}
+
+resource "aws_lambda_permission" "allow_lex_invoke_lambda" {
+  statement_id  = "AllowLexInvokeLambda"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.query_lex_handler.function_name
+  principal     = "lexv2.amazonaws.com"
+}
+
 
 
 # Lambda function
@@ -97,24 +114,8 @@ resource "aws_lambda_function" "textract_lambda" {
     }
   }
 }
-# Query Lex Handler
-# resource "aws_lambda_function" "query_lex_handler" {
-#   function_name = "query_lex_handler"
-#   filename      = "query_lex.zip"  # Update with the location of your deployment package
-#   handler       = "query_lex.lambda_handler"  # Update with your handler function
-#   runtime       = "python3.9"  # Update with your preferred runtime
-#   role          = aws_iam_role.lambda_exec.arn
-#   timeout       = 30
 
-  
-#   environment {
-#   variables = {
-#     LEX_BOT_NAME  = aws_lex_bot.greeting_bot.name
-#     LEX_BOT_ALIAS = aws_lex_bot_alias.greeting_alias.name
-#     AWS_REGION    = var.aws_region
-#   }
-#   }
-# }
+
 
 
 # Lambda Role
@@ -134,6 +135,7 @@ resource "aws_iam_role" "lambda_exec" {
 }
 
 
+
 # Lambda Policy
 resource "aws_iam_policy_attachment" "lambda_execution" {
   name       = "lambda_execution_policy"
@@ -145,4 +147,9 @@ resource "aws_iam_policy_attachment" "lambda_dynamodb_full_access" {
   name       = "lambda_dynamodb_full_access_policy"
   roles      = [aws_iam_role.lambda_exec.name]
   policy_arn = "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess"
+}
+
+resource "aws_iam_role_policy_attachment" "lex_runtime_access" {
+  role       = aws_iam_role.lambda_exec.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonLexFullAccess"
 }
