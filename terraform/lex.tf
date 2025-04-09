@@ -48,13 +48,18 @@ resource "aws_lexv2models_bot" "finance_assistant" {
 resource "null_resource" "create_lex_alias" {
   provisioner "local-exec" {
     command = <<EOT
-    set -e
-    VERSION=$(aws lexv2-models create-bot-version --bot-id ${aws_lexv2models_bot.finance_assistant.id} --locale-id en_US --query 'botVersion' --output text)
-    aws lexv2-models create-bot-alias \
-      --bot-id ${aws_lexv2models_bot.finance_assistant.id} \
-      --bot-alias-name "financeAssistantAlias" \
-      --bot-version "$VERSION" \
-      --bot-alias-locale-settings '{"en_US":{"enabled":true}}'
+      set -e
+      VERSION=$(aws lexv2-models create-bot-version \
+        --bot-id ${aws_lexv2models_bot.finance_assistant.id} \
+        --locale-id en_US \
+        --query 'botVersion' \
+        --output text)
+
+      aws lexv2-models create-bot-alias \
+        --bot-id ${aws_lexv2models_bot.finance_assistant.id} \
+        --bot-alias-name "financeAssistantAlias" \
+        --bot-version "$VERSION" \
+        --bot-version-locale-specification '{"en_US":{"sourceBotVersion":"'"$VERSION"'"}}'
     EOT
     interpreter = ["bash", "-c"]
   }
