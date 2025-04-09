@@ -19,7 +19,7 @@ plaid_environment = "sandbox"
 lambda_function_name = "transaction_handler"
 dynamodb_table_name  = "transactions"
 environment = "test-fiscai"
-lex_role_arn = aws_iam_role.lex_service_role.arn
+# lex_role_arn = aws_iam_role.lex_service_role.arn
 
 # PLAID_CLIENT_ID = "679dd136d378b10023942d78"  # Replace with your actual client ID
 # PLAID_SECRET = "959c6a0ea2fd1deb626d707ca00d4f"        # Replace with your actual secret
