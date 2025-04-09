@@ -102,6 +102,7 @@ resource "aws_lambda_permission" "allow_lex_invoke_lambda" {
 
 
 
+
 # Lambda function
 # NEEDS FOLLOWING:
 # Textract DetectDocumentText permission

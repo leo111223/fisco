@@ -109,10 +109,3 @@ resource "aws_api_gateway_integration_response" "query_lex_options_integration_r
 }
 
 
-resource "aws_lambda_permission" "apigw_lex_permission" {
-  statement_id  = "AllowExecutionFromAPIGateway"
-  action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.transaction_handler.function_name
-  principal     = "apigateway.amazonaws.com"
-  source_arn    = "${aws_api_gateway_rest_api.lex_api.execution_arn}/*/*"
-}
