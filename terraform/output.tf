@@ -17,6 +17,6 @@ output "lex_bot_id" {
   value = aws_lexv2models_bot.finance_assistant.id
 }
 
-output "lex_bot_alias_id" {
-  value = aws_lexv2models_bot_alias.finance_assistant_alias.id
-}
+# output "lex_bot_alias_id" {
+#   value = aws_lexv2models_bot_alias.finance_assistant_alias.id
+# }

@@ -88,7 +88,9 @@ resource "aws_lambda_function" "query_lex_handler" {
  environment {
   variables = {
     LEX_BOT_ID       = aws_lexv2models_bot.finance_assistant.id
-    LEX_BOT_ALIAS_ID = aws_lexv2models_bot_alias.finance_assistant_alias.id
+    LEX_BOT_ALIAS_ID = "manually-created-alias-id"
+
+    # LEX_BOT_ALIAS_ID = aws_lexv2models_bot_alias.finance_assistant_alias.id
   }
 }
 }
