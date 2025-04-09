@@ -566,3 +566,11 @@ resource "aws_api_gateway_method_response" "get_accounts_options_response" {
     "method.response.header.Access-Control-Allow-Origin"  = true
   }
 }
+
+resource "aws_lambda_permission" "get_accounts_apigw" {
+  statement_id  = "AllowAPIGatewayInvokeGetAccounts"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.get_accounts_handler.function_name
+  principal     = "apigateway.amazonaws.com"
+  source_arn    = "${aws_api_gateway_rest_api.finance_api.execution_arn}/*/*"
+}
