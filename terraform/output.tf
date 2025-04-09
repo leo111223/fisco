@@ -13,4 +13,11 @@ output "s3_bucket" {
   value = aws_s3_bucket.receipt_bucket.id
 }
 
+output "lex_bot_id" {
+  value = aws_lexv2_bot.finance_assistant.id
+}
+
+output "lex_bot_alias_id" {
+  value = aws_lexv2_bot_alias.finance_assistant_alias.id
+}
 
