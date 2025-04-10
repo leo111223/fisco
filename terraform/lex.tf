@@ -30,64 +30,15 @@ resource "aws_iam_role_policy" "lex_policy" {
     ]
   })
 }
-
-
 resource "aws_lexv2models_bot" "finance_assistant" {
   name                     = "financeAssistant"
-  //role_arn                 = var.lex_role_arn
-  role_arn = aws_iam_role.lex_service_role.arn
+  role_arn                 = aws_iam_role.lex_service_role.arn
   data_privacy {
     child_directed = false
   }
   idle_session_ttl_in_seconds = 300
   description                 = "Lex V2 bot for finance tracking"
-
-  # Removed test_bot_alias block as it is not valid here
 }
-resource "null_resource" "create_lex_alias" {
-  provisioner "local-exec" {
-    command = <<EOT
-      set -ex
-
-      VERSION=$(aws lexv2-models create-bot-version \
-        --bot-id ${aws_lexv2models_bot.finance_assistant.id} \
-        --locale-id en_US \
-        --query 'botVersion' \
-        --output text)
-
-      FILE=/tmp/version_spec.json
-      echo "{\"en_US\": {\"sourceBotVersion\": \"$VERSION\"}}" > $FILE
-      cat $FILE  # print for debug
-
-      aws lexv2-models create-bot-alias \
-        --bot-id ${aws_lexv2models_bot.finance_assistant.id} \
-        --bot-alias-name "financeAssistantAlias" \
-        --bot-version "$VERSION" \
-        --bot-version-locale-specification file://$FILE
-    EOT
-    interpreter = ["bash", "-c"]
-  }
-
-  triggers = {
-    bot_id = aws_lexv2models_bot.finance_assistant.id
-  }
-
-  depends_on = [aws_lexv2models_bot_locale.english_locale]
-}
-
-
-
-# resource "aws_lexv2models_bot_alias" "finance_assistant_alias" {
-#   bot_id      = aws_lexv2models_bot.finance_assistant.id
-#   bot_alias_name = "testAlias"
-#   bot_version = "DRAFT"
-
-#   bot_alias_locale_settings = {
-#     "en_US" = {
-#       enabled = true
-#     }
-#   }
-# }
 
 resource "aws_lexv2models_bot_locale" "english_locale" {
   bot_id      = aws_lexv2models_bot.finance_assistant.id
@@ -104,25 +55,51 @@ resource "aws_lexv2models_bot_locale" "english_locale" {
 }
 
 # resource "aws_lexv2models_intent" "get_transactions_intent" {
-#   name        = "GetTransactions"
 #   bot_id      = aws_lexv2models_bot.finance_assistant.id
 #   bot_version = "DRAFT"
-#   locale_id   = "en_US"
+#   locale_id   = aws_lexv2models_bot_locale.english_locale.locale_id
+#   name = "GetTransactions"
 
-
-#   sample_utterances {
-#     utterance = "Show me my recent transactions"
-#   }
-
-#   sample_utterances {
-#     utterance = "What did I spend last week?"
-#   }
+#   utterances = [
+#     "Show me my recent transactions",
+#     "What did I spend last week?"
+#   ]
 
 #   fulfillment_code_hook {
 #     enabled = true
 #   }
 
-#   depends_on = [
-#     aws_lexv2models_bot_locale.english_locale
-#   ]
+#   depends_on = [aws_lexv2models_bot_locale.english_locale]
 # }
+
+resource "null_resource" "create_lex_alias" {
+  provisioner "local-exec" {
+    command = <<EOT
+      set -ex
+
+      VERSION=$(aws lexv2-models create-bot-version \
+        --bot-id ${aws_lexv2models_bot.finance_assistant.id} \
+        --locale-id en_US \
+        --query 'botVersion' \
+        --output text)
+
+      FILE=/tmp/version_spec.json
+      echo "{\"en_US\": {\"sourceBotVersion\": \"$VERSION\"}}" > $FILE
+
+      aws lexv2-models create-bot-alias \
+        --bot-id ${aws_lexv2models_bot.finance_assistant.id} \
+        --bot-alias-name "financeAssistantAlias" \
+        --bot-version "$VERSION" \
+        --bot-version-locale-specification file://$FILE
+
+      echo "Lex alias created successfully for version $VERSION"
+    EOT
+    interpreter = ["bash", "-c"]
+  }
+
+  triggers = {
+    bot_id = aws_lexv2models_bot.finance_assistant.id
+  }
+
+  depends_on = [aws_lexv2models_bot_locale.english_locale]
+}

@@ -48,6 +48,10 @@ jobs:
       - name: Plan Terraform
         run: terraform plan -out=tfplan -var-file="terraform.tfvars"
         working-directory: terraform
+          #for lex
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install -y jq
+
 
       - name: Apply Terraform 
         if: github.event.inputs.action == 'apply' || github.ref == 'refs/heads/main'
