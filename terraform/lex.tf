@@ -78,7 +78,7 @@ resource "null_resource" "create_lex_alias" {
 
       VERSION=$(aws lexv2-models create-bot-version \
         --bot-id ${aws_lexv2models_bot.finance_assistant.id} \
-        --bot-version-locale-specification '{"en_US":{}}' \
+        --bot-version-locale-specification '{"en_US":{"sourceBotVersion":"DRAFT"}}' \
         --query 'botVersion' \
         --output text)
 
