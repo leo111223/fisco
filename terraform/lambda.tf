@@ -85,15 +85,15 @@ resource "aws_lambda_function" "query_lex_handler" {
   runtime       = "python3.9"
   role          = aws_iam_role.lambda_exec.arn
   timeout       = 30
-#  environment {
-#   variables = {
-#     LEX_BOT_ID       = aws_lexv2models_bot.finance_assistant.id
-#     LEX_BOT_ALIAS_ID = data.external.lex_alias_id.result.lex_bot_alias_id
-#   }
-#   }
-#   depends_on = [
-#     null_resource.create_lex_alias
-#   ]
+ environment {
+  variables = {
+    LEX_BOT_ID       = aws_lexv2models_bot.finance_assistant.id
+    LEX_BOT_ALIAS_ID = data.external.lex_alias_id.result.lex_bot_alias_id
+  }
+  }
+  depends_on = [
+    null_resource.create_lex_alias
+  ]
 }
 
 resource "aws_lambda_permission" "allow_lex_invoke_lambda" {
