@@ -88,11 +88,13 @@ resource "aws_lambda_function" "query_lex_handler" {
  environment {
   variables = {
     LEX_BOT_ID       = aws_lexv2models_bot.finance_assistant.id
-    LEX_BOT_ALIAS_ID = "manually-created-alias-id"
-
-    # LEX_BOT_ALIAS_ID = aws_lexv2models_bot_alias.finance_assistant_alias.id
+    
+    LEX_BOT_ALIAS_ID = data.external.lex_alias_id.result.lex_bot_alias_id
   }
-}
+  }
+  depends_on = [
+    null_resource.create_lex_alias
+  ]
 }
 
 resource "aws_lambda_permission" "allow_lex_invoke_lambda" {

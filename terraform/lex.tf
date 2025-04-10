@@ -102,4 +102,7 @@ resource "null_resource" "create_lex_alias" {
   }
 
   depends_on = [aws_lexv2models_bot_locale.english_locale]
+
 }
+
+
