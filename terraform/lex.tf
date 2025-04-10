@@ -44,6 +44,7 @@ resource "aws_lexv2models_bot" "finance_assistant" {
 
   # Removed test_bot_alias block as it is not valid here
 }
+
 resource "null_resource" "create_lex_alias" {
   provisioner "local-exec" {
     command = <<EOT
@@ -55,13 +56,13 @@ resource "null_resource" "create_lex_alias" {
         --query 'botVersion' \
         --output text)
 
-      JSON=$(jq -n --arg version "$VERSION" '{"en_US": {"sourceBotVersion": $version}}')
+      echo "{\"en_US\": {\"sourceBotVersion\": \"$VERSION\"}}" > version_spec.json
 
       aws lexv2-models create-bot-alias \
         --bot-id ${aws_lexv2models_bot.finance_assistant.id} \
         --bot-alias-name "financeAssistantAlias" \
         --bot-version "$VERSION" \
-        --bot-version-locale-specification "$JSON"
+        --bot-version-locale-specification file://version_spec.json
     EOT
     interpreter = ["bash", "-c"]
   }
