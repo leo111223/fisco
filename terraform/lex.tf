@@ -71,7 +71,6 @@ resource "aws_lexv2models_bot_locale" "english_locale" {
 
 #   depends_on = [aws_lexv2models_bot_locale.english_locale]
 # }
-
 resource "null_resource" "create_lex_alias" {
   provisioner "local-exec" {
     command = <<EOT
@@ -79,12 +78,13 @@ resource "null_resource" "create_lex_alias" {
 
       VERSION=$(aws lexv2-models create-bot-version \
         --bot-id ${aws_lexv2models_bot.finance_assistant.id} \
-        --locale-id en_US \
+        --bot-version-locale-specification '{"en_US":{}}' \
         --query 'botVersion' \
         --output text)
 
       FILE=/tmp/version_spec.json
       echo "{\"en_US\": {\"sourceBotVersion\": \"$VERSION\"}}" > $FILE
+      cat $FILE
 
       aws lexv2-models create-bot-alias \
         --bot-id ${aws_lexv2models_bot.finance_assistant.id} \
@@ -102,7 +102,6 @@ resource "null_resource" "create_lex_alias" {
   }
 
   depends_on = [aws_lexv2models_bot_locale.english_locale]
-
 }
 
 
