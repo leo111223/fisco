@@ -138,24 +138,6 @@ resource "aws_lexv2models_intent" "get_balance" {
   depends_on = [aws_lexv2models_bot_locale.english_locale]
 }
 
-
-# resource "aws_lexv2models_intent" "get_transactions_intent" {
-#   bot_id      = aws_lexv2models_bot.finance_assistant.id
-#   bot_version = "DRAFT"
-#   locale_id   = aws_lexv2models_bot_locale.english_locale.locale_id
-#   name = "GetTransactions"
-
-#   utterances = [
-#     "Show me my recent transactions",
-#     "What did I spend last week?"
-#   ]
-
-#   fulfillment_code_hook {
-#     enabled = true
-#   }
-
-#   depends_on = [aws_lexv2models_bot_locale.english_locale]
-# }
 resource "null_resource" "create_lex_alias" {
   provisioner "local-exec" {
     command = <<EOT
@@ -168,11 +150,14 @@ resource "null_resource" "create_lex_alias" {
         --output text)
 
       if [ -z "$VERSION" ]; then
-        echo "❌ Failed to retrieve bot version."
+        echo " Failed to retrieve bot version."
         exit 1
       fi
 
-      echo "✅ Published Lex bot version: $VERSION"
+      echo " Published Lex bot version: $VERSION"
+
+      echo " Waiting for Lex bot version $VERSION to finish stabilizing..."
+      sleep 20
 
       aws lexv2-models create-bot-alias \
         --bot-id ${aws_lexv2models_bot.finance_assistant.id} \
@@ -180,7 +165,7 @@ resource "null_resource" "create_lex_alias" {
         --bot-version "$VERSION" \
         --bot-alias-locale-settings '{"en_US":{"enabled":true}}'
 
-      echo "✅ Lex alias created for version $VERSION"
+      echo " Lex alias created for version $VERSION"
     EOT
     interpreter = ["bash", "-c"]
   }
