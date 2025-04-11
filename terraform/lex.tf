@@ -51,8 +51,10 @@ resource "aws_lexv2models_bot_locale" "english_locale" {
     voice_id = "Joanna"
   }
 
+
   depends_on = [aws_lexv2models_bot.finance_assistant]
 }
+
 resource "null_resource" "create_lex_alias" {
   triggers = {
     bot_id = aws_lexv2models_bot.finance_assistant.id
