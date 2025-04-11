@@ -59,7 +59,7 @@ const Transactions = ({ accessToken, API_BASE_URL, userId }: TransactionsProps) 
     try {
       setIsLoading(true);
       const transactionsResponse = await fetch(
-        `${API_BASE_URL}/create_transaction?access_token=${accessToken}&user_id=${userId}`,
+        `${API_BASE_URL}/transactions?access_token=${accessToken}&user_id=${userId}`,
         {
           method: "POST", 
           headers: {
