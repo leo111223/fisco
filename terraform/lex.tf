@@ -53,90 +53,88 @@ resource "aws_lexv2models_bot_locale" "english_locale" {
 
   depends_on = [aws_lexv2models_bot.finance_assistant]
 }
-resource "aws_lexv2models_intent" "get_balance" {
-  bot_id      = aws_lexv2models_bot.finance_assistant.id
-  bot_version = "DRAFT"
-  locale_id   = "en_US"
-  name = "GetBalance"
 
-  confirmation_setting {
-    active = true
+# resource "aws_lexv2models_intent" "get_balance" {
+#   bot_id      = aws_lexv2models_bot.finance_assistant.id
+#   bot_version = "DRAFT"
+#   locale_id   = "en_US"
+#   name = "GetBalance"
 
-    prompt_specification {
-      allow_interrupt            = true
-      max_retries                = 1
-      message_selection_strategy = "Ordered"
+#   confirmation_setting {
+#     active = true
 
-      prompt_attempts_specification {
-        allow_interrupt = true
-        map_block_key   = "Initial"
+#     prompt_specification {
+#       allow_interrupt            = true
+#       max_retries                = 1
+#       message_selection_strategy = "Ordered"
 
-        allowed_input_types {
-          allow_audio_input = true
-          allow_dtmf_input  = true
-        }
+#       prompt_attempts_specification {
+#         allow_interrupt = true
+#         map_block_key   = "Initial"
 
-        audio_and_dtmf_input_specification {
-          start_timeout_ms = 4000
+#         allowed_input_types {
+#           allow_audio_input = true
+#           allow_dtmf_input  = true
+#         }
 
-          audio_specification {
-            end_timeout_ms = 640
-            max_length_ms  = 15000
-          }
+#         audio_and_dtmf_input_specification {
+#           start_timeout_ms = 4000
 
-          dtmf_specification {
-            deletion_character = "*"
-            end_character      = "#"
-            end_timeout_ms     = 5000
-            max_length         = 513
-          }
-        }
+#           audio_specification {
+#             end_timeout_ms = 640
+#             max_length_ms  = 15000
+#           }
 
-        text_input_specification {
-          start_timeout_ms = 30000
-        }
-      }
+#           dtmf_specification {
+#             deletion_character = "*"
+#             end_character      = "#"
+#             end_timeout_ms     = 5000
+#             max_length         = 513
+#           }
+#         }
 
-      prompt_attempts_specification {
-        allow_interrupt = true
-        map_block_key   = "Retry1"
+#         text_input_specification {
+#           start_timeout_ms = 30000
+#         }
+#       }
 
-        allowed_input_types {
-          allow_audio_input = true
-          allow_dtmf_input  = true
-        }
+#       prompt_attempts_specification {
+#         allow_interrupt = true
+#         map_block_key   = "Retry1"
 
-        audio_and_dtmf_input_specification {
-          start_timeout_ms = 4000
+#         allowed_input_types {
+#           allow_audio_input = true
+#           allow_dtmf_input  = true
+#         }
 
-          audio_specification {
-            end_timeout_ms = 640
-            max_length_ms  = 15000
-          }
+#         audio_and_dtmf_input_specification {
+#           start_timeout_ms = 4000
 
-          dtmf_specification {
-            deletion_character = "*"
-            end_character      = "#"
-            end_timeout_ms     = 5000
-            max_length         = 513
-          }
-        }
+#           audio_specification {
+#             end_timeout_ms = 640
+#             max_length_ms  = 15000
+#           }
 
-        text_input_specification {
-          start_timeout_ms = 30000
-        }
-      }
-    }
-  }
+#           dtmf_specification {
+#             deletion_character = "*"
+#             end_character      = "#"
+#             end_timeout_ms     = 5000
+#             max_length         = 513
+#           }
+#         }
 
+#         text_input_specification {
+#           start_timeout_ms = 30000
+#         }
+#       }
+#     }
+#   }
+#   fulfillment_code_hook {
+#     enabled = true
+#   }
 
-
-  fulfillment_code_hook {
-    enabled = true
-  }
-
-  depends_on = [aws_lexv2models_bot_locale.english_locale]
-}
+#   depends_on = [aws_lexv2models_bot_locale.english_locale]
+# }
 
 resource "null_resource" "create_lex_alias" {
   provisioner "local-exec" {
