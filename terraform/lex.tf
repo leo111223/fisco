@@ -53,15 +53,18 @@ resource "aws_lexv2models_bot_locale" "english_locale" {
 
   depends_on = [aws_lexv2models_bot.finance_assistant]
 }
-
 resource "null_resource" "create_lex_alias" {
+  triggers = {
+    bot_id = aws_lexv2models_bot.finance_assistant.id
+  }
+
   provisioner "local-exec" {
     when    = create
     command = <<EOT
       set -ex
 
       VERSION=$(aws lexv2-models create-bot-version \
-        --bot-id ${aws_lexv2models_bot.finance_assistant.id} \
+        --bot-id ${self.triggers.bot_id} \
         --bot-version-locale-specification '{"en_US":{"sourceBotVersion":"DRAFT"}}' \
         --query 'botVersion' \
         --output text)
@@ -72,10 +75,11 @@ resource "null_resource" "create_lex_alias" {
       fi
 
       echo "✅ Published Lex bot version: $VERSION"
+
       sleep 10
 
       aws lexv2-models create-bot-alias \
-        --bot-id ${aws_lexv2models_bot.finance_assistant.id} \
+        --bot-id ${self.triggers.bot_id} \
         --bot-alias-name "financeAssistantAlias" \
         --bot-version "$VERSION" \
         --bot-alias-locale-settings '{"en_US":{"enabled":true}}'
@@ -91,7 +95,7 @@ resource "null_resource" "create_lex_alias" {
       echo "🔄 Looking up alias ID for deletion..."
 
       ALIAS_ID=$(aws lexv2-models list-bot-aliases \
-        --bot-id ${aws_lexv2models_bot.finance_assistant.id} \
+        --bot-id ${self.triggers.bot_id} \
         --query "botAliasSummaries[?botAliasName=='financeAssistantAlias'].botAliasId" \
         --output text)
 
@@ -102,14 +106,10 @@ resource "null_resource" "create_lex_alias" {
 
       echo "❌ Deleting Lex alias ID $ALIAS_ID"
       aws lexv2-models delete-bot-alias \
-        --bot-id ${aws_lexv2models_bot.finance_assistant.id} \
+        --bot-id ${self.triggers.bot_id} \
         --bot-alias-id $ALIAS_ID
     EOT
     interpreter = ["bash", "-c"]
-  }
-
-  triggers = {
-    bot_id = aws_lexv2models_bot.finance_assistant.id
   }
 
   depends_on = [aws_lexv2models_bot_locale.english_locale]
