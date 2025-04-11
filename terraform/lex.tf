@@ -74,34 +74,29 @@ resource "aws_lexv2models_bot_locale" "english_locale" {
 resource "null_resource" "create_lex_alias" {
   provisioner "local-exec" {
     command = <<EOT
-  set -ex
+      set -ex
 
-  VERSION=$(aws lexv2-models create-bot-version \
-    --bot-id ${aws_lexv2models_bot.finance_assistant.id} \
-    --bot-version-locale-specification '{"en_US":{"sourceBotVersion":"DRAFT"}}' \
-    --query 'botVersion' \
-    --output text)
+      VERSION=$(aws lexv2-models create-bot-version \
+        --bot-id ${aws_lexv2models_bot.finance_assistant.id} \
+        --bot-version-locale-specification '{"en_US":{"sourceBotVersion":"DRAFT"}}' \
+        --query 'botVersion' \
+        --output text)
 
-  if [ -z "$VERSION" ]; then
-    echo " Failed to retrieve bot version."
-    exit 1
-  fi
+      if [ -z "$VERSION" ]; then
+        echo "❌ Failed to retrieve bot version."
+        exit 1
+      fi
 
-  echo " Published Lex bot version: $VERSION"
+      echo "✅ Published Lex bot version: $VERSION"
 
-  FILE=/tmp/version_spec.json
-  echo "{\"en_US\": {\"sourceBotVersion\": \"$VERSION\"}}" > $FILE
-  cat $FILE
+      aws lexv2-models create-bot-alias \
+        --bot-id ${aws_lexv2models_bot.finance_assistant.id} \
+        --bot-alias-name "financeAssistantAlias" \
+        --bot-version "$VERSION" \
+        --bot-alias-locale-settings '{"en_US":{"enabled":true}}'
 
-  aws lexv2-models create-bot-alias \
-    --bot-id ${aws_lexv2models_bot.finance_assistant.id} \
-    --bot-alias-name "financeAssistantAlias" \
-    --bot-version "$VERSION" \
-    --bot-version-locale-specification file://$FILE
-
-  echo "✅ Lex alias created for version $VERSION"
-EOT
-
+      echo "✅ Lex alias created for version $VERSION"
+    EOT
     interpreter = ["bash", "-c"]
   }
 
@@ -111,5 +106,6 @@ EOT
 
   depends_on = [aws_lexv2models_bot_locale.english_locale]
 }
+
 
 
