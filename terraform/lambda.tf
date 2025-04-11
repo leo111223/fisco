@@ -101,6 +101,7 @@ resource "aws_lambda_permission" "allow_lex_invoke_lambda" {
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.query_lex_handler.function_name
   principal     = "lexv2.amazonaws.com"
+  source_arn    = "arn:aws:execute-api:us-east-1:${data.aws_caller_identity.current.account_id}:${aws_api_gateway_rest_api.lex_api.id}/*/POST/query_lex"
 }
 
 
