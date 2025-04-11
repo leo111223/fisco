@@ -20,37 +20,15 @@ resource "aws_lexv2models_intent" "greeting_intent" {
     active = true
 
     prompt_specification {
-      allow_interrupt            = true
-      max_retries                = 1
       message_selection_strategy = "Ordered"
+      max_retries                = 1
+      allow_interrupt            = true
 
-      prompt_attempts_specification {
-        allow_interrupt = true
-        map_block_key   = "Initial"
-
-        allowed_input_types {
-          allow_audio_input = true
-          allow_dtmf_input  = true
-        }
-
-        audio_and_dtmf_input_specification {
-          start_timeout_ms = 4000
-
-          audio_specification {
-            end_timeout_ms = 640
-            max_length_ms  = 15000
+      message_group {
+        message {
+          plain_text_message {
+            value = "Is this what you meant?"
           }
-
-          dtmf_specification {
-            deletion_character = "*"
-            end_character      = "#"
-            end_timeout_ms     = 5000
-            max_length         = 5
-          }
-        }
-
-        text_input_specification {
-          start_timeout_ms = 30000
         }
       }
     }
@@ -63,7 +41,6 @@ resource "aws_lexv2models_intent" "greeting_intent" {
   depends_on = [aws_lexv2models_bot_locale.english_locale]
 }
 
-
 resource "aws_lexv2models_intent" "goodbye_intent" {
   bot_id      = aws_lexv2models_bot.finance_assistant.id
   bot_version = aws_lexv2models_bot_locale.english_locale.bot_version
@@ -75,9 +52,11 @@ resource "aws_lexv2models_intent" "goodbye_intent" {
   sample_utterance {
     utterance = "bye"
   }
+
   sample_utterance {
     utterance = "goodbye"
   }
+
   sample_utterance {
     utterance = "see you later"
   }
@@ -90,33 +69,11 @@ resource "aws_lexv2models_intent" "goodbye_intent" {
       max_retries                = 1
       message_selection_strategy = "Ordered"
 
-      prompt_attempts_specification {
-        allow_interrupt = true
-        map_block_key   = "Initial"
-
-        allowed_input_types {
-          allow_audio_input = true
-          allow_dtmf_input  = true
-        }
-
-        audio_and_dtmf_input_specification {
-          start_timeout_ms = 4000
-
-          audio_specification {
-            end_timeout_ms = 640
-            max_length_ms  = 15000
+      message_group {
+        message {
+          plain_text_message {
+            value = "Are you sure you want to end the conversation?"
           }
-
-          dtmf_specification {
-            deletion_character = "*"
-            end_character      = "#"
-            end_timeout_ms     = 5000
-            max_length         = 5
-          }
-        }
-
-        text_input_specification {
-          start_timeout_ms = 30000
         }
       }
     }
