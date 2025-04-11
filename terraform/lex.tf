@@ -30,6 +30,9 @@ resource "aws_iam_role_policy" "lex_policy" {
     ]
   })
 }
+
+data "aws_caller_identity" "current" {}
+
 resource "aws_lexv2models_bot" "finance_assistant" {
   name                     = "financeAssistant"
   role_arn                 = aws_iam_role.lex_service_role.arn
