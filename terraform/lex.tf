@@ -54,90 +54,9 @@ resource "aws_lexv2models_bot_locale" "english_locale" {
   depends_on = [aws_lexv2models_bot.finance_assistant]
 }
 
-# resource "aws_lexv2models_intent" "get_balance" {
-#   bot_id      = aws_lexv2models_bot.finance_assistant.id
-#   bot_version = "DRAFT"
-#   locale_id   = "en_US"
-#   name = "GetBalance"
-
-#   confirmation_setting {
-#     active = true
-
-#     prompt_specification {
-#       allow_interrupt            = true
-#       max_retries                = 1
-#       message_selection_strategy = "Ordered"
-
-#       prompt_attempts_specification {
-#         allow_interrupt = true
-#         map_block_key   = "Initial"
-
-#         allowed_input_types {
-#           allow_audio_input = true
-#           allow_dtmf_input  = true
-#         }
-
-#         audio_and_dtmf_input_specification {
-#           start_timeout_ms = 4000
-
-#           audio_specification {
-#             end_timeout_ms = 640
-#             max_length_ms  = 15000
-#           }
-
-#           dtmf_specification {
-#             deletion_character = "*"
-#             end_character      = "#"
-#             end_timeout_ms     = 5000
-#             max_length         = 513
-#           }
-#         }
-
-#         text_input_specification {
-#           start_timeout_ms = 30000
-#         }
-#       }
-
-#       prompt_attempts_specification {
-#         allow_interrupt = true
-#         map_block_key   = "Retry1"
-
-#         allowed_input_types {
-#           allow_audio_input = true
-#           allow_dtmf_input  = true
-#         }
-
-#         audio_and_dtmf_input_specification {
-#           start_timeout_ms = 4000
-
-#           audio_specification {
-#             end_timeout_ms = 640
-#             max_length_ms  = 15000
-#           }
-
-#           dtmf_specification {
-#             deletion_character = "*"
-#             end_character      = "#"
-#             end_timeout_ms     = 5000
-#             max_length         = 513
-#           }
-#         }
-
-#         text_input_specification {
-#           start_timeout_ms = 30000
-#         }
-#       }
-#     }
-#   }
-#   fulfillment_code_hook {
-#     enabled = true
-#   }
-
-#   depends_on = [aws_lexv2models_bot_locale.english_locale]
-# }
-
 resource "null_resource" "create_lex_alias" {
   provisioner "local-exec" {
+    when    = create
     command = <<EOT
       set -ex
 
@@ -148,14 +67,12 @@ resource "null_resource" "create_lex_alias" {
         --output text)
 
       if [ -z "$VERSION" ]; then
-        echo " Failed to retrieve bot version."
+        echo "❌ Failed to retrieve bot version."
         exit 1
       fi
 
-      echo " Published Lex bot version: $VERSION"
-
-      echo " Waiting for Lex bot version $VERSION to finish stabilizing..."
-      sleep 20
+      echo "✅ Published Lex bot version: $VERSION"
+      sleep 10
 
       aws lexv2-models create-bot-alias \
         --bot-id ${aws_lexv2models_bot.finance_assistant.id} \
@@ -163,7 +80,30 @@ resource "null_resource" "create_lex_alias" {
         --bot-version "$VERSION" \
         --bot-alias-locale-settings '{"en_US":{"enabled":true}}'
 
-      echo " Lex alias created for version $VERSION"
+      echo "✅ Lex alias created for version $VERSION"
+    EOT
+    interpreter = ["bash", "-c"]
+  }
+
+  provisioner "local-exec" {
+    when    = destroy
+    command = <<EOT
+      echo "🔄 Looking up alias ID for deletion..."
+
+      ALIAS_ID=$(aws lexv2-models list-bot-aliases \
+        --bot-id ${aws_lexv2models_bot.finance_assistant.id} \
+        --query "botAliasSummaries[?botAliasName=='financeAssistantAlias'].botAliasId" \
+        --output text)
+
+      if [ -z "$ALIAS_ID" ]; then
+        echo "⚠️ Alias not found, nothing to delete."
+        exit 0
+      fi
+
+      echo "❌ Deleting Lex alias ID $ALIAS_ID"
+      aws lexv2-models delete-bot-alias \
+        --bot-id ${aws_lexv2models_bot.finance_assistant.id} \
+        --bot-alias-id $ALIAS_ID
     EOT
     interpreter = ["bash", "-c"]
   }
@@ -174,6 +114,3 @@ resource "null_resource" "create_lex_alias" {
 
   depends_on = [aws_lexv2models_bot_locale.english_locale]
 }
-
-
-
