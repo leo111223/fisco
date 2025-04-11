@@ -57,7 +57,7 @@ resource "aws_lexv2models_intent" "greeting_intent" {
   }
 
   fulfillment_code_hook {
-    enabled = true
+    enabled = false
   }
 
   depends_on = [aws_lexv2models_bot_locale.english_locale]
