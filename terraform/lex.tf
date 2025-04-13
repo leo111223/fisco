@@ -87,6 +87,11 @@ resource "aws_lambda_permission" "allow_apigw_invoke_lambda" {
   function_name = aws_lambda_function.query_lex_handler.function_name
   principal     = "apigateway.amazonaws.com"
   source_arn    = "arn:aws:execute-api:us-east-1:${data.aws_caller_identity.current.account_id}:${aws_api_gateway_rest_api.finance_api.id}/*/POST/query_lex"
+    
+  depends_on = [
+    aws_api_gateway_deployment.api_deployment
+  ]
+
 }
 
 
