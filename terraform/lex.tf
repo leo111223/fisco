@@ -14,6 +14,18 @@ resource "aws_iam_role" "lex_service_role" {
   })
 }
 
+resource "aws_iam_role_policy" "lex_policy" {
+  name = "LexLambdaInvokePolicy"
+  role = aws_iam_role.lex_service_role.id
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [{
+      Effect = "Allow",
+      Action = ["lambda:InvokeFunction"],
+      Resource = aws_lambda_function.query_lex_handler.arn
+    }]
+  })
+}
 # resource "aws_iam_role_policy" "lex_policy" {
 #   name = "LexServicePolicy"
 #   role = aws_iam_role.lex_service_role.id
