@@ -23,3 +23,5 @@ environment = "test-fiscai"
 
 # PLAID_CLIENT_ID = "679dd136d378b10023942d78"  # Replace with your actual client ID
 # PLAID_SECRET = "959c6a0ea2fd1deb626d707ca00d4f"        # Replace with your actual secret
+
+aws_account_id = 864981748263
