@@ -67,8 +67,7 @@ jobs:
         run: terraform show
         working-directory: terraform
         
-      - name: Debug lex_alias.json
-        run: cat lex_alias.json
+
 
       - name: Get Terraform outputs
         run: |
