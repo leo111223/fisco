@@ -59,7 +59,9 @@ jobs:
         working-directory: terraform
         env:
           TF_LOG: DEBUG
-      
+      - name: Check Lex Locale in State
+        run: terraform state list | grep lex
+        
       - name: Debug lex_alias.json
         run: cat lex_alias.json
 
