@@ -66,8 +66,6 @@ resource "aws_lambda_function" "query_lex_handler" {
  environment {
   variables = {
     LEX_BOT_ID       = aws_lexv2models_bot.finance_assistant.id
-    //LEX_BOT_ALIAS_ID = replace(data.external.lex_alias_id.result.lex_bot_alias_id, "\"", "")
-
     LEX_BOT_ALIAS_ID = data.external.lex_alias_id.result.lex_bot_alias_id
   }
   }
@@ -128,64 +126,64 @@ resource "aws_lexv2models_bot_locale" "english_locale" {
   depends_on = [aws_lexv2models_bot.finance_assistant]
 }
 
-resource "null_resource" "create_lex_alias" {
-  triggers = {
-    bot_id = aws_lexv2models_bot.finance_assistant.id
-  }
+# resource "null_resource" "create_lex_alias" {
+#   triggers = {
+#     bot_id = aws_lexv2models_bot.finance_assistant.id
+#   }
 
-  provisioner "local-exec" {
-    when    = create
-    command = <<EOT
-      set -ex
+#   provisioner "local-exec" {
+#     when    = create
+#     command = <<EOT
+#       set -ex
 
-      VERSION=$(aws lexv2-models create-bot-version \
-        --bot-id ${self.triggers.bot_id} \
-        --bot-version-locale-specification '{"en_US":{"sourceBotVersion":"DRAFT"}}' \
-        --query 'botVersion' \
-        --output text)
+#       VERSION=$(aws lexv2-models create-bot-version \
+#         --bot-id ${self.triggers.bot_id} \
+#         --bot-version-locale-specification '{"en_US":{"sourceBotVersion":"DRAFT"}}' \
+#         --query 'botVersion' \
+#         --output text)
 
-      if [ -z "$VERSION" ]; then
-        echo " Failed to retrieve bot version."
-        exit 1
-      fi
+#       if [ -z "$VERSION" ]; then
+#         echo " Failed to retrieve bot version."
+#         exit 1
+#       fi
 
-      echo " Published Lex bot version: $VERSION"
+#       echo " Published Lex bot version: $VERSION"
 
-      sleep 10
+#       sleep 10
 
-      aws lexv2-models create-bot-alias \
-        --bot-id ${self.triggers.bot_id} \
-        --bot-alias-name "financeAssistantAlias" \
-        --bot-version "$VERSION" \
-        --bot-alias-locale-settings '{"en_US":{"enabled":true}}'
+#       aws lexv2-models create-bot-alias \
+#         --bot-id ${self.triggers.bot_id} \
+#         --bot-alias-name "financeAssistantAlias" \
+#         --bot-version "$VERSION" \
+#         --bot-alias-locale-settings '{"en_US":{"enabled":true}}'
 
-      echo " Lex alias created for version $VERSION"
-    EOT
-    interpreter = ["bash", "-c"]
-  }
+#       echo " Lex alias created for version $VERSION"
+#     EOT
+#     interpreter = ["bash", "-c"]
+#   }
 
-  provisioner "local-exec" {
-    when    = destroy
-    command = <<EOT
-      echo "🔄 Looking up alias ID for deletion..."
+#   provisioner "local-exec" {
+#     when    = destroy
+#     command = <<EOT
+#       echo "🔄 Looking up alias ID for deletion..."
 
-      ALIAS_ID=$(aws lexv2-models list-bot-aliases \
-        --bot-id ${self.triggers.bot_id} \
-        --query "botAliasSummaries[?botAliasName=='financeAssistantAlias'].botAliasId" \
-        --output text)
+#       ALIAS_ID=$(aws lexv2-models list-bot-aliases \
+#         --bot-id ${self.triggers.bot_id} \
+#         --query "botAliasSummaries[?botAliasName=='financeAssistantAlias'].botAliasId" \
+#         --output text)
 
-      if [ -z "$ALIAS_ID" ]; then
-        echo " Alias not found, nothing to delete."
-        exit 0
-      fi
+#       if [ -z "$ALIAS_ID" ]; then
+#         echo " Alias not found, nothing to delete."
+#         exit 0
+#       fi
 
-      echo " Deleting Lex alias ID $ALIAS_ID"
-      aws lexv2-models delete-bot-alias \
-        --bot-id ${self.triggers.bot_id} \
-        --bot-alias-id $ALIAS_ID
-    EOT
-    interpreter = ["bash", "-c"]
-  }
+#       echo " Deleting Lex alias ID $ALIAS_ID"
+#       aws lexv2-models delete-bot-alias \
+#         --bot-id ${self.triggers.bot_id} \
+#         --bot-alias-id $ALIAS_ID
+#     EOT
+#     interpreter = ["bash", "-c"]
+#   }
 
-  depends_on = [aws_lexv2models_bot_locale.english_locale]
-}
+#   depends_on = [aws_lexv2models_bot_locale.english_locale]
+# }
