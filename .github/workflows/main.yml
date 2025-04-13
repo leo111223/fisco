@@ -52,13 +52,13 @@ jobs:
       - name: Install jq
         run: sudo apt-get update && sudo apt-get install -y jq
 
-      - name: Apply Lex Locale Only
-        run: terraform apply -target=aws_lexv2models_bot_locale.english_locale -auto-approve
-        working-directory: terraform
+      # - name: Apply Lex Locale Only
+      #   run: terraform apply -target=aws_lexv2models_bot_locale.english_locale -auto-approve
+      #   working-directory: terraform
 
       - name: Apply Terraform 
         if: github.event.inputs.action == 'apply' || github.ref == 'refs/heads/main'
-        run: terraform apply -auto-approve tfplan
+        run: terraform apply -auto-approve -var-file="terraform.tfvars"
         working-directory: terraform
         env:
           TF_LOG: DEBUG
