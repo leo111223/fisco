@@ -60,8 +60,7 @@ jobs:
         if: github.event.inputs.action == 'apply' || github.ref == 'refs/heads/main'
         run: terraform apply -auto-approve -var-file="terraform.tfvars"
         working-directory: terraform
-        env:
-          TF_LOG: DEBUG
+        
 
       - name: Dump Terraform State (full)
         run: terraform show
