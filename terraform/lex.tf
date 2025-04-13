@@ -239,7 +239,7 @@ resource "null_resource" "create_lex_alias" {
             "enabled": true,
             "codeHookSpecification": {
               "lambdaCodeHook": {
-                "lambdaARN": "'"${aws_lambda_function.query_lex_handler.arn}"'",
+                "lambdaARN": "${LAMBDA_ARN}",
                 "codeHookInterfaceVersion": "1.0"
               }
             }

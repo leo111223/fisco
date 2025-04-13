@@ -60,6 +60,10 @@ jobs:
         if: github.event.inputs.action == 'apply' || github.ref == 'refs/heads/main'
         run: terraform apply -auto-approve -var-file="terraform.tfvars"
         working-directory: terraform
+
+      - name: Export Lambda ARN to ENV
+        run: echo "LAMBDA_ARN=$(terraform output -raw query_lex_handler_arn)" >> $GITHUB_ENV
+      
       
 
       - name: Get Terraform outputs
