@@ -194,6 +194,32 @@ resource "null_resource" "create_lex_alias" {
 
       echo "✅ Lex alias created and locale enabled."
 
+      INTENT_ID=$(aws lexv2-models list-intents \
+        --bot-id ${self.triggers.bot_id} \
+        --bot-version DRAFT \
+        --locale-id en_US \
+        --query "intentSummaries[?intentName=='greeting_intent'].intentId" \
+        --output text)
+
+      # Get the intent config
+      aws lexv2-models describe-intent \
+        --bot-id ${self.triggers.bot_id} \
+        --bot-version DRAFT \
+        --locale-id en_US \
+        --intent-id $INTENT_ID > tmp_intent.json
+
+      # Inject fulfillment hook
+      jq '.fulfillmentCodeHook = {"enabled": true}' tmp_intent.json > updated_intent.json
+
+      # Apply update
+      aws lexv2-models update-intent \
+        --bot-id ${self.triggers.bot_id} \
+        --bot-version DRAFT \
+        --locale-id en_US \
+        --intent-id $INTENT_ID \
+        --cli-input-json file://updated_intent.json
+
+
       # Step 4: Output alias ID for use in Lambda
       ALIAS_ID=$(aws lexv2-models list-bot-aliases \
         --bot-id ${self.triggers.bot_id} \
