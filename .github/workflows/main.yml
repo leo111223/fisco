@@ -52,7 +52,9 @@ jobs:
       - name: Install jq
         run: sudo apt-get update && sudo apt-get install -y jq
 
-
+      - name: Apply Lex Locale Only
+        run: terraform apply -target=aws_lexv2models_bot_locale.english_locale -auto-approve
+      
       - name: Apply Terraform 
         if: github.event.inputs.action == 'apply' || github.ref == 'refs/heads/main'
         run: terraform apply -auto-approve tfplan
