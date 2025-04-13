@@ -55,6 +55,7 @@ jobs:
       - name: Apply Lex Locale Only
         run: terraform apply -target=aws_lexv2models_bot_locale.english_locale -auto-approve
         working-directory: terraform
+
       - name: Apply Terraform 
         if: github.event.inputs.action == 'apply' || github.ref == 'refs/heads/main'
         run: terraform apply -auto-approve tfplan
@@ -65,9 +66,6 @@ jobs:
       - name: Dump Terraform State (full)
         run: terraform show
         working-directory: terraform
-        
-      - name: Check Lex Locale in State
-        run: terraform state list | grep lex
         
       - name: Debug lex_alias.json
         run: cat lex_alias.json
