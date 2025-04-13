@@ -66,7 +66,9 @@ resource "aws_lambda_function" "query_lex_handler" {
  environment {
   variables = {
     LEX_BOT_ID       = aws_lexv2models_bot.finance_assistant.id
-    LEX_BOT_ALIAS_ID = data.external.lex_alias_id.result.lex_bot_alias_id
+    LEX_BOT_ALIAS_ID = replace(data.external.lex_alias_id.result.lex_bot_alias_id, "\"", "")
+
+    //LEX_BOT_ALIAS_ID = data.external.lex_alias_id.result.lex_bot_alias_id
   }
   }
   depends_on = [
@@ -143,11 +145,11 @@ resource "null_resource" "create_lex_alias" {
         --output text)
 
       if [ -z "$VERSION" ]; then
-        echo "❌ Failed to retrieve bot version."
+        echo " Failed to retrieve bot version."
         exit 1
       fi
 
-      echo "✅ Published Lex bot version: $VERSION"
+      echo " Published Lex bot version: $VERSION"
 
       sleep 10
 
@@ -157,7 +159,7 @@ resource "null_resource" "create_lex_alias" {
         --bot-version "$VERSION" \
         --bot-alias-locale-settings '{"en_US":{"enabled":true}}'
 
-      echo "✅ Lex alias created for version $VERSION"
+      echo " Lex alias created for version $VERSION"
     EOT
     interpreter = ["bash", "-c"]
   }
@@ -173,11 +175,11 @@ resource "null_resource" "create_lex_alias" {
         --output text)
 
       if [ -z "$ALIAS_ID" ]; then
-        echo "⚠️ Alias not found, nothing to delete."
+        echo " Alias not found, nothing to delete."
         exit 0
       fi
 
-      echo "❌ Deleting Lex alias ID $ALIAS_ID"
+      echo " Deleting Lex alias ID $ALIAS_ID"
       aws lexv2-models delete-bot-alias \
         --bot-id ${self.triggers.bot_id} \
         --bot-alias-id $ALIAS_ID
