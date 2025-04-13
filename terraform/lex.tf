@@ -1,18 +1,18 @@
 #lex calling lambda use this
-# resource "aws_iam_role" "lex_service_role" {
-#   name = "LexServiceRole"
+resource "aws_iam_role" "lex_service_role" {
+  name = "LexServiceRole"
 
-#   assume_role_policy = jsonencode({
-#     Version = "2012-10-17"
-#     Statement = [{
-#       Effect = "Allow"
-#       Principal = {
-#         Service = "lex.amazonaws.com"
-#       }
-#       Action = "sts:AssumeRole"
-#     }]
-#   })
-# }
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect = "Allow"
+      Principal = {
+        Service = "lex.amazonaws.com"
+      }
+      Action = "sts:AssumeRole"
+    }]
+  })
+}
 
 # resource "aws_iam_role_policy" "lex_policy" {
 #   name = "LexServicePolicy"
