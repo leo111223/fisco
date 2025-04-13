@@ -227,6 +227,25 @@ resource "null_resource" "create_lex_alias" {
         --output text)
       echo "ALIAS_ID resolved: $ALIAS_ID"
       echo "{\"lex_bot_alias_id\": \"$ALIAS_ID\"}" > lex_alias.json
+
+      # Set the Lambda hook for the alias locale
+      aws lexv2-models update-bot-alias \
+        --bot-id ${self.triggers.bot_id} \
+        --bot-alias-id "$ALIAS_ID" \
+        --bot-alias-name "financeAssistantAlias" \
+        --bot-version "$VERSION" \
+        --bot-alias-locale-settings '{
+          "en_US": {
+            "enabled": true,
+            "codeHookSpecification": {
+              "lambdaCodeHook": {
+                "lambdaARN": "'"${aws_lambda_function.query_lex_handler.arn}"'",
+                "codeHookInterfaceVersion": "1.0"
+              }
+            }
+          }
+        }'
+
     EOT
     interpreter = ["bash", "-c"]
   }
