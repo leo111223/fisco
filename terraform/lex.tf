@@ -227,8 +227,6 @@ resource "null_resource" "create_lex_alias" {
         --output text)
       echo "ALIAS_ID resolved: $ALIAS_ID"
       echo "{\"lex_bot_alias_id\": \"$ALIAS_ID\"}" > lex_alias.json
-      ls -la
-        cat lex_alias.json
     EOT
     interpreter = ["bash", "-c"]
   }
