@@ -34,7 +34,7 @@ resource "null_resource" "create_lex_alias" {
 
       echo "✅ Published Lex bot version: $VERSION"
 
-      sleep 5
+      sleep 10
 
       # Step 3: Create or update alias and enable locale
       aws lexv2-models create-bot-alias \
