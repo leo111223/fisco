@@ -77,32 +77,6 @@ resource "aws_lambda_function" "get_accounts_handler" {
   }
 }
 
-# lex lambda and permission
-resource "aws_lambda_function" "query_lex_handler" {
-  function_name = "query_lex_handler"
-  filename      = "query_lex.zip"          # replace with your zip file
-  handler       = "query_lex.lambda_handler"
-  runtime       = "python3.9"
-  role          = aws_iam_role.lambda_exec.arn
-  timeout       = 30
- environment {
-  variables = {
-    LEX_BOT_ID       = aws_lexv2models_bot.finance_assistant.id
-    LEX_BOT_ALIAS_ID = data.external.lex_alias_id.result.lex_bot_alias_id
-  }
-  }
-  depends_on = [
-    null_resource.create_lex_alias
-  ]
-}
-
-resource "aws_lambda_permission" "allow_lex_invoke_lambda" {
-  statement_id  = "AllowLexInvokeLambda"
-  action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.query_lex_handler.function_name
-  principal     = "lexv2.amazonaws.com"
-  source_arn    = "arn:aws:execute-api:us-east-1:${data.aws_caller_identity.current.account_id}:${aws_api_gateway_rest_api.finance_api.id}/*/POST/query_lex"
-}
 
 
 
