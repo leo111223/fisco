@@ -6,7 +6,7 @@ resource "null_resource" "create_lex_alias" {
   provisioner "local-exec" {
     when    = create
     command = <<EOT
-      set -ex
+      set -x
 
       # Step 1: Build the DRAFT locale (if not already built)
       aws lexv2-models build-bot-locale \
@@ -59,8 +59,10 @@ resource "null_resource" "create_lex_alias" {
         --bot-id ${self.triggers.bot_id} \
         --query "botAliasSummaries[?botAliasName=='financeAssistantAlias'].botAliasId" \
         --output text)
-
+      echo "ALIAS_ID resolved: $ALIAS_ID"
       echo "{\"lex_bot_alias_id\": \"$ALIAS_ID\"}" > lex_alias.json
+      ls -la
+        cat lex_alias.json
     EOT
     interpreter = ["bash", "-c"]
   }
