@@ -57,7 +57,10 @@ jobs:
         if: github.event.inputs.action == 'apply' || github.ref == 'refs/heads/main'
         run: terraform apply -auto-approve tfplan
         working-directory: terraform
- 
+      
+      - name: Debug lex_alias.json
+        run: cat lex_alias.json
+        
       - name: Get Terraform outputs
         run: |
             RAW_URL=$(terraform output -raw api_gateway_url | tr -d '\n\"')
