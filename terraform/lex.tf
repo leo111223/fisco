@@ -228,7 +228,35 @@ resource "null_resource" "create_lex_alias" {
       echo "ALIAS_ID resolved: $ALIAS_ID"
       echo "{\"lex_bot_alias_id\": \"$ALIAS_ID\"}" > lex_alias.json
 
-      # Set the Lambda hook for the alias locale
+    EOT
+    interpreter = ["bash", "-c"]
+  }
+
+  depends_on = [
+    aws_lexv2models_bot_locale.english_locale
+  ]
+}
+
+resource "null_resource" "attach_lambda_hook" {
+  triggers = {
+    bot_id     = aws_lexv2models_bot.finance_assistant.id
+    lambda_arn = aws_lambda_function.query_lex_handler.arn
+  }
+
+  provisioner "local-exec" {
+    command = <<EOT
+      set -ex
+
+      ALIAS_ID=$(aws lexv2-models list-bot-aliases \
+        --bot-id ${self.triggers.bot_id} \
+        --query "botAliasSummaries[?botAliasName=='financeAssistantAlias'].botAliasId" \
+        --output text)
+
+      VERSION=$(aws lexv2-models list-bot-aliases \
+        --bot-id ${self.triggers.bot_id} \
+        --query "botAliasSummaries[?botAliasName=='financeAssistantAlias'].botVersion" \
+        --output text)
+
       aws lexv2-models update-bot-alias \
         --bot-id ${self.triggers.bot_id} \
         --bot-alias-id "$ALIAS_ID" \
@@ -239,80 +267,20 @@ resource "null_resource" "create_lex_alias" {
             "enabled": true,
             "codeHookSpecification": {
               "lambdaCodeHook": {
-                 "lambdaARN": "${aws_lambda_function.query_lex_handler.arn}",
+                "lambdaARN": "${self.triggers.lambda_arn}",
                 "codeHookInterfaceVersion": "1.0"
               }
             }
           }
         }'
 
+      echo "✅ Attached Lambda to Lex alias locale"
     EOT
     interpreter = ["bash", "-c"]
   }
 
   depends_on = [
-    aws_lexv2models_bot_locale.english_locale
+    null_resource.create_lex_alias,
+    aws_lambda_function.query_lex_handler
   ]
 }
-
-# resource "null_resource" "create_lex_alias" {
-#   triggers = {
-#     bot_id = aws_lexv2models_bot.finance_assistant.id
-#   }
-
-#   provisioner "local-exec" {
-#     when    = create
-#     command = <<EOT
-#       set -ex
-
-#       VERSION=$(aws lexv2-models create-bot-version \
-#         --bot-id ${self.triggers.bot_id} \
-#         --bot-version-locale-specification '{"en_US":{"sourceBotVersion":"DRAFT"}}' \
-#         --query 'botVersion' \
-#         --output text)
-
-#       if [ -z "$VERSION" ]; then
-#         echo " Failed to retrieve bot version."
-#         exit 1
-#       fi
-
-#       echo " Published Lex bot version: $VERSION"
-
-#       sleep 10
-
-#       aws lexv2-models create-bot-alias \
-#         --bot-id ${self.triggers.bot_id} \
-#         --bot-alias-name "financeAssistantAlias" \
-#         --bot-version "$VERSION" \
-#         --bot-alias-locale-settings '{"en_US":{"enabled":true}}'
-
-#       echo " Lex alias created for version $VERSION"
-#     EOT
-#     interpreter = ["bash", "-c"]
-#   }
-
-#   provisioner "local-exec" {
-#     when    = destroy
-#     command = <<EOT
-#       echo "🔄 Looking up alias ID for deletion..."
-
-#       ALIAS_ID=$(aws lexv2-models list-bot-aliases \
-#         --bot-id ${self.triggers.bot_id} \
-#         --query "botAliasSummaries[?botAliasName=='financeAssistantAlias'].botAliasId" \
-#         --output text)
-
-#       if [ -z "$ALIAS_ID" ]; then
-#         echo " Alias not found, nothing to delete."
-#         exit 0
-#       fi
-
-#       echo " Deleting Lex alias ID $ALIAS_ID"
-#       aws lexv2-models delete-bot-alias \
-#         --bot-id ${self.triggers.bot_id} \
-#         --bot-alias-id $ALIAS_ID
-#     EOT
-#     interpreter = ["bash", "-c"]
-#   }
-
-#   depends_on = [aws_lexv2models_bot_locale.english_locale]
-# }

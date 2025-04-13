@@ -61,11 +61,6 @@ jobs:
         run: terraform apply -auto-approve -var-file="terraform.tfvars"
         working-directory: terraform
 
-      - name: Export Lambda ARN to ENV
-        run: echo "LAMBDA_ARN=$(terraform output -raw query_lex_handler_arn)" >> $GITHUB_ENV
-      
-      
-
       - name: Get Terraform outputs
         run: |
             RAW_URL=$(terraform output -raw api_gateway_url | tr -d '\n\"')
