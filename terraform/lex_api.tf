@@ -33,6 +33,7 @@ resource "aws_api_gateway_method_response" "query_lex_post_response" {
     "method.response.header.Access-Control-Allow-Methods" = true
     "method.response.header.Access-Control-Allow-Origin"  = true
   }
+  depends_on = [ aws_api_gateway_method.query_lex_post ]
 }
 
 resource "aws_api_gateway_integration_response" "query_lex_post_integration_response" {
@@ -85,6 +86,7 @@ resource "aws_api_gateway_method_response" "query_lex_options_response" {
     "method.response.header.Access-Control-Allow-Methods" = true
     "method.response.header.Access-Control-Allow-Origin"  = true
   }
+  depends_on = [ aws_api_gateway_method.query_lex_options ]
 }
 
 resource "aws_api_gateway_integration_response" "query_lex_options_integration_response" {
