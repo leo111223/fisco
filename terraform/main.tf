@@ -18,11 +18,6 @@ provider "aws" {
   region = var.aws_region
 }
 
-# S3 for receipts
-resource "aws_s3_bucket" "receipt_bucket" {
-  bucket         = "fisc-ai-receipts"
-  force_destroy  = true
-}
 
 # # IAM for Amplify
 # data "aws_iam_role" "amplify_role" {
@@ -171,6 +166,12 @@ resource "aws_dynamodb_table" "accounts" {
     name = "account_id"
     type = "S"
   }
+}
+
+# S3 for receipts
+resource "aws_s3_bucket" "receipt_bucket" {
+  bucket         = "fisc-ai-receipts"
+  force_destroy  = true
 }
 
 
