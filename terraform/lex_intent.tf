@@ -42,7 +42,7 @@ resource "aws_lexv2models_intent" "greeting_intent" {
 }
 
 resource "aws_lexv2models_intent" "goodbye_intent" {
-  bot_id      = aws_lexv2models_bot.finance_assistant.intent_id
+  bot_id      = aws_lexv2models_bot.finance_assistant.id
   bot_version = aws_lexv2models_bot_locale.english_locale.bot_version
   name        = "GoodbyeIntent"
   locale_id   = aws_lexv2models_bot_locale.english_locale.locale_id
