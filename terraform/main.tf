@@ -170,7 +170,7 @@ resource "aws_dynamodb_table" "accounts" {
 
 # S3 for receipts
 resource "aws_s3_bucket" "fisc_ai_receipt_bucket" {
-  bucket         = "fisc-ai-receipts-123"
+  bucket         = "fisc-ai-receipts"
   force_destroy  = true
 
   lifecycle {
