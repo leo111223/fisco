@@ -134,7 +134,7 @@ resource "aws_amplify_branch" "main_branch" {
 }
 
 resource "aws_dynamodb_table" "transactions" {
-  name         = "transactions"
+  name         = "Transactions"
   billing_mode = "PAY_PER_REQUEST"
   hash_key     = "transaction_id"
 
