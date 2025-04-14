@@ -140,7 +140,10 @@ resource "aws_lexv2models_slot" "number_of_transactions" {
   bot_id       = aws_lexv2models_bot.finance_assistant.id
   bot_version  = "DRAFT"
   locale_id    = "en_US"
-  intent_id    = aws_lexv2models_intent.get_recent_transactions.id
+  intent_id    = aws_lexv2models_intent.get_recent_transactions.intent_id
+  //aws_lexv2models_intent.get_recent_transactions.id
+  
+  
   slot_type_id = aws_lexv2models_slot_type.transaction_count_type.slot_type_id
   value_elicitation_setting {
     slot_constraint = "Optional"
