@@ -3,7 +3,7 @@ import './ChatWidget.css';
 
 // You can store this in an environment variable or config file
 
-const API_ENDPOINT = 'https://7o81y9tcsa.execute-api.us-east-1.amazonaws.com/dev/query_lex';
+const API_ENDPOINT = '"https://90yjfojlqc.execute-api.us-east-1.amazonaws.com/prod"';
 
 const ChatWidget = () => {
   const [isOpen, setIsOpen] = useState(false);

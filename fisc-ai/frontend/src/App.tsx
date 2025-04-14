@@ -24,7 +24,7 @@ import { usePlaidLink } from "react-plaid-link";
 import LoadingScreen from './Components/LoadingScreen';
 import FiscAILogo from './assets/FiscAI.jpeg';
 Amplify.configure(awsconfig);
-export const API_BASE_URL = "https://7o81y9tcsa.execute-api.us-east-1.amazonaws.com/dev"; // currently functional API base URL
+export const API_BASE_URL = "https://90yjfojlqc.execute-api.us-east-1.amazonaws.com/prod"; // currently functional API base URL
 
 const App = ({ signOut, user }: WithAuthenticatorProps) => {
   const { linkSuccess, isPaymentInitiation, itemId, dispatch } =
