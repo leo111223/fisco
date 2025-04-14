@@ -51,7 +51,7 @@ const App = ({ signOut, user }: WithAuthenticatorProps) => {
       console.log("🔄 Populating transactions from Plaid...");
       
       const plaidResponse = await fetch(
-        `${API_BASE_URL}/create_transaction?access_token=${token}&user_id=${user?.username}`,
+        `${API_BASE_URL}/transactions?access_token=${token}&user_id=${user?.username}`,
         {
           method: 'POST',
           headers: {
@@ -88,7 +88,7 @@ const App = ({ signOut, user }: WithAuthenticatorProps) => {
       
       // Step 1: Generate new access token
       console.log("Step 1: Generating new access token...");
-      const accessTokenResponse = await fetch(`${API_BASE_URL}/create_public_token`, {
+      const accessTokenResponse = await fetch(`${API_BASE_URL}/access_token`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -117,7 +117,7 @@ const App = ({ signOut, user }: WithAuthenticatorProps) => {
 
       // Step 3: Generate new link token
       console.log("Step 3: Generating new link token...");
-      const linkTokenResponse = await fetch(`${API_BASE_URL}/create_link_token`, {
+      const linkTokenResponse = await fetch(`${API_BASE_URL}/linked_token`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
