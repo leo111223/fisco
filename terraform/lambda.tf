@@ -98,7 +98,7 @@ resource "aws_lambda_function" "fetch_transactions_handler" {
 # Textract Receipt Lambda
 resource "aws_lambda_function" "textract_receipt_handler" {
   function_name = "textract_receipt_handler"
-  filename      = "textract_receipt.zip"  # Ensure this is the zipped deployment package
+  filename      = "textract.zip"  # Ensure this is the zipped deployment package
   handler       = "textract_receipt.lambda_handler"  # Update with the handler function in your script
   runtime       = "python3.9"
   role          = aws_iam_policy.lambda_lex_policy.arn
