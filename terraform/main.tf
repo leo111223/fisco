@@ -133,7 +133,6 @@ resource "aws_amplify_branch" "main_branch" {
   }
 }
 
-# DynamoDB
 resource "aws_dynamodb_table" "transactions" {
   name         = "transactions"
   billing_mode = "PAY_PER_REQUEST"
@@ -142,6 +141,17 @@ resource "aws_dynamodb_table" "transactions" {
   attribute {
     name = "transaction_id"
     type = "S"
+  }
+
+  attribute {
+    name = "user_id"
+    type = "S"
+  }
+
+  global_secondary_index {
+    name               = "user_id-index"
+    hash_key           = "user_id"
+    projection_type    = "ALL"
   }
 }
 
