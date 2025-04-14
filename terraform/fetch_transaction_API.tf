@@ -33,7 +33,7 @@ resource "aws_api_gateway_method_response" "fetch_transactions_options_response"
     "method.response.header.Access-Control-Allow-Methods" = true,
     "method.response.header.Access-Control-Allow-Origin"  = true
   }
-  depends_on = [ aws_api_gateway_method.fetch_transactions_options ] ###
+  # depends_on = [ aws_api_gateway_method.fetch_transactions_options ] 
 }
 
 resource "aws_api_gateway_integration_response" "fetch_transactions_options_integration_response" {
@@ -73,7 +73,7 @@ resource "aws_api_gateway_method_response" "fetch_transactions_get_response" {
   http_method = "GET"
   status_code = "200"
 
-  depends_on = [ aws_api_gateway_method.fetch_transactions_get ]
+  # depends_on = [ aws_api_gateway_method.fetch_transactions_get ]
 }
 
 resource "aws_api_gateway_integration_response" "fetch_transactions_get_integration_response" {
@@ -92,6 +92,6 @@ resource "aws_lambda_permission" "api_gateway_fetch_transactions" {
   principal     = "apigateway.amazonaws.com"
   source_arn    = "${aws_api_gateway_rest_api.finance_api.execution_arn}/*/*/fetch_transactions_dynamo"
 
-  depends_on = [aws_lambda_function.fetch_transactions_handler]
+  # depends_on = [aws_lambda_function.fetch_transactions_handler]
 
 }
