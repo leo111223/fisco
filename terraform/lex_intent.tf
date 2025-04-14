@@ -91,7 +91,7 @@ resource "aws_lexv2models_intent" "get_recent_transactions" {
   name        = "GetRecentTransactions"
   description = "Returns the user's most recent transactions"
 
-  bot_id      = aws_lexv2models_bot.finance_tracker_bot.id
+  bot_id      = aws_lexv2models_bot.finance_assistant.id
   bot_version = "DRAFT"
   locale_id   = "en_US"
 
@@ -127,17 +127,17 @@ resource "aws_lexv2models_intent" "get_recent_transactions" {
   }
 
   # This part links the slot to the intent
-  slot_priority {
-    priority = 1
-    slot_id  = aws_lexv2models_slot.number_of_transactions.slot_id
-  }
+  # slot_priority {
+  #   priority = 1
+  #   slot_id  = aws_lexv2models_slot.number_of_transactions.slot_id
+  # }
 }
 
 
 
 resource "aws_lexv2models_slot" "number_of_transactions" {
   name         = "NumberOfTransactions"
-  bot_id       = aws_lexv2models_bot.finance_tracker_bot.id
+  bot_id       = aws_lexv2models_bot.finance_assistant.id
   bot_version  = "DRAFT"
   locale_id    = "en_US"
   intent_id    = aws_lexv2models_intent.get_recent_transactions.id
