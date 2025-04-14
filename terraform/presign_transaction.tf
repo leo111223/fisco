@@ -77,6 +77,7 @@ resource "aws_api_gateway_integration_response" "pre_signed_url_post_integration
   resource_id = aws_api_gateway_resource.pre_signed_url.id
   http_method = "POST"
   status_code = "200"
+  
   depends_on = [aws_api_gateway_integration.pre_signed_url_post_integration]
 }
 

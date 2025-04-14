@@ -46,6 +46,8 @@ resource "aws_api_gateway_integration_response" "fetch_transactions_options_inte
     "method.response.header.Access-Control-Allow-Methods" = "'GET,OPTIONS'",
     "method.response.header.Access-Control-Allow-Origin"  = "'*'"
   }
+
+  depends_on = [aws_api_gateway_integration.fetch_transactions_options_integration]
 }
 
 resource "aws_api_gateway_method" "fetch_transactions_get" {
@@ -76,6 +78,8 @@ resource "aws_api_gateway_integration_response" "fetch_transactions_get_integrat
   resource_id = aws_api_gateway_resource.fetch_transactions_dynamo.id
   http_method = "GET"
   status_code = "200"
+
+  depends_on = [aws_api_gateway_integration.fetch_transactions_get_integration]
 }
 
 resource "aws_lambda_permission" "api_gateway_fetch_transactions" {
