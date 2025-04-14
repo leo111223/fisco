@@ -101,7 +101,8 @@ resource "aws_lambda_function" "textract_receipt_handler" {
   filename      = "textract.zip"  # Ensure this is the zipped deployment package
   handler       = "textract_receipt.lambda_handler"  # Update with the handler function in your script
   runtime       = "python3.9"
-  role          = aws_iam_policy.lambda_lex_policy.arn
+  role          = aws_iam_role.textract_lambda_role.arn
+  
   timeout       = 30
 
   environment {
