@@ -1,4 +1,4 @@
-import { Table, TableHead, TableRow, TableCell, TableBody } from '@aws-amplify/ui-react';
+import { useState } from 'react';
 import Institution from './Institution';
 import './Institutions.css';
 
@@ -20,31 +20,29 @@ export default function Institutions({ institutions = [] }: InstitutionsProps) {
   
   return (
     <div className="institutions-container">
-      <h2>Connected Banks</h2>
-      <Table highlightOnHover={true} variation="striped">
-        <TableHead>
-          <TableRow>
-            <TableCell as="th">Institution</TableCell>
-            <TableCell as="th">Status</TableCell>
-            <TableCell as="th">Products</TableCell>
-            <TableCell as="th">Actions</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {institutions.length ? (
-            institutions.map((institution) => (
-              <Institution 
-                key={`institution-${institution.institution_id}`}
-                institution={institution}
-              />
-            ))
-          ) : (
-            <TableRow>
-              <TableCell colSpan={4}>No institutions connected</TableCell>
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
+      <div className="institutions-header">
+        <h2 className="institutions-title">Connected Banks</h2>
+      </div>
+      <div className="institutions-grid">
+        {institutions.length ? (
+          institutions.map((institution) => (
+            <Institution 
+              key={`institution-${institution.institution_id}`}
+              institution={institution}
+            />
+          ))
+        ) : (
+          <div className="institution-card">
+            <div className="institution-header">
+              <div className="institution-logo">🏦</div>
+              <div>
+                <h3 className="institution-name">No Banks Connected</h3>
+                <span className="status-badge">Connect your first bank to get started</span>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 } 

@@ -20,7 +20,7 @@ provider "aws" {
 
 # S3 for receipts
 resource "aws_s3_bucket" "receipt_bucket" {
-  bucket         = "fiscai-frontend-receipts"
+  bucket         = "fisc-ai-receipts"
   force_destroy  = true
 }
 
@@ -157,7 +157,7 @@ resource "aws_dynamodb_table" "transactions" {
 
 # DynamoDB Table for Accounts
 resource "aws_dynamodb_table" "accounts" {
-  name         = "fiscai_accounts"  # Name of the accounts table
+  name         = "Accounts"  # Name of the accounts table
   billing_mode = "PAY_PER_REQUEST"
   hash_key     = "user_id"
   range_key    = "account_id"

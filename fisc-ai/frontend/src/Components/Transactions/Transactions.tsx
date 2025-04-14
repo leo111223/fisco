@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { Table, TableHead, TableRow, TableCell, TableBody } from '@aws-amplify/ui-react';
+import styles from './Transactions.module.css';
 
 interface Counterparty {
   name: string;
@@ -33,9 +34,16 @@ interface Transaction {
 
 interface TransactionsProps {
   transactions: Transaction[];
+  accessToken: string;
+  API_BASE_URL: string;
+  userId: string;
 }
 
-const Transactions: React.FC<TransactionsProps> = ({ transactions = [] }) => {
+const Transactions = ({ accessToken, API_BASE_URL, userId }: TransactionsProps) => {
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
+
   const formatAmount = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -52,9 +60,42 @@ const Transactions: React.FC<TransactionsProps> = ({ transactions = [] }) => {
     });
   };
 
+  const handleRefresh = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      // Implement the refresh logic here
+    } catch (error) {
+      console.error('Error refreshing transactions:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
   return (
-    <div className="transactions-container">
-      <h2>Recent Transactions</h2>
+    <div className={styles['transactions-container']}>
+      <div className={styles['transactions-header']}>
+        <div className={styles['header-left']}>
+          <h2 className={styles['header-title']}>Your Transactions</h2>
+          <span className={styles['transaction-count']}>
+            ({transactions.length} total)
+          </span>
+        </div>
+        <div className={styles['header-actions']}>
+          <button 
+            onClick={handleRefresh}
+            className={styles['action-button']}
+            disabled={isLoading}
+          >
+            Refresh
+          </button>
+          <button 
+            onClick={() => setIsUploadModalOpen(true)}
+            className={`${styles['action-button']} ${styles['primary']}`}
+          >
+            Upload Receipt
+          </button>
+        </div>
+      </div>
       <Table highlightOnHover={true} variation="striped">
         <TableHead>
           <TableRow>

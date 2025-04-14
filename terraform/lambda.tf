@@ -78,31 +78,60 @@ resource "aws_lambda_function" "get_accounts_handler" {
 }
 
 
+# Fetch Transactions Lambda
+resource "aws_lambda_function" "fetch_transactions_handler" {
+  function_name = "fetch_transactions_handler"
+  filename      = "fetch_transactions.zip"  # Ensure this is the zipped deployment package
+  handler       = "fetch_transactions.lambda_handler"  # Update with the handler function in your script
+  runtime       = "python3.9"
+  role          = aws_iam_role.fetch_transaction_lambda_role.arn
+  timeout       = 30
 
-
-# Lambda function
-# NEEDS FOLLOWING:
-# Textract DetectDocumentText permission
-# S3 GetObject and PutObject permissions
-# Trigger on S3 ObjectCreated
-resource "aws_lambda_function" "textract_lambda" {
-  function_name    = "textractProcessor"
-  runtime         = "python3.9"
-  handler         = "lambda_function.lambda_handler"
-  role            = aws_iam_role.lambda_exec.arn
-  timeout         = 30
-  filename        = "textract.zip"
   environment {
     variables = {
-      DEST_BUCKET = "fiscai-textract-output"
+      STAGE = "prod"
+      DYNAMODB_TABLE = aws_dynamodb_table.transactions.name
+    }
+  }
+}
+
+# Textract Receipt Lambda
+resource "aws_lambda_function" "textract_receipt_handler" {
+  function_name = "textract_receipt_handler"
+  filename      = "textract_receipt.zip"  # Ensure this is the zipped deployment package
+  handler       = "textract_receipt.lambda_handler"  # Update with the handler function in your script
+  runtime       = "python3.9"
+  role          = aws_iam_policy.lambda_lex_policy.arn
+  timeout       = 30
+
+  environment {
+    variables = {
+      STAGE = "prod"
+      S3_BUCKET = aws_s3_bucket.receipt_bucket.bucket
+    }
+  }
+}
+
+# Fetch Presigned URL Lambda
+resource "aws_lambda_function" "fetch_presigned_url_handler" {
+  function_name = "fetch_presigned_url_handler"
+  filename      = "fetch_presigned_url.zip"  
+  handler       = "fetch_presigned_url.lambda_handler"  
+  runtime       = "python3.9"
+  role          = aws_iam_role.presign_transaction_lambda_role.arn
+  timeout       = 30
+
+  environment {
+    variables = {
+      STAGE = "prod"
+      S3_BUCKET = aws_s3_bucket.receipt_bucket.bucket  
     }
   }
 }
 
 
 
-
-# Lambda Role
+# Lambda Role for access token, create account, linked token.
 resource "aws_iam_role" "lambda_exec" {
   name = "lambda_exec_role"
 
@@ -117,8 +146,6 @@ resource "aws_iam_role" "lambda_exec" {
     }]
   })
 }
-
-
 
 # Lambda Policy
 resource "aws_iam_policy_attachment" "lambda_execution" {
@@ -136,4 +163,86 @@ resource "aws_iam_policy_attachment" "lambda_dynamodb_full_access" {
 resource "aws_iam_role_policy_attachment" "lex_runtime_access" {
   role       = aws_iam_role.lambda_exec.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonLexFullAccess"
+}
+
+# IAM Role for presign_transaction_lambda
+resource "aws_iam_role" "presign_transaction_lambda_role" {
+  name = "presign_transaction_lambda_role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [{
+      Effect = "Allow",
+      Principal = {
+        Service = "lambda.amazonaws.com"
+      },
+      Action = "sts:AssumeRole"
+    }]
+  })
+}
+
+# Attach full S3 access
+resource "aws_iam_role_policy_attachment" "presign_transaction_lambda_s3_full_access" {
+  role       = aws_iam_role.presign_transaction_lambda_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
+}
+
+
+# IAM Role for textract_lambda
+resource "aws_iam_role" "textract_lambda_role" {
+  name = "textract_lambda_role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [{
+      Effect = "Allow",
+      Principal = {
+        Service = "lambda.amazonaws.com"
+      },
+      Action = "sts:AssumeRole"
+    }]
+  })
+}
+
+# Attach managed policies to textract_lambda_role
+resource "aws_iam_role_policy_attachment" "textract_lambda_s3" {
+  role       = aws_iam_role.textract_lambda_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
+}
+
+resource "aws_iam_role_policy_attachment" "textract_lambda_bedrock" {
+  role       = aws_iam_role.textract_lambda_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonBedrockFullAccess"
+}
+
+resource "aws_iam_role_policy_attachment" "textract_lambda_dynamodb" {
+  role       = aws_iam_role.textract_lambda_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess"
+}
+
+resource "aws_iam_role_policy_attachment" "textract_lambda_textract" {
+  role       = aws_iam_role.textract_lambda_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonTextractFullAccess"
+}
+
+# IAM Role for fetch_transaction_lambda
+resource "aws_iam_role" "fetch_transaction_lambda_role" {
+  name = "fetch_transaction_lambda_role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [{
+      Effect = "Allow",
+      Principal = {
+        Service = "lambda.amazonaws.com"
+      },
+      Action = "sts:AssumeRole"
+    }]
+  })
+}
+
+# Attach full DynamoDB access
+resource "aws_iam_role_policy_attachment" "fetch_transaction_lambda_dynamodb_full_access" {
+  role       = aws_iam_role.fetch_transaction_lambda_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess"
 }
