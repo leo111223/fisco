@@ -33,6 +33,8 @@ resource "aws_api_gateway_method_response" "pre_signed_url_options_response" {
     "method.response.header.Access-Control-Allow-Methods" = true,
     "method.response.header.Access-Control-Allow-Origin"  = true
   }
+
+  depends_on = [ aws_api_gateway_method.pre_signed_url_options ]
 }
 
 resource "aws_api_gateway_integration_response" "pre_signed_url_options_integration_response" {
@@ -72,6 +74,8 @@ resource "aws_api_gateway_method_response" "pre_signed_url_post_response" {
   resource_id = aws_api_gateway_resource.pre_signed_url.id
   http_method = "POST"
   status_code = "200"
+
+  depends_on = [ aws_api_gateway_method.pre_signed_url_post ]
 }
 
 resource "aws_api_gateway_integration_response" "pre_signed_url_post_integration_response" {

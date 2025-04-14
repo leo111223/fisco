@@ -34,6 +34,7 @@ resource "aws_api_gateway_method_response" "textract_receipt_options_response" {
     "method.response.header.Access-Control-Allow-Methods" = true,
     "method.response.header.Access-Control-Allow-Origin"  = true
   }
+  depends_on = [ aws_api_gateway_method.textract_receipt_options ]
 }
 
 resource "aws_api_gateway_integration_response" "textract_receipt_options_integration_response" {
@@ -47,6 +48,9 @@ resource "aws_api_gateway_integration_response" "textract_receipt_options_integr
     "method.response.header.Access-Control-Allow-Methods" = "'POST,OPTIONS'",
     "method.response.header.Access-Control-Allow-Origin"  = "'*'"
   }
+  depends_on = [
+    aws_api_gateway_integration.textract_receipt_options_integration
+  ]
 }
 
 #post method
@@ -71,6 +75,8 @@ resource "aws_api_gateway_method_response" "textract_receipt_post_response" {
   resource_id = aws_api_gateway_resource.textract_receipt.id
   http_method = "POST"
   status_code = "200"
+
+  depends_on = [ aws_api_gateway_method.textract_receipt_post ]
 }
 
 resource "aws_api_gateway_integration_response" "textract_receipt_post_integration_response" {
