@@ -107,7 +107,7 @@ resource "aws_lambda_function" "textract_receipt_handler" {
   environment {
     variables = {
       STAGE = "prod"
-      S3_BUCKET = aws_s3_bucket.receipt_bucket.bucket
+      S3_BUCKET = aws_s3_bucket.fisc_ai_receipt_bucket.bucket
     }
   }
 }
@@ -124,7 +124,7 @@ resource "aws_lambda_function" "fetch_presigned_url_handler" {
   environment {
     variables = {
       STAGE = "prod"
-      S3_BUCKET = aws_s3_bucket.receipt_bucket.bucket  
+      S3_BUCKET = aws_s3_bucket.fisc_ai_receipt_bucket.bucket  
     }
   }
 }
