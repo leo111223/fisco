@@ -95,23 +95,24 @@ resource "aws_lambda_function" "fetch_transactions_handler" {
   }
 }
 
+
 # Textract Receipt Lambda
 resource "aws_lambda_function" "textract_receipt_handler" {
   function_name = "textract_receipt_handler"
-  filename      = "textract.zip"  # Ensure this is the zipped deployment package
-  handler       = "textract_receipt.lambda_handler"  # Update with the handler function in your script
+  filename      = "textract_receipt.zip"
+  handler       = "textract_receipt.lambda_handler"
   runtime       = "python3.9"
-  role          = aws_iam_role.textract_lambda_role.arn
-  
+  role          = aws_iam_role.textract_lambda_role.arn  # ✅ Must reference a ROLE, not a policy
   timeout       = 30
 
   environment {
     variables = {
-      STAGE = "prod"
-      S3_BUCKET = aws_s3_bucket.fisc_ai_receipt_bucket.bucket
+      STAGE     = "prod"
+      S3_BUCKET = aws_s3_bucket.receipt_bucket.bucket
     }
   }
 }
+
 
 # Fetch Presigned URL Lambda
 resource "aws_lambda_function" "fetch_presigned_url_handler" {
