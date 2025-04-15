@@ -219,7 +219,7 @@ resource "aws_lambda_permission" "apigw" {
 resource "aws_api_gateway_resource" "linked_token" {
   rest_api_id = aws_api_gateway_rest_api.finance_api.id
   parent_id   = aws_api_gateway_rest_api.finance_api.root_resource_id
-  path_part   = "linked_token"
+  path_part   = "create_link_token"
 }
 
 resource "aws_api_gateway_method" "linked_token_post" {
@@ -350,7 +350,7 @@ resource "aws_api_gateway_integration_response" "linked_token_options_integratio
 resource "aws_api_gateway_resource" "access_token" {
   rest_api_id = aws_api_gateway_rest_api.finance_api.id
   parent_id   = aws_api_gateway_rest_api.finance_api.root_resource_id
-  path_part   = "access_token"
+  path_part   = "create_public_token"
 }
 
 resource "aws_api_gateway_method" "access_token_post" {

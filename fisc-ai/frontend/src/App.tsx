@@ -24,7 +24,7 @@ import { usePlaidLink } from "react-plaid-link";
 import LoadingScreen from './Components/LoadingScreen';
 import FiscAILogo from './assets/FiscAI.jpeg';
 Amplify.configure(awsconfig);
-export const API_BASE_URL = "https://orm1g6w1o4.execute-api.us-east-1.amazonaws.com/prod"; // currently functional API base URL
+export const API_BASE_URL = "https://orm1g6w1o4.execute-api.us-east-1.amazonaws.com/prod/"; // currently functional API base URL
 
 const App = ({ signOut, user }: WithAuthenticatorProps) => {
   const { linkSuccess, isPaymentInitiation, itemId, dispatch } =
@@ -88,7 +88,7 @@ const App = ({ signOut, user }: WithAuthenticatorProps) => {
       
       // Step 1: Generate new access token
       console.log("Step 1: Generating new access token...");
-      const accessTokenResponse = await fetch(`${API_BASE_URL}/access_token`, {
+      const accessTokenResponse = await fetch(`${API_BASE_URL}/create_public_token`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -117,7 +117,7 @@ const App = ({ signOut, user }: WithAuthenticatorProps) => {
 
       // Step 3: Generate new link token
       console.log("Step 3: Generating new link token...");
-      const linkTokenResponse = await fetch(`${API_BASE_URL}/linked_token`, {
+      const linkTokenResponse = await fetch(`${API_BASE_URL}/create_link_token`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
