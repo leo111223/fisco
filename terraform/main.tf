@@ -170,7 +170,7 @@ resource "aws_dynamodb_table" "accounts" {
 
 # S3 for receipts
 resource "aws_s3_bucket" "receipt_bucket" {
-  bucket         = "receipt-bucket"
+  bucket         = "leo-receipt"
   force_destroy  = true
 }
 # S3 bucket policy
