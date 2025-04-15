@@ -59,53 +59,53 @@ resource "aws_lambda_function" "get_accounts_handler" {
   
 }
 
-# transaction handler
-resource "aws_lambda_function" "transaction_handler" {
-  function_name = "transaction_handle"
-  //role          = aws_iam_role.fetch_transaction_lambda_role.arn
-  role          = "arn:aws:iam::864981748263:role/fetch_transaction_lambda_role"
-  runtime       = "python3.9"
-  timeout       = 30
-  handler       = "create_transactions.lambda_handler"
-  filename      = "transaction.zip"
+# # transaction handler
+# resource "aws_lambda_function" "transaction_handler" {
+#   function_name = "transaction_handle"
+#   //role          = aws_iam_role.fetch_transaction_lambda_role.arn
+#   role          = "arn:aws:iam::864981748263:role/fetch_transaction_lambda_role"
+#   runtime       = "python3.9"
+#   timeout       = 30
+#   handler       = "create_transactions.lambda_handler"
+#   filename      = "transaction.zip"
 
-  environment {
-    variables = {
-      DYNAMODB_TABLE     = aws_dynamodb_table.transactions.name
-      PLAID_CLIENT_ID    = var.plaid_client_id
-      PLAID_SECRET       = var.plaid_secret
-      PLAID_ENVIRONMENT  = var.plaid_environment
-    }
-  }
-  depends_on = [
-    aws_iam_role.fetch_transaction_lambda_role,
-    aws_iam_role_policy_attachment.fetch_transaction_lambda_dynamodb_full_access,
-    aws_iam_role_policy_attachment.fetch_transaction_lambda_logging
-  ]
-}
+#   environment {
+#     variables = {
+#       DYNAMODB_TABLE     = aws_dynamodb_table.transactions.name
+#       PLAID_CLIENT_ID    = var.plaid_client_id
+#       PLAID_SECRET       = var.plaid_secret
+#       PLAID_ENVIRONMENT  = var.plaid_environment
+#     }
+#   }
+#   depends_on = [
+#     aws_iam_role.fetch_transaction_lambda_role,
+#     aws_iam_role_policy_attachment.fetch_transaction_lambda_dynamodb_full_access,
+#     aws_iam_role_policy_attachment.fetch_transaction_lambda_logging
+#   ]
+# }
 
-# Fetch Transactions Lambda
-resource "aws_lambda_function" "fetch_transactions_handler" {
-  function_name = "fetch_transactions_handler"
-  filename      = "fetch_transactions.zip"  # Ensure this is the zipped deployment package
-  handler       = "fetch_transactions.lambda_handler"  # Update with the handler function in your script
-  runtime       = "python3.9"
-  #role          = aws_iam_role.fetch_transaction_lambda_role.arn
-  role          = "arn:aws:iam::864981748263:role/fetch_transaction_lambda_role"
-  timeout       = 30
+# # Fetch Transactions Lambda
+# resource "aws_lambda_function" "fetch_transactions_handler" {
+#   function_name = "fetch_transactions_handler"
+#   filename      = "fetch_transactions.zip"  # Ensure this is the zipped deployment package
+#   handler       = "fetch_transactions.lambda_handler"  # Update with the handler function in your script
+#   runtime       = "python3.9"
+#   #role          = aws_iam_role.fetch_transaction_lambda_role.arn
+#   role          = "arn:aws:iam::864981748263:role/fetch_transaction_lambda_role"
+#   timeout       = 30
 
-  environment {
-    variables = {
-      STAGE = "prod"
-      DYNAMODB_TABLE = aws_dynamodb_table.transactions.name
-    }
-  }
-  depends_on = [
-    aws_iam_role.fetch_transaction_lambda_role,
-    aws_iam_role_policy_attachment.fetch_transaction_lambda_dynamodb_full_access,
-    aws_iam_role_policy_attachment.fetch_transaction_lambda_logging
-  ]
-}
+#   environment {
+#     variables = {
+#       STAGE = "prod"
+#       DYNAMODB_TABLE = aws_dynamodb_table.transactions.name
+#     }
+#   }
+#   depends_on = [
+#     aws_iam_role.fetch_transaction_lambda_role,
+#     aws_iam_role_policy_attachment.fetch_transaction_lambda_dynamodb_full_access,
+#     aws_iam_role_policy_attachment.fetch_transaction_lambda_logging
+#   ]
+# }
 
 
 # # Textract Receipt Lambda
@@ -257,31 +257,31 @@ resource "aws_iam_role_policy_attachment" "lex_runtime_access" {
 #   depends_on = [aws_iam_role.textract_lambda_role]
 # }
 
-#IAM Role for fetch_transaction_lambda
-resource "aws_iam_role" "fetch_transaction_lambda_role" {
-  name = "fetch_transaction_lambda_role"
+# #IAM Role for fetch_transaction_lambda
+# resource "aws_iam_role" "fetch_transaction_lambda_role" {
+#   name = "fetch_transaction_lambda_role"
 
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17",
-    Statement = [{
-      Effect = "Allow",
-      Principal = {
-        Service = "lambda.amazonaws.com"
-      },
-      Action = "sts:AssumeRole"
-    }]
-  })
-}
+#   assume_role_policy = jsonencode({
+#     Version = "2012-10-17",
+#     Statement = [{
+#       Effect = "Allow",
+#       Principal = {
+#         Service = "lambda.amazonaws.com"
+#       },
+#       Action = "sts:AssumeRole"
+#     }]
+#   })
+# }
 
-# Attach full DynamoDB access
-resource "aws_iam_role_policy_attachment" "fetch_transaction_lambda_dynamodb_full_access" {
-  role       = aws_iam_role.fetch_transaction_lambda_role.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess"
-  depends_on = [aws_iam_role.fetch_transaction_lambda_role]
-}
+# # Attach full DynamoDB access
+# resource "aws_iam_role_policy_attachment" "fetch_transaction_lambda_dynamodb_full_access" {
+#   role       = aws_iam_role.fetch_transaction_lambda_role.name
+#   policy_arn = "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess"
+#   depends_on = [aws_iam_role.fetch_transaction_lambda_role]
+# }
 
-resource "aws_iam_role_policy_attachment" "fetch_transaction_lambda_logging" {
-  role       = aws_iam_role.fetch_transaction_lambda_role.name
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-  depends_on = [aws_iam_role.fetch_transaction_lambda_role]
-}
+# resource "aws_iam_role_policy_attachment" "fetch_transaction_lambda_logging" {
+#   role       = aws_iam_role.fetch_transaction_lambda_role.name
+#   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+#   depends_on = [aws_iam_role.fetch_transaction_lambda_role]
+# }
