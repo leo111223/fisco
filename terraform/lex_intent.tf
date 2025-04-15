@@ -125,7 +125,7 @@ resource "aws_lexv2models_intent" "get_recent_transactions" {
       allow_interrupt = true
     }
   }
-
+  depends_on = [aws_lexv2models_bot_locale.english_locale]
   # This part links the slot to the intent
   # slot_priority {
   #   priority = 1
