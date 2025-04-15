@@ -26,23 +26,6 @@ resource "aws_iam_role_policy" "lex_policy" {
     }]
   })
 }
-# resource "aws_iam_role_policy" "lex_policy" {
-#   name = "LexServicePolicy"
-#   role = aws_iam_role.lex_service_role.id
-
-#   policy = jsonencode({
-#     Version = "2012-10-17"
-#     Statement = [
-#       {
-#         Effect = "Allow"
-#         Action = [
-#           "lambda:InvokeFunction"
-#         ]
-#         Resource = "*"  # You can scope this to your specific Lambda ARN for security
-#       }
-#     ]
-#   })
-# }
 
 # give lambda permission to call lex
 resource "aws_iam_policy" "lambda_lex_policy" {
@@ -82,7 +65,8 @@ resource "aws_lambda_function" "query_lex_handler" {
   }
   }
   depends_on = [
-    null_resource.create_lex_alias
+    null_resource.create_lex_alias,
+    aws_iam_role_policy_attachment.lex_runtime_access
   ]
 }
 
