@@ -186,6 +186,14 @@ resource "aws_iam_role" "presign_transaction_lambda_role" {
 resource "aws_iam_role_policy_attachment" "presign_transaction_lambda_s3_full_access" {
   role       = aws_iam_role.presign_transaction_lambda_role.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
+  depends_on = [aws_iam_role.presign_transaction_lambda_role]
+}
+
+# Attach basic logging access
+resource "aws_iam_role_policy_attachment" "presign_transaction_lambda_logging" {
+  role       = aws_iam_role.presign_transaction_lambda_role.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+  depends_on = [aws_iam_role.presign_transaction_lambda_role]
 }
 
 
@@ -209,21 +217,30 @@ resource "aws_iam_role" "textract_lambda_role" {
 resource "aws_iam_role_policy_attachment" "textract_lambda_s3" {
   role       = aws_iam_role.textract_lambda_role.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
+  depends_on = [aws_iam_role.textract_lambda_role]
 }
 
 resource "aws_iam_role_policy_attachment" "textract_lambda_bedrock" {
   role       = aws_iam_role.textract_lambda_role.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonBedrockFullAccess"
+  depends_on = [aws_iam_role.textract_lambda_role]
 }
 
 resource "aws_iam_role_policy_attachment" "textract_lambda_dynamodb" {
   role       = aws_iam_role.textract_lambda_role.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess"
+  depends_on = [aws_iam_role.textract_lambda_role]
 }
 
 resource "aws_iam_role_policy_attachment" "textract_lambda_textract" {
   role       = aws_iam_role.textract_lambda_role.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonTextractFullAccess"
+  depends_on = [aws_iam_role.textract_lambda_role]
+}
+resource "aws_iam_role_policy_attachment" "textract_lambda_logs" {
+  role       = aws_iam_role.textract_lambda_role.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+  depends_on = [aws_iam_role.textract_lambda_role]
 }
 
 # IAM Role for fetch_transaction_lambda
@@ -246,4 +263,11 @@ resource "aws_iam_role" "fetch_transaction_lambda_role" {
 resource "aws_iam_role_policy_attachment" "fetch_transaction_lambda_dynamodb_full_access" {
   role       = aws_iam_role.fetch_transaction_lambda_role.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess"
+  depends_on = [aws_iam_role.fetch_transaction_lambda_role]
+}
+
+resource "aws_iam_role_policy_attachment" "fetch_transaction_lambda_logging" {
+  role       = aws_iam_role.fetch_transaction_lambda_role.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+  depends_on = [aws_iam_role.fetch_transaction_lambda_role]
 }
