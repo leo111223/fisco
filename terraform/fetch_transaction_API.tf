@@ -97,6 +97,6 @@ resource "aws_lambda_permission" "api_gateway_fetch_transactions" {
   principal     = "apigateway.amazonaws.com"
   source_arn    = "${aws_api_gateway_rest_api.finance_api.execution_arn}/*/*/fetch_transactions_dynamo"
 
-  # depends_on = [aws_lambda_function.fetch_transactions_handler]
+  depends_on = [aws_lambda_function.fetch_transactions_handler]
 
 }
