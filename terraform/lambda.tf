@@ -77,7 +77,12 @@ resource "aws_lambda_function" "transaction_handler" {
       PLAID_ENVIRONMENT  = var.plaid_environment
     }
   }
-
+  depends_on = [
+    aws_iam_role.lambda_exec,
+    aws_iam_policy_attachment.lambda_execution,
+    aws_iam_policy_attachment.lambda_dynamodb_full_access,
+    aws_iam_role_policy_attachment.lex_runtime_access
+  ]
     
 }
 
