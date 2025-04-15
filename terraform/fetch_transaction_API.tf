@@ -72,8 +72,13 @@ resource "aws_api_gateway_method_response" "fetch_transactions_get_response" {
   resource_id = aws_api_gateway_resource.fetch_transactions_dynamo.id
   http_method = "GET"
   status_code = "200"
-
-  # depends_on = [ aws_api_gateway_method.fetch_transactions_get ]
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Headers" = true,
+    "method.response.header.Access-Control-Allow-Methods" = true,
+    "method.response.header.Access-Control-Allow-Origin"  = true,
+    "method.response.header.Access-Control-Allow-Cridentials" = true
+  }
+  depends_on = [ aws_api_gateway_method.fetch_transactions_get ]
 }
 
 resource "aws_api_gateway_integration_response" "fetch_transactions_get_integration_response" {
