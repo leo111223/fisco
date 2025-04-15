@@ -24,7 +24,7 @@ import { usePlaidLink } from "react-plaid-link";
 import LoadingScreen from './Components/LoadingScreen';
 import FiscAILogo from './assets/FiscAI.jpeg';
 Amplify.configure(awsconfig);
-export const API_BASE_URL = "https://90yjfojlqc.execute-api.us-east-1.amazonaws.com/prod"; // currently functional API base URL
+export const API_BASE_URL = "https://orm1g6w1o4.execute-api.us-east-1.amazonaws.com/prod"; // currently functional API base URL
 
 const App = ({ signOut, user }: WithAuthenticatorProps) => {
   const { linkSuccess, isPaymentInitiation, itemId, dispatch } =
@@ -51,7 +51,7 @@ const App = ({ signOut, user }: WithAuthenticatorProps) => {
       console.log("🔄 Populating transactions from Plaid...");
       
       const plaidResponse = await fetch(
-        `${API_BASE_URL}/transactions?access_token=${token}&user_id=${user?.username}`,
+        `${API_BASE_URL}/create_transaction?access_token=${token}&user_id=${user?.username}`,
         {
           method: 'POST',
           headers: {

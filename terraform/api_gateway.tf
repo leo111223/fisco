@@ -88,7 +88,7 @@ resource "aws_api_gateway_deployment" "api_deployment" {
 resource "aws_api_gateway_resource" "transactions" {
   rest_api_id = aws_api_gateway_rest_api.finance_api.id
   parent_id   = aws_api_gateway_rest_api.finance_api.root_resource_id
-  path_part   = "transactions"
+  path_part   = "create_transaction"
 }
 
 resource "aws_api_gateway_method" "transactions_post" {
