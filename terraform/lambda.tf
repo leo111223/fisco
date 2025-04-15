@@ -89,7 +89,8 @@ resource "aws_lambda_function" "fetch_transactions_handler" {
   filename      = "fetch_transactions.zip"  # Ensure this is the zipped deployment package
   handler       = "fetch_transactions.lambda_handler"  # Update with the handler function in your script
   runtime       = "python3.9"
-  role          = aws_iam_role.fetch_transaction_lambda_role.arn
+  #role          = aws_iam_role.fetch_transaction_lambda_role.arn
+  role          = "arn:aws:iam::864981748263:role/fetch_transaction_lambda_role"
   timeout       = 30
 
   environment {
