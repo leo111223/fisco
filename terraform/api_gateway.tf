@@ -207,12 +207,21 @@ resource "aws_api_gateway_integration_response" "transactions_options_integratio
   ]
 }
 
-resource "aws_lambda_permission" "apigw" {
-  statement_id  = "AllowAPIGatewayInvoke"
+
+resource "random_id" "transaction_apigw_suffix" {
+  byte_length = 4
+}
+resource "aws_lambda_permission" "transaction_apigw_permission" {
+  statement_id  = "AllowAPIGatewayInvokeTransaction-${random_id.transaction_apigw_suffix.hex}"
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.transaction_handler.function_name
   principal     = "apigateway.amazonaws.com"
   source_arn    = "${aws_api_gateway_rest_api.finance_api.execution_arn}/*/*"
+
+  depends_on = [
+    aws_lambda_function.transaction_handler,
+    aws_api_gateway_rest_api.finance_api
+  ]
 }
 
 #linked_token resource
