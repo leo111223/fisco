@@ -672,6 +672,8 @@ resource "aws_lambda_permission" "get_accounts_apigw" {
   function_name = aws_lambda_function.get_accounts_handler.function_name
   principal     = "apigateway.amazonaws.com"
   source_arn    = "${aws_api_gateway_rest_api.finance_api.execution_arn}/*/*"
+
+  depends_on = [aws_lambda_function.get_accounts_handler]
 }
 
 
