@@ -62,7 +62,7 @@ resource "aws_lambda_function" "get_accounts_handler" {
 # transaction handler
 resource "aws_lambda_function" "transaction_handler" {
   function_name = "transaction_handle"
-  role          = aws_iam_role.lambda_exec.arn
+  role          = aws_iam_role.fetch_transaction_lambda_role.arn
   runtime       = "python3.9"
   timeout       = 30
   handler       = "create_transactions.lambda_handler"
@@ -77,9 +77,9 @@ resource "aws_lambda_function" "transaction_handler" {
     }
   }
   depends_on = [
-    aws_iam_role.lambda_exec,
-    aws_iam_policy_attachment.lambda_execution,
-    aws_iam_policy_attachment.lambda_dynamodb_full_access
+    aws_iam_role.fetch_transaction_lambda_role,
+    aws_iam_role_policy_attachment.fetch_transaction_lambda_dynamodb_full_access,
+    aws_iam_role_policy_attachment.fetch_transaction_lambda_logging
   ]
 }
 
