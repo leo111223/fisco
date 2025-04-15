@@ -59,30 +59,27 @@ resource "aws_lambda_function" "get_accounts_handler" {
   
 }
 
-# # transaction handler
-# resource "aws_lambda_function" "transaction_handler" {
-#   function_name = "transaction_handle"
-#   //role          = aws_iam_role.fetch_transaction_lambda_role.arn
-#   role          = "arn:aws:iam::864981748263:role/fetch_transaction_lambda_role"
-#   runtime       = "python3.9"
-#   timeout       = 30
-#   handler       = "create_transactions.lambda_handler"
-#   filename      = "transaction.zip"
+# transaction handler
+resource "aws_lambda_function" "transaction_handler" {
+  function_name = "transaction_handle"
+  //role          = aws_iam_role.fetch_transaction_lambda_role.arn
+  role          = aws_iam_role.lambda_exec.arn
+  runtime       = "python3.9"
+  timeout       = 30
+  handler       = "create_transactions.lambda_handler"
+  filename      = "transaction.zip"
 
-#   environment {
-#     variables = {
-#       DYNAMODB_TABLE     = aws_dynamodb_table.transactions.name
-#       PLAID_CLIENT_ID    = var.plaid_client_id
-#       PLAID_SECRET       = var.plaid_secret
-#       PLAID_ENVIRONMENT  = var.plaid_environment
-#     }
-#   }
-#   depends_on = [
-#     aws_iam_role.fetch_transaction_lambda_role,
-#     aws_iam_role_policy_attachment.fetch_transaction_lambda_dynamodb_full_access,
-#     aws_iam_role_policy_attachment.fetch_transaction_lambda_logging
-#   ]
-# }
+  environment {
+    variables = {
+      DYNAMODB_TABLE     = aws_dynamodb_table.transactions.name
+      PLAID_CLIENT_ID    = var.plaid_client_id
+      PLAID_SECRET       = var.plaid_secret
+      PLAID_ENVIRONMENT  = var.plaid_environment
+    }
+  }
+
+    
+}
 
 # # Fetch Transactions Lambda
 # resource "aws_lambda_function" "fetch_transactions_handler" {
