@@ -13,11 +13,11 @@ output "s3_bucket" {
   value = aws_s3_bucket.receipt_bucket.id
 }
 
-output "apigw_arn" {
-  value = "arn:aws:execute-api:us-east-1:${data.aws_caller_identity.current.account_id}:${aws_api_gateway_rest_api.finance_api.id}/prod/POST/query_lex"
-}
+# output "apigw_arn" {
+#   value = "arn:aws:execute-api:us-east-1:${data.aws_caller_identity.current.account_id}:${aws_api_gateway_rest_api.finance_api.id}/prod/POST/query_lex"
+# }
 
 
-output "resolved_lex_alias_id" {
-  value = data.external.lex_alias_id.result.lex_bot_alias_id
-}
+# output "resolved_lex_alias_id" {
+#   value = data.external.lex_alias_id.result.lex_bot_alias_id
+# }
