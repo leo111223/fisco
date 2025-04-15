@@ -81,9 +81,9 @@ resource "aws_lambda_function" "query_lex_handler" {
     LEX_BOT_ALIAS_ID = data.external.lex_alias_id.result.lex_bot_alias_id
   }
   }
-  # depends_on = [
-  #   null_resource.create_lex_alias
-  # ]
+  depends_on = [
+    null_resource.create_lex_alias
+  ]
 }
 
 # resource "aws_lambda_permission" "allow_lex_invoke_lambda" {

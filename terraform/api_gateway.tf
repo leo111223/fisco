@@ -15,38 +15,38 @@ resource "aws_api_gateway_deployment" "api_deployment" {
     create_before_destroy = true
   }
 
-  # depends_on = [
-  #   aws_api_gateway_integration.lambda_integration,
-  #   aws_api_gateway_method.transactions_post,
+  depends_on = [
+    aws_api_gateway_integration.lambda_integration,
+    aws_api_gateway_method.transactions_post,
 
-  #   aws_api_gateway_integration.linked_token_lambda_integration,
-  #   aws_api_gateway_method.linked_token_post,
-  #   aws_api_gateway_method_response.linked_token_post_response,
-  #   aws_api_gateway_integration_response.linked_token_post_integration_response,
+    aws_api_gateway_integration.linked_token_lambda_integration,
+    aws_api_gateway_method.linked_token_post,
+    aws_api_gateway_method_response.linked_token_post_response,
+    aws_api_gateway_integration_response.linked_token_post_integration_response,
 
-  #   aws_api_gateway_integration.access_token_lambda_integration,
-  #   aws_api_gateway_method.access_token_post,
-  #   aws_api_gateway_method_response.access_token_post_response,
-  #   aws_api_gateway_integration_response.access_token_post_integration_response,
+    aws_api_gateway_integration.access_token_lambda_integration,
+    aws_api_gateway_method.access_token_post,
+    aws_api_gateway_method_response.access_token_post_response,
+    aws_api_gateway_integration_response.access_token_post_integration_response,
 
-  #   aws_api_gateway_method.linked_token_options,
-  #   aws_api_gateway_integration.linked_token_options_integration,
-  #   aws_api_gateway_method_response.linked_token_options_response,
-  #   aws_api_gateway_integration_response.linked_token_options_integration_response,
+    aws_api_gateway_method.linked_token_options,
+    aws_api_gateway_integration.linked_token_options_integration,
+    aws_api_gateway_method_response.linked_token_options_response,
+    aws_api_gateway_integration_response.linked_token_options_integration_response,
 
-  #   aws_api_gateway_method.access_token_options,
-  #   aws_api_gateway_integration.access_token_options_integration,
-  #   aws_api_gateway_method_response.access_token_options_response,
-  #   aws_api_gateway_integration_response.access_token_options_integration_response,
+    aws_api_gateway_method.access_token_options,
+    aws_api_gateway_integration.access_token_options_integration,
+    aws_api_gateway_method_response.access_token_options_response,
+    aws_api_gateway_integration_response.access_token_options_integration_response,
 
-  #   aws_api_gateway_method.get_accounts_get,
-  #   aws_api_gateway_integration.get_accounts_get_integration,
-  #   aws_api_gateway_method_response.get_accounts_get_response,
-  #   aws_api_gateway_integration_response.get_accounts_get_integration_response,
+    aws_api_gateway_method.get_accounts_get,
+    aws_api_gateway_integration.get_accounts_get_integration,
+    aws_api_gateway_method_response.get_accounts_get_response,
+    aws_api_gateway_integration_response.get_accounts_get_integration_response,
 
-  #   aws_api_gateway_method.get_accounts_post,
-  #   aws_api_gateway_integration.get_accounts_post_integration,
-  #   aws_api_gateway_method_response.get_accounts_post_response, 
+    aws_api_gateway_method.get_accounts_post,
+    aws_api_gateway_integration.get_accounts_post_integration,
+    aws_api_gateway_method_response.get_accounts_post_response, 
 
   #   # # Textract Receipt
   #   # aws_api_gateway_resource.textract_receipt,
@@ -81,7 +81,7 @@ resource "aws_api_gateway_deployment" "api_deployment" {
   #   # aws_api_gateway_method_response.pre_signed_url_post_response,
   #   # aws_api_gateway_integration_response.pre_signed_url_post_integration_response,
 
-  # ]
+  ]
 }
 
 # transaction resource
