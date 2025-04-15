@@ -49,6 +49,33 @@ resource "aws_iam_role_policy_attachment" "attach_lambda_lex_policy" {
   policy_arn = aws_iam_policy.lambda_lex_policy.arn
 }
 
+###lex lambda role
+resource "aws_iam_role" "query_lex_lambda_role" {
+  name = "query_lex_lambda_role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [{
+      Effect = "Allow",
+      Principal = {
+        Service = "lambda.amazonaws.com"
+      },
+      Action = "sts:AssumeRole"
+    }]
+  })
+}
+# Full access to Lex V2
+resource "aws_iam_role_policy_attachment" "query_lex_lambda_lex_full_access" {
+  role       = aws_iam_role.query_lex_lambda_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonLexFullAccess"
+}
+
+# Basic Lambda logging
+resource "aws_iam_role_policy_attachment" "query_lex_lambda_logs" {
+  role       = aws_iam_role.query_lex_lambda_role.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+}
+
 
 # lex lambda and permission
 resource "aws_lambda_function" "query_lex_handler" {
@@ -56,7 +83,9 @@ resource "aws_lambda_function" "query_lex_handler" {
   filename      = "query_lex.zip"          # replace with your zip file
   handler       = "query_lex.lambda_handler"
   runtime       = "python3.9"
-  role          = aws_iam_role.lambda_exec.arn
+  //role          = aws_iam_role.lambda_exec.arn
+  role          = aws_iam_role.query_lex_lambda_role.arn
+
   timeout       = 30
  environment {
   variables = {
@@ -64,9 +93,11 @@ resource "aws_lambda_function" "query_lex_handler" {
     LEX_BOT_ALIAS_ID = data.external.lex_alias_id.result.lex_bot_alias_id
   }
   }
+
   depends_on = [
     null_resource.create_lex_alias,
-    aws_iam_role_policy_attachment.lex_runtime_access
+    aws_iam_role_policy_attachment.query_lex_lambda_logs,
+    aws_iam_role_policy_attachment.query_lex_lambda_lex_full_access
   ]
 }
 
