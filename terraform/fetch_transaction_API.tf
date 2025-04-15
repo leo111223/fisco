@@ -33,7 +33,7 @@ resource "aws_api_gateway_method_response" "fetch_transactions_options_response"
     "method.response.header.Access-Control-Allow-Methods" = true,
     "method.response.header.Access-Control-Allow-Origin"  = true
   }
-  # depends_on = [ aws_api_gateway_method.fetch_transactions_options ] 
+  depends_on = [ aws_api_gateway_method.fetch_transactions_options ] 
 }
 
 resource "aws_api_gateway_integration_response" "fetch_transactions_options_integration_response" {
@@ -47,8 +47,8 @@ resource "aws_api_gateway_integration_response" "fetch_transactions_options_inte
     "method.response.header.Access-Control-Allow-Methods" = "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'"
     "method.response.header.Access-Control-Allow-Origin"  = "'*'"
   }
+  depends_on = [aws_api_gateway_method_response.fetch_transactions_options_response]
 
-  depends_on = [aws_api_gateway_integration.fetch_transactions_options_integration]
 }
 
 resource "aws_api_gateway_method" "fetch_transactions_get" {
