@@ -16,71 +16,32 @@ resource "aws_api_gateway_deployment" "api_deployment" {
   }
 
   depends_on = [
+    #transaction post and options integration
     aws_api_gateway_integration.lambda_integration,
-    aws_api_gateway_method.transactions_post,
-
-    aws_api_gateway_integration.linked_token_lambda_integration,
-    aws_api_gateway_method.linked_token_post,
-    aws_api_gateway_method_response.linked_token_post_response,
-    aws_api_gateway_integration_response.linked_token_post_integration_response,
-
-    aws_api_gateway_integration.access_token_lambda_integration,
-    aws_api_gateway_method.access_token_post,
-    aws_api_gateway_method_response.access_token_post_response,
-    aws_api_gateway_integration_response.access_token_post_integration_response,
-
-    aws_api_gateway_method.linked_token_options,
+    aws_api_gateway_integration.transactions_options_integration, 
+    #linked token post and options integration
+    aws_api_gateway_integration.linked_token_lambda_integration, 
     aws_api_gateway_integration.linked_token_options_integration,
-    aws_api_gateway_method_response.linked_token_options_response,
-    aws_api_gateway_integration_response.linked_token_options_integration_response,
-
-    aws_api_gateway_method.access_token_options,
+    #access token post and options integration
+    aws_api_gateway_integration.access_token_lambda_integration,
     aws_api_gateway_integration.access_token_options_integration,
-    aws_api_gateway_method_response.access_token_options_response,
-    aws_api_gateway_integration_response.access_token_options_integration_response,
-
-    aws_api_gateway_method.get_accounts_get,
+    #get accounts post and options integration
     aws_api_gateway_integration.get_accounts_get_integration,
-    aws_api_gateway_method_response.get_accounts_get_response,
-    aws_api_gateway_integration_response.get_accounts_get_integration_response,
-
-    aws_api_gateway_method.get_accounts_post,
     aws_api_gateway_integration.get_accounts_post_integration,
-    aws_api_gateway_method_response.get_accounts_post_response, 
-
-  #   # # Textract Receipt
+    aws_api_gateway_integration.get_accounts_options_integration,
+    #fetch transactions post and options integration 
+    aws_api_gateway_integration.fetch_transactions_options_integration,
+    aws_api_gateway_integration.fetch_transactions_get_integration,
+    # Textract post and options integration
   #   # aws_api_gateway_resource.textract_receipt,
-  #   # aws_api_gateway_method.textract_receipt_options,
   #   # aws_api_gateway_integration.textract_receipt_options_integration,
-  #   # aws_api_gateway_method_response.textract_receipt_options_response,
-  #   # aws_api_gateway_integration_response.textract_receipt_options_integration_response,
-  #   # aws_api_gateway_method.textract_receipt_post,
   #   # aws_api_gateway_integration.textract_receipt_post_integration,
-  #   # aws_api_gateway_method_response.textract_receipt_post_response,
-  #   # aws_api_gateway_integration_response.textract_receipt_post_integration_response,
-
-  #   # # Fetch Transactions
-  #   # aws_api_gateway_resource.fetch_transactions_dynamo,
-  #   # aws_api_gateway_method.fetch_transactions_options,
-  #   # aws_api_gateway_integration.fetch_transactions_options_integration,
-  #   # aws_api_gateway_method_response.fetch_transactions_options_response,
-  #   # aws_api_gateway_integration_response.fetch_transactions_options_integration_response,
-  #   # aws_api_gateway_method.fetch_transactions_get,
-  #   # aws_api_gateway_integration.fetch_transactions_get_integration,
-  #   # aws_api_gateway_method_response.fetch_transactions_get_response,
-  #   # aws_api_gateway_integration_response.fetch_transactions_get_integration_response,
 
   #   # # Presigned URL
   #   # aws_api_gateway_resource.pre_signed_url,
-  #   # aws_api_gateway_method.pre_signed_url_options,
-  #   # aws_api_gateway_integration.pre_signed_url_options_integration,
-  #   # aws_api_gateway_method_response.pre_signed_url_options_response,
-  #   # aws_api_gateway_integration_response.pre_signed_url_options_integration_response,
-  #   # aws_api_gateway_method.pre_signed_url_post,
-  #   # aws_api_gateway_integration.pre_signed_url_post_integration,
-  #   # aws_api_gateway_method_response.pre_signed_url_post_response,
-  #   # aws_api_gateway_integration_response.pre_signed_url_post_integration_response,
 
+  #   # aws_api_gateway_integration.pre_signed_url_options_integration,
+  #   # aws_api_gateway_integration.pre_signed_url_post_integration,
   ]
 }
 
