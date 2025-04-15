@@ -257,31 +257,31 @@ resource "aws_iam_role_policy_attachment" "lex_runtime_access" {
 #   depends_on = [aws_iam_role.textract_lambda_role]
 # }
 
-# #IAM Role for fetch_transaction_lambda
-# resource "aws_iam_role" "fetch_transaction_lambda_role" {
-#   name = "fetch_transaction_lambda_role"
+#IAM Role for fetch_transaction_lambda
+resource "aws_iam_role" "fetch_transaction_lambda_role" {
+  name = "fetch_transaction_lambda_role"
 
-#   assume_role_policy = jsonencode({
-#     Version = "2012-10-17",
-#     Statement = [{
-#       Effect = "Allow",
-#       Principal = {
-#         Service = "lambda.amazonaws.com"
-#       },
-#       Action = "sts:AssumeRole"
-#     }]
-#   })
-# }
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [{
+      Effect = "Allow",
+      Principal = {
+        Service = "lambda.amazonaws.com"
+      },
+      Action = "sts:AssumeRole"
+    }]
+  })
+}
 
-# # Attach full DynamoDB access
-# resource "aws_iam_role_policy_attachment" "fetch_transaction_lambda_dynamodb_full_access" {
-#   role       = aws_iam_role.fetch_transaction_lambda_role.name
-#   policy_arn = "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess"
-#   depends_on = [aws_iam_role.fetch_transaction_lambda_role]
-# }
+# Attach full DynamoDB access
+resource "aws_iam_role_policy_attachment" "fetch_transaction_lambda_dynamodb_full_access" {
+  role       = aws_iam_role.fetch_transaction_lambda_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess"
+  depends_on = [aws_iam_role.fetch_transaction_lambda_role]
+}
 
-# resource "aws_iam_role_policy_attachment" "fetch_transaction_lambda_logging" {
-#   role       = aws_iam_role.fetch_transaction_lambda_role.name
-#   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-#   depends_on = [aws_iam_role.fetch_transaction_lambda_role]
-# }
+resource "aws_iam_role_policy_attachment" "fetch_transaction_lambda_logging" {
+  role       = aws_iam_role.fetch_transaction_lambda_role.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+  depends_on = [aws_iam_role.fetch_transaction_lambda_role]
+}
