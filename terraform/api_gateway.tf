@@ -124,9 +124,9 @@ resource "aws_api_gateway_method_response" "transactions_post_response" {
     "method.response.header.Access-Control-Allow-Methods" = true
     "method.response.header.Access-Control-Allow-Origin"  = true
   }
-  depends_on = [
-    aws_api_gateway_method.transactions_post
-  ]
+  # depends_on = [
+  #   aws_api_gateway_method.transactions_post
+  # ]
 }
 
 resource "aws_api_gateway_integration_response" "transactions_post_integration_response" {

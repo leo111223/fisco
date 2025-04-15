@@ -16,9 +16,6 @@ resource "aws_lambda_function" "transaction_handler" {
       PLAID_ENVIRONMENT  = var.plaid_environment
     }
   }
-  depends_on = [
-    aws_iam_role.lambda_exec
-  ]
 }
 
 #access token handler
