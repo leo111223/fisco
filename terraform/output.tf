@@ -18,6 +18,6 @@ output "apigw_arn" {
 }
 
 
-output "resolved_lex_alias_id" {
-  value = data.external.lex_alias_id.result.lex_bot_alias_id
-}
+# output "resolved_lex_alias_id" {
+#   value = data.external.lex_alias_id.result.lex_bot_alias_id
+# }
