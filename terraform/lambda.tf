@@ -82,8 +82,7 @@ resource "aws_lambda_function" "transaction_handler" {
     aws_iam_policy_attachment.lambda_execution,
     aws_iam_policy_attachment.lambda_dynamodb_full_access,
     aws_iam_role_policy_attachment.lex_runtime_access
-  ]
-    
+  ]  
 }
 
 # Fetch Transactions Lambda
