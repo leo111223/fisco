@@ -16,6 +16,9 @@ resource "aws_lambda_function" "transaction_handler" {
       PLAID_ENVIRONMENT  = var.plaid_environment
     }
   }
+  depends_on = [
+    aws_iam_role.lambda_exec
+  ]
 }
 
 #access token handler
@@ -133,7 +136,7 @@ resource "aws_lambda_function" "fetch_presigned_url_handler" {
 
 
 
-# Lambda Role for access token, create account, linked token.
+# Lambda Role for access token, create account, linked token, transaction, query lex
 resource "aws_iam_role" "lambda_exec" {
   name = "lambda_exec_role"
 
@@ -166,6 +169,7 @@ resource "aws_iam_role_policy_attachment" "lex_runtime_access" {
   role       = aws_iam_role.lambda_exec.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonLexFullAccess"
 }
+
 
 # IAM Role for presign_transaction_lambda
 resource "aws_iam_role" "presign_transaction_lambda_role" {
