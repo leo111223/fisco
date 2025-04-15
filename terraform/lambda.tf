@@ -93,11 +93,6 @@ resource "aws_lambda_function" "fetch_transactions_handler" {
       DYNAMODB_TABLE = aws_dynamodb_table.transactions.name
     }
   }
-  depends_on = [
-  aws_iam_role.fetch_transaction_lambda_role,
-  aws_iam_role_policy_attachment.fetch_transaction_lambda_dynamodb_full_access,
-  aws_iam_role_policy_attachment.fetch_transaction_lambda_logging
-]
 }
 
 
