@@ -1,21 +1,21 @@
 # transaction handler
-# resource "aws_lambda_function" "transaction_handler" {
-#   function_name = "transaction_handle"
-#   role          = aws_iam_role.lambda_exec.arn
-#   runtime       = "python3.9"
-#   timeout       = 30
-#   handler       = "create_transactions.lambda_handler"
-#   filename      = "transaction.zip"
+resource "aws_lambda_function" "transaction_handler" {
+  function_name = "transaction_handle"
+  role          = aws_iam_role.lambda_exec.arn
+  runtime       = "python3.9"
+  timeout       = 30
+  handler       = "create_transactions.lambda_handler"
+  filename      = "transaction.zip"
 
-#   environment {
-#     variables = {
-#       DYNAMODB_TABLE     = aws_dynamodb_table.transactions.name
-#       PLAID_CLIENT_ID    = var.plaid_client_id
-#       PLAID_SECRET       = var.plaid_secret
-#       PLAID_ENVIRONMENT  = var.plaid_environment
-#     }
-#   }
-# }
+  environment {
+    variables = {
+      DYNAMODB_TABLE     = aws_dynamodb_table.transactions.name
+      PLAID_CLIENT_ID    = var.plaid_client_id
+      PLAID_SECRET       = var.plaid_secret
+      PLAID_ENVIRONMENT  = var.plaid_environment
+    }
+  }
+}
 
 #access token handler
 resource "aws_lambda_function" "access_token_handler" {
