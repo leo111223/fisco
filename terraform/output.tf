@@ -10,7 +10,7 @@ output "api_gateway_url" {
 }
 
 output "s3_bucket" {
-  value = aws_s3_bucket.fisc_ai_receipt_bucket.id
+  value = aws_s3_bucket.receipt_bucket.id
 }
 
 output "apigw_arn" {
