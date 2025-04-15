@@ -84,7 +84,7 @@ resource "aws_lambda_function" "fetch_transactions_handler" {
   filename      = "fetch_transactions.zip"  # Ensure this is the zipped deployment package
   handler       = "fetch_transactions.lambda_handler"  # Update with the handler function in your script
   runtime       = "python3.9"
-  role          = aws_iam_role.fetch_transaction_lambda_role.arn
+  role          = aws_iam_role.lambda_exec.arn
   timeout       = 30
 
   environment {
@@ -251,30 +251,30 @@ resource "aws_iam_role_policy_attachment" "lex_runtime_access" {
 # }
 
 # IAM Role for fetch_transaction_lambda
-resource "aws_iam_role" "fetch_transaction_lambda_role" {
-  name = "fetch_transaction_lambda_role"
+# resource "aws_iam_role" "fetch_transaction_lambda_role" {
+#   name = "fetch_transaction_lambda_role"
 
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17",
-    Statement = [{
-      Effect = "Allow",
-      Principal = {
-        Service = "lambda.amazonaws.com"
-      },
-      Action = "sts:AssumeRole"
-    }]
-  })
-}
+#   assume_role_policy = jsonencode({
+#     Version = "2012-10-17",
+#     Statement = [{
+#       Effect = "Allow",
+#       Principal = {
+#         Service = "lambda.amazonaws.com"
+#       },
+#       Action = "sts:AssumeRole"
+#     }]
+#   })
+# }
 
-# Attach full DynamoDB access
-resource "aws_iam_role_policy_attachment" "fetch_transaction_lambda_dynamodb_full_access" {
-  role       = aws_iam_role.fetch_transaction_lambda_role.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess"
-  depends_on = [aws_iam_role.fetch_transaction_lambda_role]
-}
+# # Attach full DynamoDB access
+# resource "aws_iam_role_policy_attachment" "fetch_transaction_lambda_dynamodb_full_access" {
+#   role       = aws_iam_role.fetch_transaction_lambda_role.name
+#   policy_arn = "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess"
+#   depends_on = [aws_iam_role.fetch_transaction_lambda_role]
+# }
 
-resource "aws_iam_role_policy_attachment" "fetch_transaction_lambda_logging" {
-  role       = aws_iam_role.fetch_transaction_lambda_role.name
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-  depends_on = [aws_iam_role.fetch_transaction_lambda_role]
-}
+# resource "aws_iam_role_policy_attachment" "fetch_transaction_lambda_logging" {
+#   role       = aws_iam_role.fetch_transaction_lambda_role.name
+#   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+#   depends_on = [aws_iam_role.fetch_transaction_lambda_role]
+# }
