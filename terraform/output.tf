@@ -4,10 +4,10 @@ output "amplify_app_url" {
 }
 
 
-# output "api_gateway_url" {
-#   value = "https://${aws_api_gateway_rest_api.finance_api.id}.execute-api.${var.aws_region}.amazonaws.com/${aws_api_gateway_stage.api_stage.stage_name}"
-#   description = "URL to access the deployed API Gateway"
-# }
+output "api_gateway_url" {
+  value = "https://${aws_api_gateway_rest_api.finance_api.id}.execute-api.${var.aws_region}.amazonaws.com/${aws_api_gateway_stage.api_stage.stage_name}"
+  description = "URL to access the deployed API Gateway"
+}
 
 output "s3_bucket" {
   value = aws_s3_bucket.receipt_bucket.id

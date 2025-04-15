@@ -86,28 +86,28 @@ resource "aws_lambda_function" "transaction_handler" {
     
 }
 
-# # Fetch Transactions Lambda
-# resource "aws_lambda_function" "fetch_transactions_handler" {
-#   function_name = "fetch_transactions_handler"
-#   filename      = "fetch_transactions.zip"  # Ensure this is the zipped deployment package
-#   handler       = "fetch_transactions.lambda_handler"  # Update with the handler function in your script
-#   runtime       = "python3.9"
-#   #role          = aws_iam_role.fetch_transaction_lambda_role.arn
-#   role          = "arn:aws:iam::864981748263:role/fetch_transaction_lambda_role"
-#   timeout       = 30
+# Fetch Transactions Lambda
+resource "aws_lambda_function" "fetch_transactions_handler" {
+  function_name = "fetch_transactions_handler"
+  filename      = "fetch_transactions.zip"  # Ensure this is the zipped deployment package
+  handler       = "fetch_transactions.lambda_handler"  # Update with the handler function in your script
+  runtime       = "python3.9"
+  #role          = aws_iam_role.fetch_transaction_lambda_role.arn
+  role          = "arn:aws:iam::864981748263:role/fetch_transaction_lambda_role"
+  timeout       = 30
 
-#   environment {
-#     variables = {
-#       STAGE = "prod"
-#       DYNAMODB_TABLE = aws_dynamodb_table.transactions.name
-#     }
-#   }
-#   depends_on = [
-#     aws_iam_role.fetch_transaction_lambda_role,
-#     aws_iam_role_policy_attachment.fetch_transaction_lambda_dynamodb_full_access,
-#     aws_iam_role_policy_attachment.fetch_transaction_lambda_logging
-#   ]
-# }
+  environment {
+    variables = {
+      STAGE = "prod"
+      DYNAMODB_TABLE = aws_dynamodb_table.transactions.name
+    }
+  }
+  depends_on = [
+    aws_iam_role.fetch_transaction_lambda_role,
+    aws_iam_role_policy_attachment.fetch_transaction_lambda_dynamodb_full_access,
+    aws_iam_role_policy_attachment.fetch_transaction_lambda_logging
+  ]
+}
 
 
 # # Textract Receipt Lambda
