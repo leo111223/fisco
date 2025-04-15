@@ -6,7 +6,6 @@ resource "aws_lambda_function" "transaction_handler" {
   timeout       = 30
   handler       = "create_transactions.lambda_handler"
   filename      = "transaction.zip"
- 
 
   environment {
     variables = {
