@@ -169,8 +169,8 @@ resource "aws_dynamodb_table" "accounts" {
 }
 
 # S3 for receipts
-resource "aws_s3_bucket" "receipt_bucket" {
-  bucket         = "fisc-ai-receipts-123"
-  force_destroy  = true
-}
+# resource "aws_s3_bucket" "receipt_bucket" {
+#   bucket         = "fisc-ai-receipts-123"
+#   force_destroy  = true
+# }
 # S3 bucket policy
