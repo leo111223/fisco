@@ -111,7 +111,7 @@ resource "aws_lambda_function" "fetch_transactions_handler" {
 # Textract Receipt Lambda
 resource "aws_lambda_function" "textract_receipt_handler" {
   function_name = "textract_receipt_handler"
-  filename      = "textract_receipt.zip"
+  filename      = "textract.zip"
   handler       = "textract_receipt.lambda_handler"
   runtime       = "python3.9"
   role          = aws_iam_role.textract_lambda_role.arn  # ✅ Must reference a ROLE, not a policy
