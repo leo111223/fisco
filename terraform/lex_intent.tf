@@ -27,7 +27,7 @@ resource "aws_lexv2models_intent" "greeting_intent" {
       message_group {
         message {
           plain_text_message {
-            value = "Is this what you meant?"
+            value = "what can i help you?"
           }
         }
       }
@@ -87,51 +87,51 @@ resource "aws_lexv2models_intent" "goodbye_intent" {
 }
 
 #transaction intent
-resource "aws_lexv2models_intent" "get_recent_transactions" {
-  name        = "GetRecentTransactions"
-  description = "Returns the user's most recent transactions"
+# resource "aws_lexv2models_intent" "get_recent_transactions" {
+#   name        = "GetRecentTransactions"
+#   description = "Returns the user's most recent transactions"
 
-  bot_id      = aws_lexv2models_bot.finance_assistant.id
-  bot_version = "DRAFT"
-  locale_id   = "en_US"
+#   bot_id      = aws_lexv2models_bot.finance_assistant.id
+#   bot_version = "DRAFT"
+#   locale_id   = "en_US"
 
-  sample_utterance {
-    utterance = "Show me the last {NumberOfTransactions} transactions"
-  }
+#   sample_utterance {
+#     utterance = "Show me the last {NumberOfTransactions} transactions"
+#   }
 
-  sample_utterance {
-    utterance = "Get my latest {NumberOfTransactions} transactions"
-  }
+#   sample_utterance {
+#     utterance = "Get my latest {NumberOfTransactions} transactions"
+#   }
 
-  sample_utterance {
-    utterance = "What are my last {NumberOfTransactions} purchases?"
-  }
+#   sample_utterance {
+#     utterance = "What are my last {NumberOfTransactions} purchases?"
+#   }
 
-  fulfillment_code_hook {
-    enabled = true
-  }
+#   fulfillment_code_hook {
+#     enabled = true
+#   }
 
-  closing_setting {
-    active = true
+#   closing_setting {
+#     active = true
 
-    closing_response {
-      message_group {
-        message {
-          plain_text_message {
-            value = "Let me know if you need anything else!"
-          }
-        }
-      }
-      allow_interrupt = true
-    }
-  }
-  depends_on = [aws_lexv2models_bot_locale.english_locale]
-  # This part links the slot to the intent
-  # slot_priority {
-  #   priority = 1
-  #   slot_id  = aws_lexv2models_slot.number_of_transactions.slot_id
-  # }
-}
+#     closing_response {
+#       message_group {
+#         message {
+#           plain_text_message {
+#             value = "Let me know if you need anything else!"
+#           }
+#         }
+#       }
+#       allow_interrupt = true
+#     }
+#   }
+#   depends_on = [aws_lexv2models_bot_locale.english_locale]
+#   # This part links the slot to the intent
+#   # slot_priority {
+#   #   priority = 1
+#   #   slot_id  = aws_lexv2models_slot.number_of_transactions.slot_id
+#   # }
+# }
 
 
 
