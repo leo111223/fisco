@@ -38,6 +38,9 @@ resource "aws_api_gateway_deployment" "api_deployment" {
     # Presigned URL
     aws_api_gateway_integration.pre_signed_url_options_integration,
     aws_api_gateway_integration.pre_signed_url_post_integration,
+    # query lex
+    aws_api_gateway_integration_response.query_lex_post_integration_response,
+    aws_api_gateway_integration_response.query_lex_options_integration_response
   ]
 }
 
