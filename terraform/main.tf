@@ -151,26 +151,37 @@ resource "aws_dynamodb_table" "transactions" {
 }
 
 # DynamoDB Table for Accounts
-resource "aws_dynamodb_table" "accounts" {
-  name         = "Accounts"  # Name of the accounts table
-  billing_mode = "PAY_PER_REQUEST"
-  hash_key     = "user_id"
-  range_key    = "account_id"
+# resource "aws_dynamodb_table" "accounts" {
+#   name         = "Accounts"  # Name of the accounts table
+#   billing_mode = "PAY_PER_REQUEST"
+#   hash_key     = "user_id"
+#   range_key    = "account_id"
 
-  attribute {
-    name = "user_id"
-    type = "S"
-  }
+#   attribute {
+#     name = "user_id"
+#     type = "S"
+#   }
 
-  attribute {
-    name = "account_id"
-    type = "S"
-  }
-}
+#   attribute {
+#     name = "transaction_id"
+#     type = "S"
+#   }
+# }
 
-# S3 for receipts
-resource "aws_s3_bucket" "receipt_bucket" {
-  bucket         = "leo-receipt"
-  force_destroy  = true
-}
 # S3 bucket policy
+resource "aws_s3_bucket" "receipt_bucket" {
+  bucket        = "leo-receipt"
+  force_destroy = true
+}
+
+resource "aws_s3_bucket_cors_configuration" "receipt_bucket_cors" {
+  bucket = aws_s3_bucket.receipt_bucket.id
+
+  cors_rule {
+    allowed_headers = ["*"]
+    allowed_methods = ["PUT", "POST", "GET"]
+    allowed_origins = ["*"]
+    expose_headers  = ["ETag"]
+    max_age_seconds = 3000
+  }
+}
