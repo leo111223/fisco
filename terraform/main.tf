@@ -128,45 +128,46 @@ resource "aws_amplify_branch" "main_branch" {
   }
 }
 
-resource "aws_dynamodb_table" "transactions" {
-  name         = "Transactions"
-  billing_mode = "PAY_PER_REQUEST"
-  hash_key     = "transaction_id"
-
-  attribute {
-    name = "transaction_id"
-    type = "S"
-  }
-
-  attribute {
-    name = "user_id"
-    type = "S"
-  }
-
-  global_secondary_index {
-    name               = "user_id-index"
-    hash_key           = "user_id"
-    projection_type    = "ALL"
-  }
-}
-
-# DynamoDB Table for Accounts
-# resource "aws_dynamodb_table" "accounts" {
-#   name         = "Accounts"  # Name of the accounts table
+# resource "aws_dynamodb_table" "transactions" {
+#   name         = "Transactions"
 #   billing_mode = "PAY_PER_REQUEST"
-#   hash_key     = "user_id"
-#   range_key    = "account_id"
+#   hash_key     = "transaction_id"
+
+#   attribute {
+#     name = "transaction_id"
+#     type = "S"
+#   }
 
 #   attribute {
 #     name = "user_id"
 #     type = "S"
 #   }
 
-#   attribute {
-#     name = "transaction_id"
-#     type = "S"
+#   global_secondary_index {
+#     name               = "user_id-index"
+#     hash_key           = "user_id"
+#     projection_type    = "ALL"
 #   }
 # }
+
+# DynamoDB Table for Accounts
+resource "aws_dynamodb_table" "accounts" {
+  name         = "Accounts"  # Name of the accounts table
+  billing_mode = "PAY_PER_REQUEST"
+  hash_key     = "user_id"
+  range_key    = "account_id"
+
+  attribute {
+    name = "user_id"
+    type = "S"
+  }
+
+  attribute {
+    name = "account_id"
+    type = "S"
+  }
+}
+
 
 # S3 bucket policy
 resource "aws_s3_bucket" "receipt_bucket" {
