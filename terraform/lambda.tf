@@ -92,8 +92,9 @@ resource "aws_lambda_function" "fetch_transactions_handler" {
   filename      = "fetch_transactions.zip"  # Ensure this is the zipped deployment package
   handler       = "fetch_transactions.lambda_handler"  # Update with the handler function in your script
   runtime       = "python3.9"
-  #role          = aws_iam_role.fetch_transaction_lambda_role.arn
-  role          = "arn:aws:iam::864981748263:role/fetch_transaction_lambda_role"
+  role          = aws_iam_role.fetch_transaction_lambda_role.arn
+  #role          = aws_iam_role.lambda_exec.arn
+  
   timeout       = 30
 
   environment {
@@ -103,8 +104,7 @@ resource "aws_lambda_function" "fetch_transactions_handler" {
     }
   }
   depends_on = [
-    aws_iam_role.fetch_transaction_lambda_role,
-    aws_iam_role_policy_attachment.fetch_transaction_lambda_dynamodb_full_access
+    aws_iam_policy_attachment.lambda_dynamodb_full_access
   ]
 }
 
@@ -143,6 +143,12 @@ resource "aws_lambda_function" "fetch_presigned_url_handler" {
       S3_BUCKET = aws_s3_bucket.receipt_bucket.bucket  
     }
   }
+  depends_on = [
+    aws_iam_role.presign_transaction_lambda_role,
+    aws_iam_role_policy_attachment.presign_transaction_lambda_s3_full_access,
+    aws_iam_role_policy_attachment.presign_transaction_lambda_logging
+  ]
+ 
 }
 
 
@@ -172,7 +178,11 @@ resource "aws_iam_policy_attachment" "lambda_execution" {
 
 resource "aws_iam_policy_attachment" "lambda_dynamodb_full_access" {
   name       = "lambda_dynamodb_full_access_policy"
-  roles      = [aws_iam_role.lambda_exec.name]
+  roles      = [
+    aws_iam_role.lambda_exec.name,
+    aws_iam_role.textract_lambda_role.name,
+    aws_iam_role.fetch_transaction_lambda_role.name
+  ]
   policy_arn = "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess"
 }
 
@@ -181,27 +191,7 @@ resource "aws_iam_role_policy_attachment" "lex_runtime_access" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonLexFullAccess"
 }
 
-#IAM Role for fetch_transaction_lambda
-resource "aws_iam_role" "fetch_transaction_lambda_role" {
-  name = "fetch_transaction_lambda_role"
 
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17",
-    Statement = [{
-      Effect = "Allow",
-      Principal = {
-        Service = "lambda.amazonaws.com"
-      },
-      Action = "sts:AssumeRole"
-    }]
-  })
-}
-
-# Attach full DynamoDB access
-resource "aws_iam_role_policy_attachment" "fetch_transaction_lambda_dynamodb_full_access" {
-  role       = aws_iam_role.fetch_transaction_lambda_role.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess"
-}
 
 
 # IAM Role for presign_transaction_lambda
@@ -264,12 +254,6 @@ resource "aws_iam_role_policy_attachment" "textract_lambda_bedrock" {
   depends_on = [aws_iam_role.textract_lambda_role]
 }
 
-resource "aws_iam_role_policy_attachment" "textract_lambda_dynamodb" {
-  role       = aws_iam_role.textract_lambda_role.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess"
-  depends_on = [aws_iam_role.textract_lambda_role]
-}
-
 resource "aws_iam_role_policy_attachment" "textract_lambda_textract" {
   role       = aws_iam_role.textract_lambda_role.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonTextractFullAccess"
@@ -280,5 +264,33 @@ resource "aws_iam_role_policy_attachment" "textract_lambda_logs" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
   depends_on = [aws_iam_role.textract_lambda_role]
 }
+# resource "aws_iam_role_policy_attachment" "textract_lambda_dynamodb" {
+#   role       = aws_iam_role.textract_lambda_role.name
+#   policy_arn = "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess"
+#   depends_on = [aws_iam_role.textract_lambda_role]
+# }
 
+
+
+#IAM Role for fetch_transaction_lambda
+resource "aws_iam_role" "fetch_transaction_lambda_role" {
+  name = "fetch_transaction_lambda_role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [{
+      Effect = "Allow",
+      Principal = {
+        Service = "lambda.amazonaws.com"
+      },
+      Action = "sts:AssumeRole"
+    }]
+  })
+}
+
+# # Attach full DynamoDB access
+# resource "aws_iam_role_policy_attachment" "fetch_transaction_lambda_dynamodb_full_access" {
+#   role       = aws_iam_role.fetch_transaction_lambda_role.name
+#   policy_arn = "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess"
+# }
 
