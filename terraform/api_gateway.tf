@@ -33,15 +33,11 @@ resource "aws_api_gateway_deployment" "api_deployment" {
     aws_api_gateway_integration.fetch_transactions_options_integration,
     aws_api_gateway_integration.fetch_transactions_get_integration,
     # Textract post and options integration
-  #   # aws_api_gateway_resource.textract_receipt,
-  #   # aws_api_gateway_integration.textract_receipt_options_integration,
-  #   # aws_api_gateway_integration.textract_receipt_post_integration,
-
-  #   # # Presigned URL
-  #   # aws_api_gateway_resource.pre_signed_url,
-
-  #   # aws_api_gateway_integration.pre_signed_url_options_integration,
-  #   # aws_api_gateway_integration.pre_signed_url_post_integration,
+    aws_api_gateway_integration.textract_receipt_options_integration,
+    aws_api_gateway_integration.textract_receipt_post_integration,
+    # Presigned URL
+    aws_api_gateway_integration.pre_signed_url_options_integration,
+    aws_api_gateway_integration.pre_signed_url_post_integration,
   ]
 }
 

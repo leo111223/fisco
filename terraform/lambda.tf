@@ -108,40 +108,40 @@ resource "aws_lambda_function" "fetch_transactions_handler" {
 }
 
 
-# # Textract Receipt Lambda
-# resource "aws_lambda_function" "textract_receipt_handler" {
-#   function_name = "textract_receipt_handler"
-#   filename      = "textract_receipt.zip"
-#   handler       = "textract_receipt.lambda_handler"
-#   runtime       = "python3.9"
-#   role          = aws_iam_role.textract_lambda_role.arn  # ✅ Must reference a ROLE, not a policy
-#   timeout       = 30
+# Textract Receipt Lambda
+resource "aws_lambda_function" "textract_receipt_handler" {
+  function_name = "textract_receipt_handler"
+  filename      = "textract_receipt.zip"
+  handler       = "textract_receipt.lambda_handler"
+  runtime       = "python3.9"
+  role          = aws_iam_role.textract_lambda_role.arn  # ✅ Must reference a ROLE, not a policy
+  timeout       = 30
 
-#   environment {
-#     variables = {
-#       STAGE     = "prod"
-#       S3_BUCKET = aws_s3_bucket.receipt_bucket.bucket
-#     }
-#   }
-# }
+  environment {
+    variables = {
+      STAGE     = "prod"
+      S3_BUCKET = aws_s3_bucket.receipt_bucket.bucket
+    }
+  }
+}
 
 
-# # Fetch Presigned URL Lambda
-# resource "aws_lambda_function" "fetch_presigned_url_handler" {
-#   function_name = "fetch_presigned_url_handler"
-#   filename      = "fetch_presigned_url.zip"  
-#   handler       = "fetch_presigned_url.lambda_handler"  
-#   runtime       = "python3.9"
-#   role          = aws_iam_role.presign_transaction_lambda_role.arn
-#   timeout       = 30
+# Fetch Presigned URL Lambda
+resource "aws_lambda_function" "fetch_presigned_url_handler" {
+  function_name = "fetch_presigned_url_handler"
+  filename      = "fetch_presigned_url.zip"  
+  handler       = "fetch_presigned_url.lambda_handler"  
+  runtime       = "python3.9"
+  role          = aws_iam_role.presign_transaction_lambda_role.arn
+  timeout       = 30
 
-#   environment {
-#     variables = {
-#       STAGE = "prod"
-#       S3_BUCKET = aws_s3_bucket.receipt_bucket.bucket  
-#     }
-#   }
-# }
+  environment {
+    variables = {
+      STAGE = "prod"
+      S3_BUCKET = aws_s3_bucket.receipt_bucket.bucket  
+    }
+  }
+}
 
 
 
@@ -202,81 +202,81 @@ resource "aws_iam_role_policy_attachment" "fetch_transaction_lambda_dynamodb_ful
 }
 
 
-# # IAM Role for presign_transaction_lambda
-# resource "aws_iam_role" "presign_transaction_lambda_role" {
-#   name = "presign_transaction_lambda_role"
+# IAM Role for presign_transaction_lambda
+resource "aws_iam_role" "presign_transaction_lambda_role" {
+  name = "presign_transaction_lambda_role"
 
-#   assume_role_policy = jsonencode({
-#     Version = "2012-10-17",
-#     Statement = [{
-#       Effect = "Allow",
-#       Principal = {
-#         Service = "lambda.amazonaws.com"
-#       },
-#       Action = "sts:AssumeRole"
-#     }]
-#   })
-# }
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [{
+      Effect = "Allow",
+      Principal = {
+        Service = "lambda.amazonaws.com"
+      },
+      Action = "sts:AssumeRole"
+    }]
+  })
+}
 
-# # Attach full S3 access
-# resource "aws_iam_role_policy_attachment" "presign_transaction_lambda_s3_full_access" {
-#   role       = aws_iam_role.presign_transaction_lambda_role.name
-#   policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
-#   depends_on = [aws_iam_role.presign_transaction_lambda_role]
-# }
+# Attach full S3 access
+resource "aws_iam_role_policy_attachment" "presign_transaction_lambda_s3_full_access" {
+  role       = aws_iam_role.presign_transaction_lambda_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
+  
+}
 
-# # Attach basic logging access
-# resource "aws_iam_role_policy_attachment" "presign_transaction_lambda_logging" {
-#   role       = aws_iam_role.presign_transaction_lambda_role.name
-#   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-#   depends_on = [aws_iam_role.presign_transaction_lambda_role]
-# }
+# Attach basic logging access
+resource "aws_iam_role_policy_attachment" "presign_transaction_lambda_logging" {
+  role       = aws_iam_role.presign_transaction_lambda_role.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+  
+}
 
 
-# # IAM Role for textract_lambda
-# resource "aws_iam_role" "textract_lambda_role" {
-#   name = "textract_lambda_role"
+# IAM Role for textract_lambda
+resource "aws_iam_role" "textract_lambda_role" {
+  name = "textract_lambda_role"
 
-#   assume_role_policy = jsonencode({
-#     Version = "2012-10-17",
-#     Statement = [{
-#       Effect = "Allow",
-#       Principal = {
-#         Service = "lambda.amazonaws.com"
-#       },
-#       Action = "sts:AssumeRole"
-#     }]
-#   })
-# }
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [{
+      Effect = "Allow",
+      Principal = {
+        Service = "lambda.amazonaws.com"
+      },
+      Action = "sts:AssumeRole"
+    }]
+  })
+}
 
-# # Attach managed policies to textract_lambda_role
-# resource "aws_iam_role_policy_attachment" "textract_lambda_s3" {
-#   role       = aws_iam_role.textract_lambda_role.name
-#   policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
-#   depends_on = [aws_iam_role.textract_lambda_role]
-# }
+# Attach managed policies to textract_lambda_role
+resource "aws_iam_role_policy_attachment" "textract_lambda_s3" {
+  role       = aws_iam_role.textract_lambda_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
+  depends_on = [aws_iam_role.textract_lambda_role]
+}
 
-# resource "aws_iam_role_policy_attachment" "textract_lambda_bedrock" {
-#   role       = aws_iam_role.textract_lambda_role.name
-#   policy_arn = "arn:aws:iam::aws:policy/AmazonBedrockFullAccess"
-#   depends_on = [aws_iam_role.textract_lambda_role]
-# }
+resource "aws_iam_role_policy_attachment" "textract_lambda_bedrock" {
+  role       = aws_iam_role.textract_lambda_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonBedrockFullAccess"
+  depends_on = [aws_iam_role.textract_lambda_role]
+}
 
-# resource "aws_iam_role_policy_attachment" "textract_lambda_dynamodb" {
-#   role       = aws_iam_role.textract_lambda_role.name
-#   policy_arn = "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess"
-#   depends_on = [aws_iam_role.textract_lambda_role]
-# }
+resource "aws_iam_role_policy_attachment" "textract_lambda_dynamodb" {
+  role       = aws_iam_role.textract_lambda_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess"
+  depends_on = [aws_iam_role.textract_lambda_role]
+}
 
-# resource "aws_iam_role_policy_attachment" "textract_lambda_textract" {
-#   role       = aws_iam_role.textract_lambda_role.name
-#   policy_arn = "arn:aws:iam::aws:policy/AmazonTextractFullAccess"
-#   depends_on = [aws_iam_role.textract_lambda_role]
-# }
-# resource "aws_iam_role_policy_attachment" "textract_lambda_logs" {
-#   role       = aws_iam_role.textract_lambda_role.name
-#   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-#   depends_on = [aws_iam_role.textract_lambda_role]
-# }
+resource "aws_iam_role_policy_attachment" "textract_lambda_textract" {
+  role       = aws_iam_role.textract_lambda_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonTextractFullAccess"
+  depends_on = [aws_iam_role.textract_lambda_role]
+}
+resource "aws_iam_role_policy_attachment" "textract_lambda_logs" {
+  role       = aws_iam_role.textract_lambda_role.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+  depends_on = [aws_iam_role.textract_lambda_role]
+}
 
 
