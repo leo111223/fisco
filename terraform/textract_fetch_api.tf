@@ -84,10 +84,13 @@ resource "aws_api_gateway_integration_response" "textract_receipt_post_integrati
   resource_id = aws_api_gateway_resource.textract_receipt.id
   http_method = "POST"
   status_code = "200"
+
   depends_on = [
+    aws_api_gateway_integration.textract_receipt_post_integration,
     aws_api_gateway_method_response.textract_receipt_post_response
   ]
 }
+
 
 resource "aws_lambda_permission" "api_gateway_textract_receipt" {
   statement_id  = "AllowAPIGatewayInvokeTextractReceipt"

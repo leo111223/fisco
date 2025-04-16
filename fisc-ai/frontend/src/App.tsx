@@ -25,7 +25,7 @@ import LoadingScreen from './Components/LoadingScreen';
 import FiscAILogo from './assets/FiscAI.jpeg';
 Amplify.configure(awsconfig);
 export const API_BASE_URL = "https://oymd112g4c.execute-api.us-east-1.amazonaws.com/prod"; // currently functional API base URL
-
+//export const API_BASE_URL = "REPLACE_WITH_API_GW_BASE_URL";
 const App = ({ signOut, user }: WithAuthenticatorProps) => {
   const { linkSuccess, isPaymentInitiation, itemId, dispatch } =
     useContext(Context);
