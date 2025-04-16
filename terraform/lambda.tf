@@ -71,7 +71,8 @@ resource "aws_lambda_function" "transaction_handler" {
 
   environment {
     variables = {
-      DYNAMODB_TABLE     = aws_dynamodb_table.transactions.name
+      # DYNAMODB_TABLE     = aws_dynamodb_table.transactions.name
+      # TRANSACTIONS_TABLE = aws_dynamodb_table.transactions.name
       PLAID_CLIENT_ID    = var.plaid_client_id
       PLAID_SECRET       = var.plaid_secret
       PLAID_ENVIRONMENT  = var.plaid_environment
@@ -98,7 +99,7 @@ resource "aws_lambda_function" "fetch_transactions_handler" {
   environment {
     variables = {
       STAGE = "prod"
-      DYNAMODB_TABLE = aws_dynamodb_table.transactions.name
+      # DYNAMODB_TABLE = aws_dynamodb_table.transactions.name
     }
   }
   depends_on = [
@@ -121,6 +122,7 @@ resource "aws_lambda_function" "textract_receipt_handler" {
     variables = {
       STAGE     = "prod"
       S3_BUCKET = aws_s3_bucket.receipt_bucket.bucket
+      # TRANSACTIONS_TABLE = aws_dynamodb_table.transactions.name
     }
   }
 }
