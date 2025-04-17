@@ -407,6 +407,7 @@ resource "null_resource" "update_query_spending_by_category_slot_priorities" {
   triggers = {
     bot_id    = aws_lexv2models_bot.finance_assistant.id
     locale_id = "en_US"
+    intent_id  = aws_lexv2models_intent.query_spending_by_category.intent_id
   }
 
   provisioner "local-exec" {
