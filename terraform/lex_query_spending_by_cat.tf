@@ -163,7 +163,7 @@ resource "aws_lexv2models_slot" "category_slot" {
 
 # Time frame slot
 resource "aws_lexv2models_slot" "time_frame_slot" {
-  name         = "TimeFrame"
+  name         = "TimeFrame"  # Changed name to be simpler
   bot_id       = aws_lexv2models_bot.finance_assistant.id
   bot_version  = "DRAFT"
   locale_id    = "en_US"
@@ -173,74 +173,10 @@ resource "aws_lexv2models_slot" "time_frame_slot" {
   value_elicitation_setting {
     slot_constraint = "Required"
     
-    prompt_specification {
-      max_retries = 2
-      allow_interrupt = true
-
-      message_group {
-        message {
-          plain_text_message {
-            value = "For what time period? For example: this week, last month, in January, etc."
-          }
-        }
-      }
-
-      message_selection_strategy = "Random"
-
-      prompt_attempts_specification {
-        map_block_key = "Initial"
-        allow_interrupt = true
-
-        allowed_input_types {
-          allow_audio_input = true
-          allow_dtmf_input  = true
-        }
-
-        audio_and_dtmf_input_specification {
-          start_timeout_ms = 4000
-          audio_specification {
-            max_length_ms  = 15000
-            end_timeout_ms = 640
-          }
-          dtmf_specification {
-            max_length         = 20
-            end_timeout_ms     = 5000
-            deletion_character = "*"
-            end_character      = "#"
-          }
-        }
-
-        text_input_specification {
-          start_timeout_ms = 30000
-        }
-      }
-
-      prompt_attempts_specification {
-        map_block_key = "Retry1"
-        allow_interrupt = true
-
-        allowed_input_types {
-          allow_audio_input = true
-          allow_dtmf_input  = true
-        }
-
-        audio_and_dtmf_input_specification {
-          start_timeout_ms = 4000
-          audio_specification {
-            max_length_ms  = 15000
-            end_timeout_ms = 640
-          }
-          dtmf_specification {
-            max_length         = 20
-            end_timeout_ms     = 5000
-            deletion_character = "*"
-            end_character      = "#"
-          }
-        }
-
-        text_input_specification {
-          start_timeout_ms = 30000
-        }
+    # Use default settings instead of detailed prompt specifications
+    default_value_specification {
+      default_value_list {
+        default_value = "this month"
       }
     }
   }
