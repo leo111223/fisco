@@ -139,7 +139,90 @@ resource "aws_lexv2models_slot" "number_of_transactions" {
   intent_id    = aws_lexv2models_intent.get_recent_transactions.intent_id
   slot_type_id = aws_lexv2models_slot_type.transaction_count_type.slot_type_id
 
-  # Rest of your slot configuration...
+  value_elicitation_setting {
+    slot_constraint = "Optional"
+
+    prompt_specification {
+      max_retries = 1
+      allow_interrupt = true
+
+      message_group {
+        message {
+          plain_text_message {
+            value = "How many recent transactions would you like to see?"
+          }
+        }
+      }
+
+      message_selection_strategy = "Random"
+
+      prompt_attempts_specification {
+        map_block_key = "Initial"
+        allow_interrupt = true
+
+        allowed_input_types {
+          allow_audio_input = true
+          allow_dtmf_input  = true
+        }
+
+        audio_and_dtmf_input_specification {
+          start_timeout_ms = 4000
+
+          audio_specification {
+            max_length_ms  = 15000
+            end_timeout_ms = 640
+          }
+
+          dtmf_specification {
+            max_length         = 513
+            end_timeout_ms     = 5000
+            deletion_character = "*"
+            end_character      = "#"
+          }
+        }
+
+        text_input_specification {
+          start_timeout_ms = 30000
+        }
+      }
+
+      prompt_attempts_specification {
+        map_block_key = "Retry1"
+        allow_interrupt = true
+
+        allowed_input_types {
+          allow_audio_input = true
+          allow_dtmf_input  = true
+        }
+
+        audio_and_dtmf_input_specification {
+          start_timeout_ms = 4000
+
+          audio_specification {
+            max_length_ms  = 15000
+            end_timeout_ms = 640
+          }
+
+          dtmf_specification {
+            max_length         = 513
+            end_timeout_ms     = 5000
+            deletion_character = "*"
+            end_character      = "#"
+          }
+        }
+
+        text_input_specification {
+          start_timeout_ms = 30000
+        }
+      }
+    }
+
+    default_value_specification {
+      default_value_list {
+        default_value = "5"
+      }
+    }
+  }
 }
 
 # Add this null_resource to update the intent with the slot priority
