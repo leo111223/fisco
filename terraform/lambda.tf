@@ -181,7 +181,8 @@ resource "aws_iam_policy_attachment" "lambda_dynamodb_full_access" {
   roles      = [
     aws_iam_role.lambda_exec.name,
     aws_iam_role.textract_lambda_role.name,
-    aws_iam_role.fetch_transaction_lambda_role.name
+    aws_iam_role.fetch_transaction_lambda_role.name,
+    aws_iam_role.query_lex_lambda_role.name
   ]
   policy_arn = "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess"
 }

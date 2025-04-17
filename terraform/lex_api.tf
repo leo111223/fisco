@@ -53,7 +53,8 @@ resource "aws_api_gateway_integration_response" "query_lex_post_integration_resp
   }
 
   depends_on = [
-    aws_api_gateway_integration.query_lex_post_integration
+    aws_api_gateway_integration.query_lex_post_integration,
+    aws_api_gateway_method_response.query_lex_post_response
   ]
 }
 
@@ -106,7 +107,8 @@ resource "aws_api_gateway_integration_response" "query_lex_options_integration_r
   }
 
   depends_on = [
-    aws_api_gateway_integration.query_lex_options_integration
+    aws_api_gateway_integration.query_lex_options_integration,
+    aws_api_gateway_method_response.query_lex_options_response
   ]
 }
 
