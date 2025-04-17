@@ -175,7 +175,7 @@ resource "null_resource" "create_lex_alias" {
   provisioner "local-exec" {
     when    = create
     command = <<EOT
-      set -xe
+      set -x
 
       # Step 1: Build the DRAFT locale (if not already built)
       aws lexv2-models build-bot-locale \
@@ -185,19 +185,12 @@ resource "null_resource" "create_lex_alias" {
 
       # Wait for build to complete
       echo "🕒 Waiting for locale build to finish..."
-      for i in {1..60}; do  # up to ~5 minutes
-        STATUS=$(aws lexv2-models describe-bot-locale ...)
-        echo "⏳ Current locale status: $STATUS"
-
-        if [[ "$STATUS" == "Built" ]]; then
-          echo "✅ Locale build complete."
-          break
-        elif [[ "$STATUS" == "Failed" ]]; then
-          echo "❌ Locale build failed. Fetching failure reasons..."
-          aws lexv2-models describe-bot-locale ... --query 'failureReasons' ...
-          exit 1
-        fi
-
+      until [[ $(aws lexv2-models describe-bot-locale \
+        --bot-id ${self.triggers.bot_id} \
+        --bot-version DRAFT \
+        --locale-id en_US \
+        --query 'botLocaleStatus' \
+        --output text) == "Built" ]]; do
         sleep 5
       done
 
