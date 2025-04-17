@@ -60,7 +60,7 @@ resource "aws_lexv2models_slot" "category_slot" {
     prompt_specification {
       max_retries = 2  # This should match the number of retry specifications
       allow_interrupt = true
-
+      
       message_group {
         message {
           plain_text_message {
@@ -176,7 +176,8 @@ resource "aws_lexv2models_slot" "time_frame_slot" {
     prompt_specification {
       max_retries     = 2
       allow_interrupt = true
-
+        
+      message_selection_strategy = "Random"
       message_group {
         message {
           plain_text_message {
@@ -334,6 +335,10 @@ resource "null_resource" "update_query_spending_by_category_slot_priorities" {
         --locale-id $LOCALE \
         --query "intentSummaries[?intentName=='$INTENT_NAME'].intentId" \
         --output text)
+      if [[ -z "$INTENT_ID" ]]; then
+        echo "❌ Intent '$INTENT_NAME' not found. Exiting."
+        exit 1
+      fi
 
       # Get slot IDs
       SLOT_ID_1=$(aws lexv2-models list-slots \
