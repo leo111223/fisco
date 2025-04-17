@@ -302,11 +302,8 @@ resource "aws_lexv2models_slot_type" "time_frame_type" {
 # The null resource to fix the slot priority circular dependency
 resource "null_resource" "update_query_spending_by_category_slot_priorities" {
   triggers = {
-    bot_id     = aws_lexv2models_bot.finance_assistant.id
-    intent_id  = aws_lexv2models_intent.query_spending_by_category.id
-    locale_id  = "en_US"
-    slot_1     = "Category"
-    slot_2     = "TimeFrame"
+    bot_id    = aws_lexv2models_bot.finance_assistant.id
+    locale_id = "en_US"
   }
 
   provisioner "local-exec" {
@@ -314,18 +311,24 @@ resource "null_resource" "update_query_spending_by_category_slot_priorities" {
       set -xe
 
       BOT_ID=${self.triggers.bot_id}
-      INTENT_ID=${self.triggers.intent_id}
       LOCALE=${self.triggers.locale_id}
-      SLOT_NAME_1=${self.triggers.slot_1}
-      SLOT_NAME_2=${self.triggers.slot_2}
+      INTENT_NAME="QuerySpendingByCategory"
 
-      # Get slot IDs by name
+      # Get intent ID by name
+      INTENT_ID=$(aws lexv2-models list-intents \
+        --bot-id $BOT_ID \
+        --bot-version DRAFT \
+        --locale-id $LOCALE \
+        --query "intentSummaries[?intentName=='$INTENT_NAME'].intentId" \
+        --output text)
+
+      # Get slot IDs
       SLOT_ID_1=$(aws lexv2-models list-slots \
         --bot-id $BOT_ID \
         --bot-version DRAFT \
         --locale-id $LOCALE \
         --intent-id $INTENT_ID \
-        --query "slotSummaries[?slotName=='$SLOT_NAME_1'].slotId" \
+        --query "slotSummaries[?slotName=='Category'].slotId" \
         --output text)
 
       SLOT_ID_2=$(aws lexv2-models list-slots \
@@ -333,12 +336,12 @@ resource "null_resource" "update_query_spending_by_category_slot_priorities" {
         --bot-version DRAFT \
         --locale-id $LOCALE \
         --intent-id $INTENT_ID \
-        --query "slotSummaries[?slotName=='$SLOT_NAME_2'].slotId" \
+        --query "slotSummaries[?slotName=='TimeFrame'].slotId" \
         --output text)
 
-      echo "Slot IDs found: $SLOT_NAME_1=$SLOT_ID_1, $SLOT_NAME_2=$SLOT_ID_2"
+      echo "Slot IDs found: Category=$SLOT_ID_1, TimeFrame=$SLOT_ID_2"
 
-      # Describe the intent and remove immutable fields
+      # Get intent config
       aws lexv2-models describe-intent \
         --bot-id $BOT_ID \
         --bot-version DRAFT \
@@ -346,12 +349,12 @@ resource "null_resource" "update_query_spending_by_category_slot_priorities" {
         --intent-id $INTENT_ID | \
         jq 'del(.creationDateTime, .lastUpdatedDateTime, .version, .name)' > intent_config.json
 
-      # Add slot priorities
+      # Inject slot priorities
       jq --arg slot1 "$SLOT_ID_1" --arg slot2 "$SLOT_ID_2" \
         '.slotPriorities = [{"priority": 1, "slotId": $slot1}, {"priority": 2, "slotId": $slot2}]' \
         intent_config.json > updated_intent.json
 
-      # Push the updated intent back
+      # Update intent
       aws lexv2-models update-intent \
         --bot-id $BOT_ID \
         --bot-version DRAFT \
@@ -359,14 +362,9 @@ resource "null_resource" "update_query_spending_by_category_slot_priorities" {
         --intent-id $INTENT_ID \
         --cli-input-json file://updated_intent.json
 
-      echo "✅ Slot priorities updated successfully for $INTENT_ID"
+      echo "✅ Slot priorities updated successfully for $INTENT_NAME"
     EOT
   }
-  depends_on = [
-    aws_lexv2models_intent.query_spending_by_category,
-    aws_lexv2models_slot.category_slot,
-    aws_lexv2models_slot.time_frame_slot
-  ]
 }
 
 
