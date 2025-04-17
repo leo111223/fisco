@@ -472,6 +472,12 @@ resource "null_resource" "update_query_spending_by_category_slot_priorities" {
       echo "✅ Slot priorities updated successfully for $INTENT_NAME"
     EOT
   }
+
+  depends_on = [ 
+    aws_lexv2models_intent.query_spending_by_category,
+    aws_lexv2models_slot.category_slot,
+    aws_lexv2models_slot.time_frame_slot
+  ]
 }
 
 
