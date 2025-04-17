@@ -417,20 +417,21 @@ resource "null_resource" "update_query_spending_by_category_slot_priorities" {
       LOCALE=${self.triggers.locale_id}
       INTENT_NAME="QuerySpendingByCategory"
 
-      # Get intent ID by name
+      echo "🔍 Looking up intent ID for: $INTENT_NAME"
       INTENT_ID=$(aws lexv2-models list-intents \
         --bot-id $BOT_ID \
         --bot-version DRAFT \
         --locale-id $LOCALE \
         --query "intentSummaries[?intentName=='$INTENT_NAME'].intentId" \
         --output text)
+
       if [[ -z "$INTENT_ID" ]]; then
         echo "❌ Intent '$INTENT_NAME' not found. Exiting."
         exit 1
       fi
 
-      # Get slot IDs
-      SLOT_ID_1=$(aws lexv2-models list-slots \
+      echo "🔍 Looking up slot IDs..."
+      SLOT_ID_CATEGORY=$(aws lexv2-models list-slots \
         --bot-id $BOT_ID \
         --bot-version DRAFT \
         --locale-id $LOCALE \
@@ -438,7 +439,7 @@ resource "null_resource" "update_query_spending_by_category_slot_priorities" {
         --query "slotSummaries[?slotName=='Category'].slotId" \
         --output text)
 
-      SLOT_ID_2=$(aws lexv2-models list-slots \
+      SLOT_ID_TIMEFRAME=$(aws lexv2-models list-slots \
         --bot-id $BOT_ID \
         --bot-version DRAFT \
         --locale-id $LOCALE \
@@ -446,9 +447,14 @@ resource "null_resource" "update_query_spending_by_category_slot_priorities" {
         --query "slotSummaries[?slotName=='TimeFrame'].slotId" \
         --output text)
 
-      echo "Slot IDs found: Category=$SLOT_ID_1, TimeFrame=$SLOT_ID_2"
+      if [[ -z "$SLOT_ID_CATEGORY" || -z "$SLOT_ID_TIMEFRAME" ]]; then
+        echo "❌ One or both slot IDs not found. Exiting."
+        exit 1
+      fi
 
-      # Get intent config
+      echo "✅ Slot IDs: Category=$SLOT_ID_CATEGORY, TimeFrame=$SLOT_ID_TIMEFRAME"
+
+      echo "📄 Fetching intent definition..."
       aws lexv2-models describe-intent \
         --bot-id $BOT_ID \
         --bot-version DRAFT \
@@ -456,12 +462,12 @@ resource "null_resource" "update_query_spending_by_category_slot_priorities" {
         --intent-id $INTENT_ID | \
         jq 'del(.creationDateTime, .lastUpdatedDateTime, .version, .name)' > intent_config.json
 
-      # Inject slot priorities
-      jq --arg slot1 "$SLOT_ID_1" --arg slot2 "$SLOT_ID_2" \
-        '.slotPriorities = [{"priority": 1, "slotId": $slot1}, {"priority": 2, "slotId": $slot2}]' \
+      echo "🛠️ Injecting slot priorities..."
+      jq --arg cat "$SLOT_ID_CATEGORY" --arg tf "$SLOT_ID_TIMEFRAME" \
+        '.slotPriorities = [{"priority": 1, "slotId": $cat}, {"priority": 2, "slotId": $tf}]' \
         intent_config.json > updated_intent.json
 
-      # Update intent
+      echo "🚀 Updating Lex intent..."
       aws lexv2-models update-intent \
         --bot-id $BOT_ID \
         --bot-version DRAFT \
@@ -469,7 +475,7 @@ resource "null_resource" "update_query_spending_by_category_slot_priorities" {
         --intent-id $INTENT_ID \
         --cli-input-json file://updated_intent.json
 
-      echo "✅ Slot priorities updated successfully for $INTENT_NAME"
+      echo "✅ Slot priorities successfully updated for '$INTENT_NAME'"
     EOT
   }
 
