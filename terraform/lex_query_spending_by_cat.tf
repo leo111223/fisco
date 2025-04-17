@@ -245,7 +245,122 @@ resource "aws_lexv2models_slot" "time_frame_slot" {
     }
   }
 }
+# Category slot type
+resource "aws_lexv2models_slot_type" "spending_category_type" {
+  name         = "SpendingCategoryType"
+  bot_id       = aws_lexv2models_bot.finance_assistant.id
+  bot_version  = "DRAFT"
+  locale_id    = "en_US"
+  description  = "Categories of spending"
 
+  value_selection_setting {
+    resolution_strategy = "OriginalValue"
+  }
+
+  # Common spending categories
+  slot_type_values {
+    sample_value { value = "groceries" }
+    synonyms { value = "grocery" }
+    synonyms { value = "supermarket" }
+    synonyms { value = "food shopping" }
+  }
+  
+  slot_type_values {
+    sample_value { value = "dining" }
+    synonyms { value = "restaurants" }
+    synonyms { value = "eating out" }
+    synonyms { value = "food" }
+  }
+  
+  slot_type_values {
+    sample_value { value = "entertainment" }
+    synonyms { value = "fun" }
+    synonyms { value = "movies" }
+    synonyms { value = "shows" }
+  }
+  
+  slot_type_values {
+    sample_value { value = "shopping" }
+    synonyms { value = "retail" }
+    synonyms { value = "clothes" }
+    synonyms { value = "purchases" }
+  }
+  
+  slot_type_values {
+    sample_value { value = "transportation" }
+    synonyms { value = "transit" }
+    synonyms { value = "travel" }
+    synonyms { value = "commute" }
+  }
+  
+  slot_type_values {
+    sample_value { value = "utilities" }
+    synonyms { value = "bills" }
+    synonyms { value = "electricity" }
+    synonyms { value = "water" }
+  }
+
+  depends_on = [
+    aws_lexv2models_bot_locale.english_locale
+  ]
+}
+
+# Time frame slot type
+resource "aws_lexv2models_slot_type" "time_frame_type" {
+  name         = "TimeFrameType"
+  bot_id       = aws_lexv2models_bot.finance_assistant.id
+  bot_version  = "DRAFT"
+  locale_id    = "en_US"
+  description  = "Time periods for queries"
+
+  value_selection_setting {
+    resolution_strategy = "OriginalValue"
+  }
+
+  # Common time frames
+  slot_type_values {
+    sample_value { value = "today" }
+    synonyms { value = "this day" }
+  }
+  
+  slot_type_values {
+    sample_value { value = "yesterday" }
+  }
+  
+  slot_type_values {
+    sample_value { value = "this week" }
+    synonyms { value = "current week" }
+  }
+  
+  slot_type_values {
+    sample_value { value = "last week" }
+    synonyms { value = "previous week" }
+  }
+  
+  slot_type_values {
+    sample_value { value = "this month" }
+    synonyms { value = "current month" }
+  }
+  
+  slot_type_values {
+    sample_value { value = "last month" }
+    synonyms { value = "previous month" }
+  }
+  
+  slot_type_values {
+    sample_value { value = "this year" }
+    synonyms { value = "current year" }
+  }
+  
+  slot_type_values {
+    sample_value { value = "last year" }
+    synonyms { value = "previous year" }
+  }
+
+  depends_on = [
+    aws_lexv2models_bot_locale.english_locale
+  ]
+}
 # The null resource to fix the slot priority circular dependency
 resource "null_resource" "update_spending_intent_slot_priorities" {
   triggers = {
