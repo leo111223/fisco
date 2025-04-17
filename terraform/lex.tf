@@ -547,7 +547,7 @@ resource "null_resource" "create_lex_alias" {
     aws_lexv2models_slot.category_slot,
     aws_lexv2models_slot.time_frame_slot,
     aws_lexv2models_intent.query_spending_by_category,
-    null_resource.update_spending_intent_slot_priorities
+    null_resource.update_query_spending_intent_slot_priorities
   ]
 }
 
