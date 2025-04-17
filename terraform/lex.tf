@@ -540,7 +540,14 @@ resource "null_resource" "create_lex_alias" {
     aws_lexv2models_intent.greeting_intent,
     aws_lexv2models_intent.get_recent_transactions,
     aws_lexv2models_intent.goodbye_intent,
-    null_resource.update_intent_slot_priority
+    null_resource.update_intent_slot_priority,
+    #second intent
+    aws_lexv2models_slot_type.spending_category_type,
+    aws_lexv2models_slot_type.time_frame_type,
+    aws_lexv2models_slot.category_slot,
+    aws_lexv2models_slot.time_frame_slot,
+    aws_lexv2models_intent.query_spending_by_category,
+    null_resource.update_spending_intent_slot_priorities
   ]
 }
 
