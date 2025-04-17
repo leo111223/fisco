@@ -174,55 +174,112 @@ resource "aws_lexv2models_slot" "time_frame_slot" {
     slot_constraint = "Required"
 
     prompt_specification {
-      max_retries     = 2
-      allow_interrupt = true
-      message_selection_strategy = "Random"
+  max_retries     = 2
+  allow_interrupt = true
+  message_selection_strategy = "Random"
 
-      message_group {
-        message {
-          plain_text_message {
-            value = "For what time frame would you like to view your spending? (e.g., last week, this month)"
-          }
-        }
-      }
-
-      prompt_attempts_specification {
-        map_block_key = "Initial"
-
-        allow_interrupt = true
-
-        allowed_input_types {
-          allow_audio_input = true
-          allow_dtmf_input  = true
-        }
-
-        text_input_specification {
-          start_timeout_ms = 30000
-        }
-
-        audio_and_dtmf_input_specification {
-          start_timeout_ms = 4000
-
-          audio_specification {
-            max_length_ms  = 15000
-            end_timeout_ms = 640
-          }
-
-          dtmf_specification {
-            max_length         = 513
-            end_timeout_ms     = 5000
-            deletion_character = "*"
-            end_character      = "#"
-          }
-        }
+  message_group {
+    message {
+      plain_text_message {
+        value = "For what time frame would you like to view your spending? (e.g., last week, this month)"
       }
     }
+  }
 
-    default_value_specification {
-      default_value_list {
-        default_value = "this month"
+  # Initial Attempt
+  prompt_attempts_specification {
+    map_block_key = "Initial"
+    allow_interrupt = true
+
+    allowed_input_types {
+      allow_audio_input = true
+      allow_dtmf_input  = true
+    }
+
+    text_input_specification {
+      start_timeout_ms = 30000
+    }
+
+    audio_and_dtmf_input_specification {
+      start_timeout_ms = 4000
+
+      audio_specification {
+        max_length_ms  = 15000
+        end_timeout_ms = 640
+      }
+
+      dtmf_specification {
+        max_length         = 513
+        end_timeout_ms     = 5000
+        deletion_character = "*"
+        end_character      = "#"
       }
     }
+  }
+
+  # Retry 1
+  prompt_attempts_specification {
+    map_block_key = "Retry1"
+    allow_interrupt = true
+
+    allowed_input_types {
+      allow_audio_input = true
+      allow_dtmf_input  = true
+    }
+
+    text_input_specification {
+      start_timeout_ms = 30000
+    }
+
+    audio_and_dtmf_input_specification {
+      start_timeout_ms = 4000
+
+      audio_specification {
+        max_length_ms  = 15000
+        end_timeout_ms = 640
+      }
+
+      dtmf_specification {
+        max_length         = 513
+        end_timeout_ms     = 5000
+        deletion_character = "*"
+        end_character      = "#"
+      }
+    }
+  }
+
+  # Retry 2
+  prompt_attempts_specification {
+    map_block_key = "Retry2"
+    allow_interrupt = true
+
+    allowed_input_types {
+      allow_audio_input = true
+      allow_dtmf_input  = true
+    }
+
+    text_input_specification {
+      start_timeout_ms = 30000
+    }
+
+    audio_and_dtmf_input_specification {
+      start_timeout_ms = 4000
+
+      audio_specification {
+        max_length_ms  = 15000
+        end_timeout_ms = 640
+      }
+
+      dtmf_specification {
+        max_length         = 513
+        end_timeout_ms     = 5000
+        deletion_character = "*"
+        end_character      = "#"
+      }
+    }
+  }
+}
+
   }
 }
 
