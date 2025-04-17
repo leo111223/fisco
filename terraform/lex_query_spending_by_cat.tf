@@ -247,120 +247,176 @@ resource "aws_lexv2models_slot" "time_frame_slot" {
 }
 
 # Category slot type
-resource "aws_lexv2models_slot_type" "spending_category_type" {
-  name         = "SpendingCategoryType"
+resource "aws_lexv2models_slot" "category_slot" {
+  name         = "SpendingCategory"
   bot_id       = aws_lexv2models_bot.finance_assistant.id
   bot_version  = "DRAFT"
   locale_id    = "en_US"
-  description  = "Categories of spending"
+  intent_id    = aws_lexv2models_intent.query_spending_by_category.intent_id
+  slot_type_id = aws_lexv2models_slot_type.spending_category_type.slot_type_id
 
-  value_selection_setting {
-    resolution_strategy = "OriginalValue"
-  }
+  value_elicitation_setting {
+    slot_constraint = "Required"
+    
+    prompt_specification {
+      max_retries = 1
+      allow_interrupt = true
 
-  # Common spending categories
-  slot_type_values {
-    sample_value { value = "groceries" }
-    synonyms { value = "grocery" }
-    synonyms { value = "supermarket" }
-    synonyms { value = "food shopping" }
-  }
-  
-  slot_type_values {
-    sample_value { value = "dining" }
-    synonyms { value = "restaurants" }
-    synonyms { value = "eating out" }
-    synonyms { value = "food" }
-  }
-  
-  slot_type_values {
-    sample_value { value = "entertainment" }
-    synonyms { value = "fun" }
-    synonyms { value = "movies" }
-    synonyms { value = "shows" }
-  }
-  
-  slot_type_values {
-    sample_value { value = "shopping" }
-    synonyms { value = "retail" }
-    synonyms { value = "clothes" }
-    synonyms { value = "purchases" }
-  }
-  
-  slot_type_values {
-    sample_value { value = "transportation" }
-    synonyms { value = "transit" }
-    synonyms { value = "travel" }
-    synonyms { value = "commute" }
-  }
-  
-  slot_type_values {
-    sample_value { value = "utilities" }
-    synonyms { value = "bills" }
-    synonyms { value = "electricity" }
-    synonyms { value = "water" }
-  }
+      message_group {
+        message {
+          plain_text_message {
+            value = "Which spending category would you like to know about? For example: groceries, dining, entertainment, etc."
+          }
+        }
+      }
 
-  depends_on = [
-    aws_lexv2models_bot_locale.english_locale
-  ]
+      message_selection_strategy = "Random"
+
+      # Initial prompt
+      prompt_attempts_specification {
+        map_block_key = "Initial"
+        allow_interrupt = true
+
+        allowed_input_types {
+          allow_audio_input = true
+          allow_dtmf_input  = true
+        }
+
+        audio_and_dtmf_input_specification {
+          start_timeout_ms = 4000
+          audio_specification {
+            max_length_ms  = 15000
+            end_timeout_ms = 640
+          }
+          dtmf_specification {
+            max_length         = 20
+            end_timeout_ms     = 5000
+            deletion_character = "*"
+            end_character      = "#"
+          }
+        }
+
+        text_input_specification {
+          start_timeout_ms = 30000
+        }
+      }
+
+      # First retry
+      prompt_attempts_specification {
+        map_block_key = "Retry1"
+        allow_interrupt = true
+
+        allowed_input_types {
+          allow_audio_input = true
+          allow_dtmf_input  = true
+        }
+
+        audio_and_dtmf_input_specification {
+          start_timeout_ms = 4000
+          audio_specification {
+            max_length_ms  = 15000
+            end_timeout_ms = 640
+          }
+          dtmf_specification {
+            max_length         = 20
+            end_timeout_ms     = 5000
+            deletion_character = "*"
+            end_character      = "#"
+          }
+        }
+
+        text_input_specification {
+          start_timeout_ms = 30000
+        }
+      }
+    }
+  }
 }
 
-# Time frame slot type
-resource "aws_lexv2models_slot_type" "time_frame_type" {
-  name         = "TimeFrameType"
+resource "aws_lexv2models_slot" "time_frame_slot" {
+  name         = "SpendingTimeFrame"
   bot_id       = aws_lexv2models_bot.finance_assistant.id
   bot_version  = "DRAFT"
   locale_id    = "en_US"
-  description  = "Time periods for queries"
+  intent_id    = aws_lexv2models_intent.query_spending_by_category.intent_id
+  slot_type_id = aws_lexv2models_slot_type.time_frame_type.slot_type_id
 
-  value_selection_setting {
-    resolution_strategy = "OriginalValue"
-  }
+  value_elicitation_setting {
+    slot_constraint = "Required"
+    
+    prompt_specification {
+      max_retries = 1
+      allow_interrupt = true
 
-  # Common time frames
-  slot_type_values {
-    sample_value { value = "today" }
-    synonyms { value = "this day" }
-  }
-  
-  slot_type_values {
-    sample_value { value = "yesterday" }
-  }
-  
-  slot_type_values {
-    sample_value { value = "this week" }
-    synonyms { value = "current week" }
-  }
-  
-  slot_type_values {
-    sample_value { value = "last week" }
-    synonyms { value = "previous week" }
-  }
-  
-  slot_type_values {
-    sample_value { value = "this month" }
-    synonyms { value = "current month" }
-  }
-  
-  slot_type_values {
-    sample_value { value = "last month" }
-    synonyms { value = "previous month" }
-  }
-  
-  slot_type_values {
-    sample_value { value = "this year" }
-    synonyms { value = "current year" }
-  }
-  
-  slot_type_values {
-    sample_value { value = "last year" }
-    synonyms { value = "previous year" }
-  }
+      message_group {
+        message {
+          plain_text_message {
+            value = "For what time period? For example: this week, last month, in January, etc."
+          }
+        }
+      }
 
-  depends_on = [
-    aws_lexv2models_bot_locale.english_locale
-  ]
+      message_selection_strategy = "Random"
+
+      # Initial prompt
+      prompt_attempts_specification {
+        map_block_key = "Initial"
+        allow_interrupt = true
+
+        allowed_input_types {
+          allow_audio_input = true
+          allow_dtmf_input  = true
+        }
+
+        audio_and_dtmf_input_specification {
+          start_timeout_ms = 4000
+          audio_specification {
+            max_length_ms  = 15000
+            end_timeout_ms = 640
+          }
+          dtmf_specification {
+            max_length         = 20
+            end_timeout_ms     = 5000
+            deletion_character = "*"
+            end_character      = "#"
+          }
+        }
+
+        text_input_specification {
+          start_timeout_ms = 30000
+        }
+      }
+
+      # First retry
+      prompt_attempts_specification {
+        map_block_key = "Retry1"
+        allow_interrupt = true
+
+        allowed_input_types {
+          allow_audio_input = true
+          allow_dtmf_input  = true
+        }
+
+        audio_and_dtmf_input_specification {
+          start_timeout_ms = 4000
+          audio_specification {
+            max_length_ms  = 15000
+            end_timeout_ms = 640
+          }
+          dtmf_specification {
+            max_length         = 20
+            end_timeout_ms     = 5000
+            deletion_character = "*"
+            end_character      = "#"
+          }
+        }
+
+        text_input_specification {
+          start_timeout_ms = 30000
+        }
+      }
+    }
+  }
 }
 
 # The null resource to fix the slot priority circular dependency
