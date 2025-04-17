@@ -255,6 +255,8 @@ resource "null_resource" "update_intent_slot_priority" {
         --locale-id en_US \
         --intent-id ${self.triggers.intent_id} \
         --cli-input-json file://updated_intent.json
+        
+      echo "✅ Successfully added slot priority to GetRecentTransactions intent"
     EOT
     interpreter = ["bash", "-c"]
   }

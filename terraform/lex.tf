@@ -177,6 +177,62 @@ resource "null_resource" "create_lex_alias" {
     command = <<EOT
       set -xe
 
+      # ✅First, verify the slot priority is set correctly
+      echo "Verifying slot priorities are properly set..."
+      TRANSACTIONS_INTENT_ID=$(aws lexv2-models list-intents \
+        --bot-id ${self.triggers.bot_id} \
+        --bot-version DRAFT \
+        --locale-id en_US \
+        --query "intentSummaries[?intentName=='GetRecentTransactions'].intentId" \
+        --output text)
+        
+      if [[ ! -z "$TRANSACTIONS_INTENT_ID" ]]; then
+        INTENT_INFO=$(aws lexv2-models describe-intent \
+          --bot-id ${self.triggers.bot_id} \
+          --bot-version DRAFT \
+          --locale-id en_US \
+          --intent-id $TRANSACTIONS_INTENT_ID)
+          
+        # Check if slotPriorities exists
+        if ! echo "$INTENT_INFO" | jq -e '.slotPriorities' > /dev/null; then
+          echo "⚠️ No slot priorities found for GetRecentTransactions intent. Setting them now..."
+          
+          # Get slots for this intent
+          SLOT_ID=$(aws lexv2-models list-slots \
+            --bot-id ${self.triggers.bot_id} \
+            --bot-version DRAFT \
+            --locale-id en_US \
+            --intent-id $TRANSACTIONS_INTENT_ID \
+            --query "slotSummaries[?slotName=='NumberOfTransactions'].slotId" \
+            --output text)
+            
+          if [[ ! -z "$SLOT_ID" ]]; then
+            # Create a temporary file with the intent configuration
+            echo "$INTENT_INFO" | jq 'del(.creationDateTime, .lastUpdatedDateTime, .version)' > temp_intent.json
+            
+            # Add slot priority
+            jq --arg slot_id "$SLOT_ID" '.slotPriorities = [{"priority": 1, "slotId": $slot_id}]' temp_intent.json > updated_intent.json
+            
+            # Update the intent
+            aws lexv2-models update-intent \
+              --bot-id ${self.triggers.bot_id} \
+              --bot-version DRAFT \
+              --locale-id en_US \
+              --intent-id $TRANSACTIONS_INTENT_ID \
+              --cli-input-json file://updated_intent.json
+              
+            echo "✅ Slot priorities updated for GetRecentTransactions intent"
+          else
+            echo "⚠️ No NumberOfTransactions slot found!"
+          fi
+        else
+          echo "✅ Slot priorities already set for GetRecentTransactions intent"
+        fi
+      else
+        echo "⚠️ GetRecentTransactions intent not found!"
+      fi
+
+
       # Step 1: Build the DRAFT locale (if not already built)
       aws lexv2-models build-bot-locale \
         --bot-id ${self.triggers.bot_id} \
