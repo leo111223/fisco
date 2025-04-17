@@ -291,7 +291,8 @@ resource "null_resource" "create_lex_alias" {
     aws_lexv2models_slot.number_of_transactions,
     aws_lexv2models_intent.greeting_intent,
     aws_lexv2models_intent.get_recent_transactions,
-    aws_lexv2models_intent.goodbye_intent
+    aws_lexv2models_intent.goodbye_intent,
+    null_resource.update_intent_slot_priority 
   ]
 }
 
