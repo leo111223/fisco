@@ -175,7 +175,7 @@ resource "null_resource" "create_lex_alias" {
   provisioner "local-exec" {
     when    = create
     command = <<EOT
-      set -x
+      set -xe
 
       # Step 1: Build the DRAFT locale (if not already built)
       aws lexv2-models build-bot-locale \
