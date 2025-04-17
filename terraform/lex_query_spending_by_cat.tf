@@ -182,6 +182,8 @@ resource "aws_lexv2models_slot" "time_frame_slot" {
   }
 }
 # Category slot type
+# Category slot type
+# Category slot type
 resource "aws_lexv2models_slot_type" "spending_category_type" {
   name         = "SpendingCategoryType"
   bot_id       = aws_lexv2models_bot.finance_assistant.id
@@ -190,10 +192,10 @@ resource "aws_lexv2models_slot_type" "spending_category_type" {
   description  = "Categories of spending"
 
   value_selection_setting {
-    resolution_strategy = "OriginalValue"
+    resolution_strategy = "TOP_RESOLUTION"  # Changed from ORIGINAL_VALUE to TOP_RESOLUTION
   }
 
-  # Common spending categories
+  # Use slot_type_values instead of enumeration_value
   slot_type_values {
     sample_value { value = "groceries" }
     synonyms { value = "grocery" }
@@ -212,7 +214,7 @@ resource "aws_lexv2models_slot_type" "spending_category_type" {
     sample_value { value = "entertainment" }
     synonyms { value = "fun" }
     synonyms { value = "movies" }
-    synonyms { value = "shows" }
+    synonyms{ value = "shows" }
   }
   
   slot_type_values {
@@ -250,10 +252,10 @@ resource "aws_lexv2models_slot_type" "time_frame_type" {
   description  = "Time periods for queries"
 
   value_selection_setting {
-    resolution_strategy = "OriginalValue"
+    resolution_strategy = "TOP_RESOLUTION"  # Changed from ORIGINAL_VALUE to TOP_RESOLUTION
   }
 
-  # Common time frames
+  # Use slot_type_values instead of enumeration_value
   slot_type_values {
     sample_value { value = "today" }
     synonyms { value = "this day" }
@@ -298,7 +300,7 @@ resource "aws_lexv2models_slot_type" "time_frame_type" {
   ]
 }
 # The null resource to fix the slot priority circular dependency
-resource "null_resource" "update_spending_intent_slot_priorities" {
+resource "null_resource" "update_query_spending_intent_slot_priorities" {
   triggers = {
     bot_id     = aws_lexv2models_bot.finance_assistant.id
     intent_id  = aws_lexv2models_intent.query_spending_by_category.intent_id
