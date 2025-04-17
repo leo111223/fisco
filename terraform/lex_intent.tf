@@ -158,12 +158,13 @@ resource "null_resource" "update_intent_slot_priority" {
     command = <<EOT
       set -xe
       
-      # Get the current intent configuration
+      # Get the current intent configuration and filter out metadata fields
       aws lexv2-models describe-intent \
         --bot-id ${self.triggers.bot_id} \
         --bot-version DRAFT \
         --locale-id en_US \
-        --intent-id ${self.triggers.intent_id} > intent_config.json
+        --intent-id ${self.triggers.intent_id} | \
+        jq 'del(.creationDateTime, .lastUpdatedDateTime, .version)' > intent_config.json
       
       # Add the slot priority to the configuration
       # First check if slotPriorities exists, if not create it
