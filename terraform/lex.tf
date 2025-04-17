@@ -185,12 +185,19 @@ resource "null_resource" "create_lex_alias" {
 
       # Wait for build to complete
       echo "🕒 Waiting for locale build to finish..."
-      until [[ $(aws lexv2-models describe-bot-locale \
-        --bot-id ${self.triggers.bot_id} \
-        --bot-version DRAFT \
-        --locale-id en_US \
-        --query 'botLocaleStatus' \
-        --output text) == "Built" ]]; do
+      for i in {1..60}; do  # up to ~5 minutes
+        STATUS=$(aws lexv2-models describe-bot-locale ...)
+        echo "⏳ Current locale status: $STATUS"
+
+        if [[ "$STATUS" == "Built" ]]; then
+          echo "✅ Locale build complete."
+          break
+        elif [[ "$STATUS" == "Failed" ]]; then
+          echo "❌ Locale build failed. Fetching failure reasons..."
+          aws lexv2-models describe-bot-locale ... --query 'failureReasons' ...
+          exit 1
+        fi
+
         sleep 5
       done
 
