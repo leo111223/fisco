@@ -133,6 +133,8 @@ resource "aws_lexv2models_intent" "get_recent_transactions" {
   # }
 }
 
+
+
 resource "aws_lexv2models_slot" "number_of_transactions" {
   name         = "NumberOfTransactions"
   bot_id       = aws_lexv2models_bot.finance_assistant.id
@@ -230,4 +232,31 @@ resource "aws_lexv2models_slot" "number_of_transactions" {
   }
 }
 
+
+resource "aws_lexv2models_slot_type" "transaction_count_type" {
+  name         = "TransactionCountType"
+  description  = "Number of recent transactions to fetch"
+  bot_id = aws_lexv2models_bot.finance_assistant.id
+  bot_version   = "DRAFT"
+  locale_id     = "en_US"
+
+  value_selection_setting {
+    resolution_strategy = "OriginalValue"
+  }
+  slot_type_values {
+    sample_value {
+      value = "5"
+    }
+  }
+  slot_type_values {
+    sample_value {
+      value = "10"
+    }
+  }
+  slot_type_values {
+    sample_value {
+      value = "3"
+    }
+  }
+}
 
