@@ -417,30 +417,30 @@ resource "aws_lexv2models_slot_priority" "transaction_slot_priority" {
 # }
 
 
-resource "aws_lexv2models_slot_type" "transaction_count_type" {
-  name         = "TransactionCountType"
-  bot_id       = aws_lexv2models_bot.finance_assistant.id
-  bot_version  = "DRAFT"
-  locale_id    = "en_US"
-  description  = "Number of recent transactions to fetch"
+# resource "aws_lexv2models_slot_type" "transaction_count_type" {
+#   name         = "TransactionCountType"
+#   bot_id       = aws_lexv2models_bot.finance_assistant.id
+#   bot_version  = "DRAFT"
+#   locale_id    = "en_US"
+#   description  = "Number of recent transactions to fetch"
 
-  value_selection_setting {
-    resolution_strategy = "OriginalValue"
-  }
+#   value_selection_setting {
+#     resolution_strategy = "OriginalValue"
+#   }
 
-  slot_type_values {
-    sample_value { value = "3" }
-  }
-  slot_type_values {
-    sample_value { value = "5" }
-  }
-  slot_type_values {
-    sample_value { value = "10" }
-  }
+#   slot_type_values {
+#     sample_value { value = "3" }
+#   }
+#   slot_type_values {
+#     sample_value { value = "5" }
+#   }
+#   slot_type_values {
+#     sample_value { value = "10" }
+#   }
 
-  depends_on = [
-    aws_lexv2models_bot_locale.english_locale
-  ]
-}
+#   depends_on = [
+#     aws_lexv2models_bot_locale.english_locale
+#   ]
+# }
 
 
