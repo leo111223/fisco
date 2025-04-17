@@ -235,28 +235,28 @@ resource "aws_lexv2models_slot" "number_of_transactions" {
 
 resource "aws_lexv2models_slot_type" "transaction_count_type" {
   name         = "TransactionCountType"
+  bot_id       = aws_lexv2models_bot.finance_assistant.id
+  bot_version  = "DRAFT"
+  locale_id    = "en_US"
   description  = "Number of recent transactions to fetch"
-  bot_id = aws_lexv2models_bot.finance_assistant.id
-  bot_version   = "DRAFT"
-  locale_id     = "en_US"
 
   value_selection_setting {
     resolution_strategy = "OriginalValue"
   }
+
   slot_type_values {
-    sample_value {
-      value = "5"
-    }
+    sample_value { value = "3" }
   }
   slot_type_values {
-    sample_value {
-      value = "10"
-    }
+    sample_value { value = "5" }
   }
   slot_type_values {
-    sample_value {
-      value = "3"
-    }
+    sample_value { value = "10" }
   }
+
+  depends_on = [
+    aws_lexv2models_bot_locale.english_locale
+  ]
 }
+
 
