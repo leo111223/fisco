@@ -264,7 +264,12 @@ resource "null_resource" "create_lex_alias" {
   }
 
   depends_on = [
-    aws_lexv2models_bot_locale.english_locale
+    aws_lexv2models_bot_locale.english_locale,
+    aws_lexv2models_slot_type.transaction_count_type,
+    aws_lexv2models_slot.number_of_transactions,
+    aws_lexv2models_intent.greeting_intent,
+    aws_lexv2models_intent.get_recent_transactions,
+    aws_lexv2models_intent.goodbye_intent
   ]
 }
 
