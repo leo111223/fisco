@@ -86,6 +86,7 @@ resource "aws_lexv2models_intent" "goodbye_intent" {
   depends_on = [aws_lexv2models_bot_locale.english_locale]
 }
 
+
 # Intent definition without slot_priority
 resource "aws_lexv2models_intent" "get_recent_transactions" {
   name        = "GetRecentTransactions"
@@ -127,7 +128,6 @@ resource "aws_lexv2models_intent" "get_recent_transactions" {
   depends_on = [
     aws_lexv2models_bot_locale.english_locale
   ]
-  # No slot_priority block here
 }
 
 # Slot definition with intent_id reference
@@ -140,10 +140,6 @@ resource "aws_lexv2models_slot" "number_of_transactions" {
   slot_type_id = aws_lexv2models_slot_type.transaction_count_type.slot_type_id
 
   # Rest of your slot configuration...
-  value_elicitation_setting {
-    slot_constraint = "Optional"
-    # ...rest of your configuration
-  }
 }
 
 # Add this null_resource to update the intent with the slot priority
@@ -167,14 +163,7 @@ resource "null_resource" "update_intent_slot_priority" {
         jq 'del(.creationDateTime, .lastUpdatedDateTime, .version)' > intent_config.json
       
       # Add the slot priority to the configuration
-      # First check if slotPriorities exists, if not create it
-      if jq -e '.slotPriorities' intent_config.json > /dev/null; then
-        # slotPriorities exists, append to it
-        jq --arg slot_id "${self.triggers.slot_id}" '.slotPriorities += [{"priority": 1, "slotId": $slot_id}]' intent_config.json > updated_intent.json
-      else
-        # slotPriorities doesn't exist, create it
-        jq --arg slot_id "${self.triggers.slot_id}" '.slotPriorities = [{"priority": 1, "slotId": $slot_id}]' intent_config.json > updated_intent.json
-      fi
+      jq --arg slot_id "${self.triggers.slot_id}" '.slotPriorities = [{"priority": 1, "slotId": $slot_id}]' intent_config.json > updated_intent.json
       
       # Update the intent with the new configuration
       aws lexv2-models update-intent \

@@ -254,12 +254,13 @@ resource "null_resource" "create_lex_alias" {
         --query "intentSummaries[?intentName=='greeting_intent'].intentId" \
         --output text)
 
+      if [[ ! -z "$INTENT_ID" ]]; then
       # Get the intent config
-      aws lexv2-models describe-intent \
-        --bot-id ${self.triggers.bot_id} \
-        --bot-version DRAFT \
-        --locale-id en_US \
-        --intent-id $INTENT_ID > tmp_intent.json
+        aws lexv2-models describe-intent \
+          --bot-id ${self.triggers.bot_id} \
+          --bot-version DRAFT \
+          --locale-id en_US \
+          --intent-id $INTENT_ID > tmp_intent.json
 
       # Inject fulfillment hook
       jq '.fulfillmentCodeHook = {"enabled": true}' tmp_intent.json > updated_intent.json
