@@ -54,12 +54,11 @@ resource "aws_lexv2models_slot" "category_slot" {
   locale_id    = "en_US"
   intent_id    = aws_lexv2models_intent.query_spending_by_category.intent_id
   slot_type_id = aws_lexv2models_slot_type.spending_category_type.slot_type_id
-
   value_elicitation_setting {
     slot_constraint = "Required"
     
     prompt_specification {
-      max_retries = 2
+      max_retries = 2  # This should match the number of retry specifications
       allow_interrupt = true
 
       message_group {
@@ -72,6 +71,7 @@ resource "aws_lexv2models_slot" "category_slot" {
 
       message_selection_strategy = "Random"
 
+      # Initial prompt
       prompt_attempts_specification {
         map_block_key = "Initial"
         allow_interrupt = true
@@ -100,8 +100,38 @@ resource "aws_lexv2models_slot" "category_slot" {
         }
       }
 
+      # First retry
       prompt_attempts_specification {
         map_block_key = "Retry1"
+        allow_interrupt = true
+
+        allowed_input_types {
+          allow_audio_input = true
+          allow_dtmf_input  = true
+        }
+
+        audio_and_dtmf_input_specification {
+          start_timeout_ms = 4000
+          audio_specification {
+            max_length_ms  = 15000
+            end_timeout_ms = 640
+          }
+          dtmf_specification {
+            max_length         = 20
+            end_timeout_ms     = 5000
+            deletion_character = "*"
+            end_character      = "#"
+          }
+        }
+
+        text_input_specification {
+          start_timeout_ms = 30000
+        }
+      }
+
+      # Second retry - Add this block
+      prompt_attempts_specification {
+        map_block_key = "Retry2"
         allow_interrupt = true
 
         allowed_input_types {
