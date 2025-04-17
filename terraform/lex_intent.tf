@@ -130,10 +130,10 @@ resource "aws_lexv2models_intent" "get_recent_transactions" {
     aws_lexv2models_slot.number_of_transactions
   ]
   # This part links the slot to the intent
-  slot_priority {
-    priority = 1
-    slot_id  = aws_lexv2models_slot.number_of_transactions.slot_id
-  }
+  # slot_priority {
+  #   priority = 1
+  #   slot_id  = aws_lexv2models_slot.number_of_transactions.slot_id
+  # }
 }
 
 
