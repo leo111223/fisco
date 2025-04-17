@@ -17,6 +17,7 @@ done
 
 
 ole one
+echo "🕒 Waiting for locale build to finish..."
 until [[ $(aws lexv2-models describe-bot-locale \
         --bot-id ${self.triggers.bot_id} \
         --bot-version DRAFT \

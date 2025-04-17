@@ -185,14 +185,38 @@ resource "null_resource" "create_lex_alias" {
 
       # Wait for build to complete
       echo "🕒 Waiting for locale build to finish..."
-      until [[ $(aws lexv2-models describe-bot-locale \
-        --bot-id ${self.triggers.bot_id} \
-        --bot-version DRAFT \
-        --locale-id en_US \
-        --query 'botLocaleStatus' \
-        --output text) == "Built" ]]; do
+      for i in {1..60}; do
+        STATUS=$(aws lexv2-models describe-bot-locale \
+          --bot-id ${self.triggers.bot_id} \
+          --bot-version DRAFT \
+          --locale-id en_US \
+          --query 'botLocaleStatus' \
+          --output text)
+
+        echo "⏳ Current locale status: $STATUS"
+
+        if [[ -z "$STATUS" ]]; then
+          echo "⚠️  Failed to fetch locale status. Exiting."
+          exit 1
+        fi
+
+        if [[ "$STATUS" == "Built" ]]; then
+          echo "✅ Locale build complete."
+          break
+        elif [[ "$STATUS" == "Failed" ]]; then
+          echo "❌ Locale build failed. Fetching failure reasons..."
+          aws lexv2-models describe-bot-locale \
+            --bot-id ${self.triggers.bot_id} \
+            --bot-version DRAFT \
+            --locale-id en_US \
+            --query 'failureReasons' \
+            --output text
+          exit 1
+        fi
+
         sleep 5
       done
+
 
       # Step 2: Create a version from the DRAFT
       VERSION=$(aws lexv2-models create-bot-version \
