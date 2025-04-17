@@ -133,29 +133,91 @@ resource "aws_lexv2models_intent" "get_recent_transactions" {
   # }
 }
 
-
-
 resource "aws_lexv2models_slot" "number_of_transactions" {
   name         = "NumberOfTransactions"
   bot_id       = aws_lexv2models_bot.finance_assistant.id
   bot_version  = "DRAFT"
   locale_id    = "en_US"
   intent_id    = aws_lexv2models_intent.get_recent_transactions.intent_id
-  //aws_lexv2models_intent.get_recent_transactions.id
-  
-  
+
   slot_type_id = aws_lexv2models_slot_type.transaction_count_type.slot_type_id
+
   value_elicitation_setting {
     slot_constraint = "Optional"
 
     prompt_specification {
       max_retries = 1
       allow_interrupt = true
+
       message_group {
         message {
           plain_text_message {
             value = "How many recent transactions would you like to see?"
           }
+        }
+      }
+
+      # ✅ Fix for provider mismatch error
+      message_selection_strategy = "Random"
+
+      # ✅ Fix for prompt_attempts_specification mismatch
+      prompt_attempts_specification {
+        map_block_key = "Initial"
+        allow_interrupt = true
+
+        allowed_input_types {
+          allow_audio_input = true
+          allow_dtmf_input  = true
+        }
+
+        audio_and_dtmf_input_specification {
+          start_timeout_ms = 4000
+
+          audio_specification {
+            max_length_ms  = 15000
+            end_timeout_ms = 640
+          }
+
+          dtmf_specification {
+            max_length         = 513
+            end_timeout_ms     = 5000
+            deletion_character = "*"
+            end_character      = "#"
+          }
+        }
+
+        text_input_specification {
+          start_timeout_ms = 30000
+        }
+      }
+
+      prompt_attempts_specification {
+        map_block_key = "Retry1"
+        allow_interrupt = true
+
+        allowed_input_types {
+          allow_audio_input = true
+          allow_dtmf_input  = true
+        }
+
+        audio_and_dtmf_input_specification {
+          start_timeout_ms = 4000
+
+          audio_specification {
+            max_length_ms  = 15000
+            end_timeout_ms = 640
+          }
+
+          dtmf_specification {
+            max_length         = 513
+            end_timeout_ms     = 5000
+            deletion_character = "*"
+            end_character      = "#"
+          }
+        }
+
+        text_input_specification {
+          start_timeout_ms = 30000
         }
       }
     }
@@ -168,30 +230,4 @@ resource "aws_lexv2models_slot" "number_of_transactions" {
   }
 }
 
-resource "aws_lexv2models_slot_type" "transaction_count_type" {
-  name         = "TransactionCountType"
-  description  = "Number of recent transactions to fetch"
-  bot_id = aws_lexv2models_bot.finance_assistant.id
-  bot_version   = "DRAFT"
-  locale_id     = "en_US"
-
-  value_selection_setting {
-    resolution_strategy = "OriginalValue"
-  }
-  slot_type_values {
-    sample_value {
-      value = "5"
-    }
-  }
-  slot_type_values {
-    sample_value {
-      value = "10"
-    }
-  }
-  slot_type_values {
-    sample_value {
-      value = "3"
-    }
-  }
-}
 
