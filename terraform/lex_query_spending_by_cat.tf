@@ -163,7 +163,7 @@ resource "aws_lexv2models_slot" "category_slot" {
 
 # Time frame slot
 resource "aws_lexv2models_slot" "time_frame_slot" {
-  name         = "TimeFrame"  # Changed name to be simpler
+  name         = "TimeFrame"
   bot_id       = aws_lexv2models_bot.finance_assistant.id
   bot_version  = "DRAFT"
   locale_id    = "en_US"
@@ -172,8 +172,20 @@ resource "aws_lexv2models_slot" "time_frame_slot" {
 
   value_elicitation_setting {
     slot_constraint = "Required"
-    
-    # Use default settings instead of detailed prompt specifications
+
+    prompt_specification {
+      max_retries     = 2
+      allow_interrupt = true
+
+      message_group {
+        message {
+          plain_text_message {
+            value = "For what time frame would you like to view your spending? (e.g., last week, this month)"
+          }
+        }
+      }
+    }
+
     default_value_specification {
       default_value_list {
         default_value = "this month"
@@ -181,6 +193,7 @@ resource "aws_lexv2models_slot" "time_frame_slot" {
     }
   }
 }
+
 # Category slot type
 # Category slot type
 # Category slot type
