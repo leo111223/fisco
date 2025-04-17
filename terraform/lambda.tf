@@ -115,7 +115,7 @@ resource "aws_lambda_function" "textract_receipt_handler" {
   filename      = "textract.zip"
   handler       = "textract_receipt.lambda_handler"
   runtime       = "python3.9"
-  role          = aws_iam_role.textract_lambda_role.arn  # ✅ Must reference a ROLE, not a policy
+  role          = aws_iam_role.textract_lambda_role.arn  
   timeout       = 30
 
   environment {

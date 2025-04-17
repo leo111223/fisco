@@ -100,8 +100,11 @@ resource "aws_lambda_permission" "api_gateway_fetch_transactions" {
     create_before_destroy = true
   }
   depends_on = [
-    aws_api_gateway_integration.fetch_transactions_get_integration,
-    aws_api_gateway_method.fetch_transactions_get
+    aws_lambda_function.fetch_transactions_handler,
+    aws_api_gateway_rest_api.finance_api,
+    aws_api_gateway_resource.fetch_transactions_dynamo,
+    aws_api_gateway_method.fetch_transactions_get,
+    aws_api_gateway_integration.fetch_transactions_get_integration
   ]
 
 }
