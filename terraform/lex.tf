@@ -101,13 +101,7 @@ resource "aws_lambda_function" "query_lex_handler" {
   ]
 }
 
-# resource "aws_lambda_permission" "allow_lex_invoke_lambda" {
-#   statement_id  = "AllowLexInvokeLambda"
-#   action        = "lambda:InvokeFunction"
-#   function_name = aws_lambda_function.query_lex_handler.function_name
-#   principal     = "lexv2.amazonaws.com"
-#   source_arn    = "arn:aws:execute-api:us-east-1:${data.aws_caller_identity.current.account_id}:${aws_api_gateway_rest_api.finance_api.id}/*/POST/query_lex"
-# }
+
 resource "aws_lambda_permission" "allow_apigw_invoke_lambda" {
   statement_id  = "AllowAPIGatewayInvoke--leo"
   action        = "lambda:InvokeFunction"
@@ -136,6 +130,16 @@ resource "aws_lambda_permission" "allow_apigw_invoke_query_lex" {
     aws_api_gateway_deployment.api_deployment,
     aws_api_gateway_stage.api_stage
   ]
+}
+
+resource "aws_lambda_permission" "allow_lex_to_invoke_query_handler" {
+  statement_id  = "AllowLexToInvokeQueryHandler"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.query_lex_handler.function_name
+  principal     = "lexv2.amazonaws.com"
+  
+  # The source ARN will be constructed from your bot ID and alias ID
+  source_arn    = "arn:aws:lex:us-east-1:864981748263:bot-alias/${aws_lexv2models_bot.finance_assistant.id}/*"
 }
 
 
