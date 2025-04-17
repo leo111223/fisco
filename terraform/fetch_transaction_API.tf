@@ -47,7 +47,10 @@ resource "aws_api_gateway_integration_response" "fetch_transactions_options_inte
     "method.response.header.Access-Control-Allow-Methods" = "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'"
     "method.response.header.Access-Control-Allow-Origin"  = "'*'"
   }
-  depends_on = [aws_api_gateway_method_response.fetch_transactions_options_response]
+  depends_on = [
+    aws_api_gateway_method_response.fetch_transactions_options_response,
+    aws_api_gateway_integration.fetch_transactions_options_integration
+  ]
 
 }
 
@@ -87,7 +90,10 @@ resource "aws_api_gateway_integration_response" "fetch_transactions_get_integrat
   http_method = "GET"
   status_code = "200"
 
-  depends_on = [aws_api_gateway_integration.fetch_transactions_get_integration]
+  depends_on = [
+    aws_api_gateway_integration.fetch_transactions_get_integration,
+    aws_api_gateway_method_response.fetch_transactions_get_response
+    ]
 }
 
 resource "aws_lambda_permission" "api_gateway_fetch_transactions" {
@@ -104,7 +110,8 @@ resource "aws_lambda_permission" "api_gateway_fetch_transactions" {
     aws_api_gateway_rest_api.finance_api,
     aws_api_gateway_resource.fetch_transactions_dynamo,
     aws_api_gateway_method.fetch_transactions_get,
-    aws_api_gateway_integration.fetch_transactions_get_integration
+    aws_api_gateway_integration.fetch_transactions_get_integration,
+    aws_api_gateway_integration_response.fetch_transactions_get_integration_response,
   ]
 
 }
