@@ -192,7 +192,7 @@ resource "aws_lexv2models_slot_type" "spending_category_type" {
   description  = "Categories of spending"
 
   value_selection_setting {
-    resolution_strategy = "TOP_RESOLUTION"  # Changed from ORIGINAL_VALUE to TOP_RESOLUTION
+    resolution_strategy = "TopResolution"  # Changed from ORIGINAL_VALUE to TOP_RESOLUTION
   }
 
   # Use slot_type_values instead of enumeration_value
@@ -252,7 +252,7 @@ resource "aws_lexv2models_slot_type" "time_frame_type" {
   description  = "Time periods for queries"
 
   value_selection_setting {
-    resolution_strategy = "TOP_RESOLUTION"  # Changed from ORIGINAL_VALUE to TOP_RESOLUTION
+    resolution_strategy = "TopResolution"  # Changed from ORIGINAL_VALUE to TOP_RESOLUTION
   }
 
   # Use slot_type_values instead of enumeration_value
