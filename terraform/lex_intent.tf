@@ -243,7 +243,7 @@ resource "null_resource" "update_intent_slot_priority" {
         --bot-version DRAFT \
         --locale-id en_US \
         --intent-id ${self.triggers.intent_id} | \
-        jq 'del(.creationDateTime, .lastUpdatedDateTime, .version)' > intent_config.json
+        jq 'del(.creationDateTime, .lastUpdatedDateTime, .version, .name)' > intent_config.json
       
       # Add the slot priority to the configuration
       jq --arg slot_id "${self.triggers.slot_id}" '.slotPriorities = [{"priority": 1, "slotId": $slot_id}]' intent_config.json > updated_intent.json
