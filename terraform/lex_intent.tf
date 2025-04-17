@@ -127,10 +127,10 @@ resource "aws_lexv2models_intent" "get_recent_transactions" {
   }
   depends_on = [aws_lexv2models_bot_locale.english_locale]
   # This part links the slot to the intent
-  slot_priority {
-    priority = 1
-    slot_id  = aws_lexv2models_slot.number_of_transactions.slot_id
-  }
+  # slot_priority {
+  #   priority = 1
+  #   slot_id  = aws_lexv2models_slot.number_of_transactions.slot_id
+  # }
 }
 
 
