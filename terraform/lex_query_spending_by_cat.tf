@@ -44,6 +44,15 @@ resource "aws_lexv2models_intent" "query_spending_by_category" {
   depends_on = [
     aws_lexv2models_bot_locale.english_locale
   ]
+  slot_priority {
+  priority = 1
+  slot_id  = aws_lexv2models_slot.category_slot.id
+}
+
+slot_priority {
+priority = 2
+slot_id  = aws_lexv2models_slot.time_frame_slot.id
+}
 }
 
 # Category slot
