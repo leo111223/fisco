@@ -19,11 +19,6 @@ provider "aws" {
 }
 
 
-# # IAM for Amplify
-# data "aws_iam_role" "amplify_role" {
-#   name = "amplify-service-role"
-# }
-
 resource "aws_iam_role" "amplify_role" {
   name = "amplify-service-role"
 
