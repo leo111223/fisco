@@ -121,7 +121,7 @@ resource "aws_lambda_function" "textract_receipt_handler" {
   environment {
     variables = {
       STAGE     = "prod"
-      S3_BUCKET = aws_s3_bucket.receipt_bucket.bucket
+      BUCKET_NAME = aws_s3_bucket.receipt_bucket.bucket
       # TRANSACTIONS_TABLE = aws_dynamodb_table.transactions.name
     }
   }
@@ -140,7 +140,9 @@ resource "aws_lambda_function" "fetch_presigned_url_handler" {
   environment {
     variables = {
       STAGE = "prod"
-      S3_BUCKET = aws_s3_bucket.receipt_bucket.bucket  
+      # S3_BUCKET = aws_s3_bucket.receipt_bucket.bucket 
+      # BUCKET_NAME = "leo-receipt-${var.aws_account_id}" 
+      BUCKET_NAME = aws_s3_bucket.receipt_bucket.bucket
     }
   }
   depends_on = [

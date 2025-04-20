@@ -284,65 +284,64 @@ resource "aws_lexv2models_slot" "time_frame_slot" {
 }
 
 # Category slot type
-# Category slot type
-# resource "aws_lexv2models_slot_type" "spending_category_type" {
-#   name         = "SpendingCategoryType"
-#   bot_id       = aws_lexv2models_bot.finance_assistant.id
-#   bot_version  = "DRAFT"
-#   locale_id    = "en_US"
-#   description  = "Categories of spending"
+resource "aws_lexv2models_slot_type" "spending_category_type" {
+  name         = "SpendingCategoryType"
+  bot_id       = aws_lexv2models_bot.finance_assistant.id
+  bot_version  = "DRAFT"
+  locale_id    = "en_US"
+  description  = "Categories of spending"
 
-#   value_selection_setting {
-#     resolution_strategy = "TopResolution"  # Changed from ORIGINAL_VALUE to TOP_RESOLUTION
-#   }
+  value_selection_setting {
+    resolution_strategy = "TopResolution"  # Changed from ORIGINAL_VALUE to TOP_RESOLUTION
+  }
 
-#   # Use slot_type_values instead of enumeration_value
-#   slot_type_values {
-#     sample_value { value = "groceries" }
-#     synonyms { value = "grocery" }
-#     synonyms { value = "supermarket" }
-#     synonyms { value = "food shopping" }
-#   }
+  # Use slot_type_values instead of enumeration_value
+  slot_type_values {
+    sample_value { value = "groceries" }
+    synonyms { value = "grocery" }
+    synonyms { value = "supermarket" }
+    synonyms { value = "food shopping" }
+  }
   
-#   slot_type_values {
-#     sample_value { value = "dining" }
-#     synonyms { value = "restaurants" }
-#     synonyms { value = "eating out" }
-#     synonyms { value = "food" }
-#   }
+  slot_type_values {
+    sample_value { value = "dining" }
+    synonyms { value = "restaurants" }
+    synonyms { value = "eating out" }
+    synonyms { value = "food" }
+  }
   
-#   slot_type_values {
-#     sample_value { value = "entertainment" }
-#     synonyms { value = "fun" }
-#     synonyms { value = "movies" }
-#     synonyms{ value = "shows" }
-#   }
+  slot_type_values {
+    sample_value { value = "entertainment" }
+    synonyms { value = "fun" }
+    synonyms { value = "movies" }
+    synonyms{ value = "shows" }
+  }
   
-#   slot_type_values {
-#     sample_value { value = "shopping" }
-#     synonyms { value = "retail" }
-#     synonyms { value = "clothes" }
-#     synonyms { value = "purchases" }
-#   }
+  slot_type_values {
+    sample_value { value = "shopping" }
+    synonyms { value = "retail" }
+    synonyms { value = "clothes" }
+    synonyms { value = "purchases" }
+  }
   
-#   slot_type_values {
-#     sample_value { value = "transportation" }
-#     synonyms { value = "transit" }
-#     synonyms { value = "travel" }
-#     synonyms { value = "commute" }
-#   }
+  slot_type_values {
+    sample_value { value = "transportation" }
+    synonyms { value = "transit" }
+    synonyms { value = "travel" }
+    synonyms { value = "commute" }
+  }
   
-#   slot_type_values {
-#     sample_value { value = "utilities" }
-#     synonyms { value = "bills" }
-#     synonyms { value = "electricity" }
-#     synonyms { value = "water" }
-#   }
+  slot_type_values {
+    sample_value { value = "utilities" }
+    synonyms { value = "bills" }
+    synonyms { value = "electricity" }
+    synonyms { value = "water" }
+  }
 
-#   depends_on = [
-#     aws_lexv2models_bot_locale.english_locale
-#   ]
-# }
+  depends_on = [
+    aws_lexv2models_bot_locale.english_locale
+  ]
+}
 
 # Time frame slot type
 resource "aws_lexv2models_slot_type" "time_frame_type" {
