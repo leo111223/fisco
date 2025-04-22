@@ -329,10 +329,12 @@ resource "aws_lexv2models_slot_type" "spending_category_type" {
     synonyms { value = "transit" }
     synonyms { value = "commute" }
   }
+  
   slot_type_values {
     sample_value { value = "travel" }
     synonyms { value = "travel" }
   }
+
   slot_type_values {
     sample_value { value = "utilities" }
     synonyms { value = "bills" }
