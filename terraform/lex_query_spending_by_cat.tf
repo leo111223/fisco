@@ -64,7 +64,7 @@ resource "aws_lexv2models_slot" "category_slot" {
       message_group {
         message {
           plain_text_message {
-            value = "Which spending category would you like to know about? For example: groceries, dining, entertainment, etc."
+            value = "Which spending category would you like to know about? For example: groceries, dining, transportation, etc."
           }
         }
       }
