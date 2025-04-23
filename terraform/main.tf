@@ -183,20 +183,20 @@ resource "aws_s3_bucket_cors_configuration" "receipt_bucket_cors" {
   }
 }
 
-# resource "aws_s3_bucket_policy" "allow_textract_access" {
-#   bucket = aws_s3_bucket.receipt_bucket.id
-#   policy = jsonencode({
-#     Version = "2012-10-17"
-#     Statement = [
-#       {
-#         Sid       = "AllowTextractToAccessS3"
-#         Effect    = "Allow"
-#         Principal = {
-#           Service = "textract.amazonaws.com"
-#         }
-#         Action    = "s3:GetObject"
-#         Resource  = "${aws_s3_bucket.receipt_bucket.arn}/*"
-#       }
-#     ]
-#   })
-# }
+resource "aws_s3_bucket_policy" "allow_textract_access" {
+  bucket = aws_s3_bucket.receipt_bucket.id
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid       = "AllowTextractToAccessS3"
+        Effect    = "Allow"
+        Principal = {
+          Service = "textract.amazonaws.com"
+        }
+        Action    = "s3:GetObject"
+        Resource  = "${aws_s3_bucket.receipt_bucket.arn}/*"
+      }
+    ]
+  })
+}
