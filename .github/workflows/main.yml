@@ -65,14 +65,32 @@ jobs:
       - name: Get Terraform outputs
         if: github.event.inputs.action != 'destroy'
         run: |
-          RAW_URL=$(terraform output -raw api_gateway_url | tr -d '\n\"')
+          echo "Getting API Gateway URL from Terraform outputs..."
+          RAW_URL=$(terraform output -raw api_gateway_url)
+          echo "Raw URL from Terraform: $RAW_URL"
           echo "API_GW_BASE_URL=$RAW_URL" >> $GITHUB_ENV
         working-directory: terraform
       
-      - name: Update Frontend API URLs
+      - name: Check Environment Variable
         if: github.event.inputs.action != 'destroy'
         run: |
-          sed -i "s|REPLACE_WITH_API_GW_BASE_URL|${API_GW_BASE_URL}|g" fisc-ai/frontend/src/App.tsx
+          echo "API Gateway URL from environment: ${{ env.API_GW_BASE_URL }}"
+          
+      - name: List Directory Structure
+        run: |
+          ls -la
+          ls -la fisc-ai || echo "fisc-ai directory not found"
+          ls -la fisc-ai/frontend || echo "frontend directory not found"
+          ls -la fisc-ai/frontend/src || echo "src directory not found"
+      
+      - name: Find and Replace in Frontend Code
+        if: github.event.inputs.action != 'destroy'
+        run: |
+          echo "Finding and replacing API URL placeholder in frontend code..."
+          grep -n "REPLACE_WITH_API_GW_BASE_URL" fisc-ai/frontend/src/App.tsx || echo "Placeholder not found"
+          sed -i "s|\"REPLACE_WITH_API_GW_BASE_URL\"|\"${{ env.API_GW_BASE_URL }}\"|g" fisc-ai/frontend/src/App.tsx
+          echo "After replacement:"
+          grep -n "export const API_BASE_URL" fisc-ai/frontend/src/App.tsx
       # - name: Get Terraform outputs
       #   run: |
       #       RAW_URL=$(terraform output -raw api_gateway_url | tr -d '\n\"')
