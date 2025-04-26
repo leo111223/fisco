@@ -62,14 +62,27 @@ jobs:
         if: github.event.inputs.action != 'destroy'
         run: |
           cd terraform
-          echo "API_URL=$(terraform output -raw api_gateway_url)" >> $GITHUB_ENV
-
-      - name: Build frontend with environment variables
+          # Save the output to a file instead of directly to an env var
+          terraform output -raw api_gateway_url > /tmp/api_url.txt
+          # Read the file and clean up any special characters
+          API_URL=$(cat /tmp/api_url.txt | tr -d '"\n')
+          echo "API_URL=$API_URL" >> $GITHUB_ENV
+          # Debug
+          echo "API URL: $API_URL"
+      - name: Create React env file
+        if: github.event.inputs.action != 'destroy'
+        run: |
+          # Create .env file
+          echo "REACT_APP_API_BASE_URL=${{ env.API_URL }}" > fisc-ai/frontend/.env
+          # Debug
+          echo "Contents of .env file:"
+          cat fisc-ai/frontend/.env
+      - name: Build frontend
         if: github.event.inputs.action != 'destroy'
         run: |
           cd fisc-ai/frontend
           npm ci
-          CI=false REACT_APP_API_BASE_URL=${{ env.API_URL }} npm run build
+          CI=false npm run build
       
       # - name: Get Terraform outputs
       #   run: |
