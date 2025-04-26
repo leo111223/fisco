@@ -27,7 +27,8 @@ import FiscAILogo from './assets/FiscAI.jpeg';
 Amplify.configure(awsconfig);
 // export const API_BASE_URL = "https://7o81y9tcsa.execute-api.us-east-1.amazonaws.com/dev"; // Manas's API base URL (textract works)
 //export const API_BASE_URL = "https://2dosvbygnk.execute-api.us-east-1.amazonaws.com/prod"; // Leo's API base URL
-export const API_BASE_URL = "REPLACE_WITH_API_GW_BASE_URL";
+// export const API_BASE_URL = "REPLACE_WITH_API_GW_BASE_URL";
+export const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || "https://fallback-url-for-development.com";
 const App = ({ signOut, user }: WithAuthenticatorProps) => {
   const { linkSuccess, isPaymentInitiation, itemId, dispatch } =
     useContext(Context);
