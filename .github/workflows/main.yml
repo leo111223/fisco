@@ -61,18 +61,34 @@ jobs:
       - name: Get Terraform outputs
         if: github.event.inputs.action != 'destroy'
         run: |
-          RAW_URL=$(terraform output -raw api_gateway_url)
-          echo "API_GW_BASE_URL=$RAW_URL" >> $GITHUB_ENV
+          # Add debugging to see what the raw output looks like
+          echo "Raw terraform output command result:"
+          terraform output api_gateway_url
+          
+          # Try with double quotes around the command substitution and remove -raw if causing issues
+          RAW_URL="$(terraform output api_gateway_url)"
+          
+          # Remove any quotes and newlines that might be in the output
+          CLEAN_URL=$(echo $RAW_URL | tr -d '"\n')
+          
+          # Debug the cleaned URL
+          echo "Cleaned URL: $CLEAN_URL"
+          
+          # Set the environment variable
+          echo "REACT_APP_API_BASE_URL=$CLEAN_URL" >> $GITHUB_ENV
         working-directory: terraform
 
+      - name: Verify environment variable
+        run: |
+          echo "REACT_APP_API_BASE_URL from environment: ${{ env.REACT_APP_API_BASE_URL }}"
       # Option 1: Create .env file approach
       - name: Create .env file for React
         if: github.event.inputs.action != 'destroy'
         run: |
-          echo "Creating .env file with API URL: ${{ env.API_GW_BASE_URL }}"
-          echo "REACT_APP_API_BASE_URL=${{ env.API_GW_BASE_URL }}" > fisc-ai/frontend/.env
-          cat fisc-ai/frontend/.env  # Debug: print the content of the .env file
-
+          echo "Creating .env file..."
+          echo "REACT_APP_API_BASE_URL=${{ env.REACT_APP_API_BASE_URL }}" > fisc-ai/frontend/.env
+          echo ".env file contents:"
+          cat fisc-ai/frontend/.env
       # Option 2: Using environment variable directly in build
       - name: Build frontend
         if: github.event.inputs.action != 'destroy'
