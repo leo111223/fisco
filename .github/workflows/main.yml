@@ -61,14 +61,26 @@ jobs:
         run: terraform apply -auto-approve -var-file="terraform.tfvars"
         working-directory: terraform
 
-      - name: Get Terraform outputs
-        run: |
-            RAW_URL=$(terraform output -raw api_gateway_url | tr -d '\n\"')
-            echo "API_GW_BASE_URL=$RAW_URL" >> $GITHUB_ENV
 
-      - name: Update Frontend API URLs
+      - name: Get Terraform outputs
+        if: github.event.inputs.action != 'destroy'
         run: |
-            sed -i "s|REPLACE_WITH_API_GW_BASE_URL|${API_GW_BASE_URL}|g" fisc-ai/frontend/src/App.tsx
+          RAW_URL=$(terraform output -raw api_gateway_url | tr -d '\n\"')
+          echo "API_GW_BASE_URL=$RAW_URL" >> $GITHUB_ENV
+        working-directory: terraform
+      
+      - name: Update Frontend API URLs
+        if: github.event.inputs.action != 'destroy'
+        run: |
+          sed -i "s|REPLACE_WITH_API_GW_BASE_URL|${API_GW_BASE_URL}|g" fisc-ai/frontend/src/App.tsx
+      # - name: Get Terraform outputs
+      #   run: |
+      #       RAW_URL=$(terraform output -raw api_gateway_url | tr -d '\n\"')
+      #       echo "API_GW_BASE_URL=$RAW_URL" >> $GITHUB_ENV
+
+      # - name: Update Frontend API URLs
+      #   run: |
+      #       sed -i "s|REPLACE_WITH_API_GW_BASE_URL|${API_GW_BASE_URL}|g" fisc-ai/frontend/src/App.tsx
             
       - name: Terraform Destroy
         if: github.event.inputs.action == 'destroy'
