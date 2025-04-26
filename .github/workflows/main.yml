@@ -69,7 +69,9 @@ jobs:
       - name: Create .env file for React
         if: github.event.inputs.action != 'destroy'
         run: |
+          echo "Creating .env file with API URL: ${{ env.API_GW_BASE_URL }}"
           echo "REACT_APP_API_BASE_URL=${{ env.API_GW_BASE_URL }}" > fisc-ai/frontend/.env
+          cat fisc-ai/frontend/.env  # Debug: print the content of the .env file
 
       # Option 2: Using environment variable directly in build
       - name: Build frontend
