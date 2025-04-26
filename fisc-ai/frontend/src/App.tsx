@@ -29,9 +29,9 @@ Amplify.configure(awsconfig);
 //export const API_BASE_URL = "https://2dosvbygnk.execute-api.us-east-1.amazonaws.com/prod"; // Leo's API base URL
 // export const API_BASE_URL = "REPLACE_WITH_API_GW_BASE_URL";
 export const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || "";
-if (!API_BASE_URL) {
-  console.error("API_BASE_URL not defined. Please check your environment configuration.");
-}
+// if (!API_BASE_URL) {
+//   console.error("API_BASE_URL not defined. Please check your environment configuration.");
+// }
 const App = ({ signOut, user }: WithAuthenticatorProps) => {
   const { linkSuccess, isPaymentInitiation, itemId, dispatch } =
     useContext(Context);
