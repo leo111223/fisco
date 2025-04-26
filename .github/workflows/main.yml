@@ -58,25 +58,28 @@ jobs:
         run: terraform apply -auto-approve -var-file="terraform.tfvars"
         working-directory: terraform
 
-      - name: Get Terraform outputs
+      - name: Get Terraform outputs and update frontend
         if: github.event.inputs.action != 'destroy'
         run: |
+          # Change to terraform directory
           cd terraform
-          # Save the output to a file instead of directly to an env var
+          
+          # Get the raw output and store it in a file to avoid environment variable issues
           terraform output -raw api_gateway_url > /tmp/api_url.txt
-          # Read the file and clean up any special characters
-          API_URL=$(cat /tmp/api_url.txt | tr -d '"\n')
-          echo "API_URL=$API_URL" >> $GITHUB_ENV
-          # Debug
-          echo "API URL: $API_URL"
-      - name: Create React env file
-        if: github.event.inputs.action != 'destroy'
-        run: |
-          # Create .env file
-          echo "REACT_APP_API_BASE_URL=${{ env.API_URL }}" > fisc-ai/frontend/.env
-          # Debug
-          echo "Contents of .env file:"
-          cat fisc-ai/frontend/.env
+          
+          # Show what we captured
+          echo "Terraform output content:"
+          cat /tmp/api_url.txt
+          
+          # Use the URL directly in the sed command without environment variables
+          URL=$(cat /tmp/api_url.txt)
+          
+          # Update the file directly with sed
+          sed -i "s|\"REPLACE_WITH_API_GW_BASE_URL\"|\"$URL\"|g" ../fisc-ai/frontend/src/App.tsx
+          
+          # Verify the change
+          grep "API_BASE_URL" ../fisc-ai/frontend/src/App.tsx
+      
       - name: Build frontend
         if: github.event.inputs.action != 'destroy'
         run: |
