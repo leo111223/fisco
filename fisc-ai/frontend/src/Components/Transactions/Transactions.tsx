@@ -75,7 +75,9 @@ const Transactions = ({ accessToken, API_BASE_URL, userId }: TransactionsProps) 
     <div className={styles['transactions-container']}>
       <div className={styles['transactions-header']}>
         <div className={styles['header-left']}>
-          <h2 className={styles['header-title']}>Your Transactions</h2>
+          <h2 className={styles['header-title']}>
+            Your Transactions
+          </h2>
           <span className={styles['transaction-count']}>
             ({transactions.length} total)
           </span>

@@ -228,7 +228,13 @@ const Transactions = ({ accessToken, API_BASE_URL, userId }: TransactionsProps) 
     <div className={styles['transactions-container']}>
       <div className={styles['transactions-header']}>
         <div className={styles['header-left']}>
-          <h2 className={styles['header-title']}>Your Transactions</h2>
+          <h2 className={styles['header-title']}>
+            Your Transactions{transactions.length > 0 && (
+              <span style={{ fontWeight: 400, fontSize: '0.9em', marginLeft: '8px' }}>
+                since {formatDate(transactions[transactions.length - 1].date)}
+              </span>
+            )}
+          </h2>
           <span className={styles['transaction-count']}>
             ({transactions.length} total)
           </span>

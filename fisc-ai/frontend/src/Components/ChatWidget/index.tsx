@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import './ChatWidget.css';
-import {API_BASE_URL} from '../../App';
 
+// You can store this in an environment variable or config file
+const API_ENDPOINT = "https://yhkgvdj49d.execute-api.us-east-1.amazonaws.com/prod/query_lex"; // Leo's API endpoint
 
 const ChatWidget = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -20,7 +21,7 @@ const ChatWidget = () => {
       const requestBody = JSON.stringify({ message });
       console.log('Request body:', requestBody); // Will show: {"message": "your text"}
       
-      const response = await fetch(`${API_BASE_URL}/query_lex`, {
+      const response = await fetch(API_ENDPOINT, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

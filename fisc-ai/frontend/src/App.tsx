@@ -23,10 +23,11 @@ import './App.css';
 import { usePlaidLink } from "react-plaid-link";
 import LoadingScreen from './Components/LoadingScreen';
 import FiscAILogo from './assets/FiscAI.jpeg';
-Amplify.configure(awsconfig);
-export const API_BASE_URL = "https://w7l6nc4sd4.execute-api.us-east-1.amazonaws.com/prod";
 
-//export const API_BASE_URL = "REPLACE_WITH_API_GW_BASE_URL";
+Amplify.configure(awsconfig);
+// export const API_BASE_URL = "https://7o81y9tcsa.execute-api.us-east-1.amazonaws.com/dev"; // Manas's API base URL (textract works)
+export const API_BASE_URL = "https://yhkgvdj49d.execute-api.us-east-1.amazonaws.com/prod"; // Leo's API base URL
+
 const App = ({ signOut, user }: WithAuthenticatorProps) => {
   const { linkSuccess, isPaymentInitiation, itemId, dispatch } =
     useContext(Context);
