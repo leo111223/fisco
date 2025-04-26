@@ -64,21 +64,17 @@ jobs:
           # Change to terraform directory
           cd terraform
           
-          # Get the raw output and store it in a file to avoid environment variable issues
-          terraform output -raw api_gateway_url > /tmp/api_url.txt
+          # Get the raw output - avoid using sed for now
+          API_URL=$(terraform output -raw api_gateway_url)
           
-          # Show what we captured
-          echo "Terraform output content:"
-          cat /tmp/api_url.txt
+          # Print for debugging
+          echo "API URL: $API_URL"
           
-          # Use the URL directly in the sed command without environment variables
-          URL=$(cat /tmp/api_url.txt)
+          # Create .env file for React
+          echo "REACT_APP_API_BASE_URL=$API_URL" > ../fisc-ai/frontend/.env
           
-          # Update the file directly with sed
-          sed -i "s|\"REPLACE_WITH_API_GW_BASE_URL\"|\"$URL\"|g" ../fisc-ai/frontend/src/App.tsx
-          
-          # Verify the change
-          grep "API_BASE_URL" ../fisc-ai/frontend/src/App.tsx
+          # Verify the file was created
+          cat ../fisc-ai/frontend/.env
       
       - name: Build frontend
         if: github.event.inputs.action != 'destroy'
