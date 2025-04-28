@@ -313,6 +313,7 @@ resource "aws_lexv2models_slot_type" "spending_category_type" {
   slot_type_values {
     sample_value { value = "entertainment" }
     synonyms { value = "fun" }
+    synonyms { value = "entertainment" }
     synonyms { value = "movies" }
     synonyms{ value = "shows" }
   }
@@ -333,6 +334,10 @@ resource "aws_lexv2models_slot_type" "spending_category_type" {
   slot_type_values {
     sample_value { value = "travel" }
     synonyms { value = "travel" }
+    synonyms { value = "airline" }
+    synonyms { value = "aviation" }
+    synonyms { value = "hotel" }
+    synonyms { value = "flight" }
   }
 
   slot_type_values {
