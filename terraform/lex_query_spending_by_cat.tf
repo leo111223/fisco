@@ -413,76 +413,110 @@ resource "null_resource" "update_query_spending_by_category_slot_priorities" {
   triggers = {
     bot_id    = aws_lexv2models_bot.finance_assistant.id
     locale_id = "en_US"
-    intent_id  = aws_lexv2models_intent.query_spending_by_category.intent_id
+    intent_id = aws_lexv2models_intent.query_spending_by_category.intent_id
   }
 
   provisioner "local-exec" {
     command = <<EOT
+      # Wait to ensure AWS resources are fully created and available
+      sleep 15
+      
       set -xe
 
       BOT_ID=${self.triggers.bot_id}
       LOCALE=${self.triggers.locale_id}
       INTENT_NAME="QuerySpendingByCategory"
 
-      echo "🔍 Looking up intent ID for: $INTENT_NAME"
-      INTENT_ID=$(aws lexv2-models list-intents \
-        --bot-id $BOT_ID \
-        --bot-version DRAFT \
-        --locale-id $LOCALE \
-        --query "intentSummaries[?intentName=='$INTENT_NAME'].intentId" \
-        --output text)
+      # Try multiple times with delays
+      MAX_ATTEMPTS=3
+      ATTEMPT=1
+      
+      while [ $ATTEMPT -le $MAX_ATTEMPTS ]; do
+        echo "Attempt $ATTEMPT of $MAX_ATTEMPTS to update slot priorities..."
+        
+        echo "🔍 Looking up intent ID for: $INTENT_NAME"
+        INTENT_ID=$(aws lexv2-models list-intents \
+          --bot-id $BOT_ID \
+          --bot-version DRAFT \
+          --locale-id $LOCALE \
+          --query "intentSummaries[?intentName=='$INTENT_NAME'].intentId" \
+          --output text)
 
-      if [[ -z "$INTENT_ID" ]]; then
-        echo "❌ Intent '$INTENT_NAME' not found. Exiting."
-        exit 1
-      fi
+        if [[ -z "$INTENT_ID" ]]; then
+          echo "❌ Intent '$INTENT_NAME' not found. Waiting and retrying..."
+          sleep 10
+          ATTEMPT=$((ATTEMPT+1))
+          continue
+        fi
 
-      echo "🔍 Looking up slot IDs..."
-      SLOT_ID_CATEGORY=$(aws lexv2-models list-slots \
-        --bot-id $BOT_ID \
-        --bot-version DRAFT \
-        --locale-id $LOCALE \
-        --intent-id $INTENT_ID \
-        --query "slotSummaries[?slotName=='Category'].slotId" \
-        --output text)
+        echo "🔍 Looking up slot IDs..."
+        SLOT_ID_CATEGORY=$(aws lexv2-models list-slots \
+          --bot-id $BOT_ID \
+          --bot-version DRAFT \
+          --locale-id $LOCALE \
+          --intent-id $INTENT_ID \
+          --query "slotSummaries[?slotName=='Category'].slotId" \
+          --output text)
 
-      SLOT_ID_TIMEFRAME=$(aws lexv2-models list-slots \
-        --bot-id $BOT_ID \
-        --bot-version DRAFT \
-        --locale-id $LOCALE \
-        --intent-id $INTENT_ID \
-        --query "slotSummaries[?slotName=='TimeFrame'].slotId" \
-        --output text)
+        SLOT_ID_TIMEFRAME=$(aws lexv2-models list-slots \
+          --bot-id $BOT_ID \
+          --bot-version DRAFT \
+          --locale-id $LOCALE \
+          --intent-id $INTENT_ID \
+          --query "slotSummaries[?slotName=='TimeFrame'].slotId" \
+          --output text)
 
-      if [[ -z "$SLOT_ID_CATEGORY" || -z "$SLOT_ID_TIMEFRAME" ]]; then
-        echo "❌ One or both slot IDs not found. Exiting."
-        exit 1
-      fi
+        if [[ -z "$SLOT_ID_CATEGORY" || -z "$SLOT_ID_TIMEFRAME" ]]; then
+          echo "❌ One or both slot IDs not found. Waiting and retrying..."
+          sleep 10
+          ATTEMPT=$((ATTEMPT+1))
+          continue
+        fi
 
-      echo "✅ Slot IDs: Category=$SLOT_ID_CATEGORY, TimeFrame=$SLOT_ID_TIMEFRAME"
+        echo "✅ Slot IDs: Category=$SLOT_ID_CATEGORY, TimeFrame=$SLOT_ID_TIMEFRAME"
 
-      echo "📄 Fetching intent definition..."
-      aws lexv2-models describe-intent \
-        --bot-id $BOT_ID \
-        --bot-version DRAFT \
-        --locale-id $LOCALE \
-        --intent-id $INTENT_ID | \
-        jq 'del(.creationDateTime, .lastUpdatedDateTime, .version, .name)' > intent_config.json
+        echo "📄 Fetching intent definition..."
+        aws lexv2-models describe-intent \
+          --bot-id $BOT_ID \
+          --bot-version DRAFT \
+          --locale-id $LOCALE \
+          --intent-id $INTENT_ID > intent_full.json
+          
+        # Check if slot priorities already exist
+        if jq -e '.slotPriorities' intent_full.json > /dev/null; then
+          echo "✅ Slot priorities already exist, skipping update"
+          exit 0
+        fi
+          
+        # Remove fields that can't be included in update
+        cat intent_full.json | \
+          jq 'del(.creationDateTime, .lastUpdatedDateTime, .version)' > intent_config.json
 
-      echo "🛠️ Injecting slot priorities..."
-      jq --arg cat "$SLOT_ID_CATEGORY" --arg tf "$SLOT_ID_TIMEFRAME" \
-        '.slotPriorities = [{"priority": 1, "slotId": $cat}, {"priority": 2, "slotId": $tf}]' \
-        intent_config.json > updated_intent.json
+        echo "🛠️ Injecting slot priorities..."
+        jq --arg cat "$SLOT_ID_CATEGORY" --arg tf "$SLOT_ID_TIMEFRAME" \
+          '.slotPriorities = [{"priority": 1, "slotId": $cat}, {"priority": 2, "slotId": $tf}]' \
+          intent_config.json > updated_intent.json
 
-      echo "🚀 Updating Lex intent..."
-      aws lexv2-models update-intent \
-        --bot-id $BOT_ID \
-        --bot-version DRAFT \
-        --locale-id $LOCALE \
-        --intent-id $INTENT_ID \
-        --cli-input-json file://updated_intent.json
-
-      echo "✅ Slot priorities successfully updated for '$INTENT_NAME'"
+        echo "🚀 Updating Lex intent..."
+        if aws lexv2-models update-intent \
+          --bot-id $BOT_ID \
+          --bot-version DRAFT \
+          --locale-id $LOCALE \
+          --intent-id $INTENT_ID \
+          --cli-input-json file://updated_intent.json; then
+          
+          echo "✅ Slot priorities successfully updated for '$INTENT_NAME'"
+          exit 0
+        else
+          echo "❌ Failed to update intent. Waiting and retrying..."
+          sleep 10
+          ATTEMPT=$((ATTEMPT+1))
+          continue
+        fi
+      done
+      
+      echo "❌ Failed to update slot priorities after $MAX_ATTEMPTS attempts"
+      exit 1
     EOT
   }
 
