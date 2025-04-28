@@ -76,6 +76,11 @@ resource "aws_api_gateway_method_response" "textract_receipt_post_response" {
   http_method = "POST"
   status_code = "200"
 
+  #json response
+  response_models = {
+    "application/json" = aws_api_gateway_model.empty_json_model.name
+  }
+
   depends_on = [ aws_api_gateway_method.textract_receipt_post ]
 }
 
@@ -84,6 +89,10 @@ resource "aws_api_gateway_integration_response" "textract_receipt_post_integrati
   resource_id = aws_api_gateway_resource.textract_receipt.id
   http_method = "POST"
   status_code = "200"
+
+  response_templates = {
+    "application/json" = "" # Empty template for passthrough
+  }
 
   depends_on = [
     aws_api_gateway_integration.textract_receipt_post_integration,
@@ -98,4 +107,15 @@ resource "aws_lambda_permission" "api_gateway_textract_receipt" {
   function_name = aws_lambda_function.textract_receipt_handler.function_name
   principal     = "apigateway.amazonaws.com"
   source_arn    = "${aws_api_gateway_rest_api.finance_api.execution_arn}/*/*/textract_receipt"
+}
+
+#json template for the response
+resource "aws_api_gateway_model" "empty_json_model" {
+  rest_api_id  = aws_api_gateway_rest_api.finance_api.id
+  name         = "EmptyModel"
+  description  = "Empty JSON response model"
+  content_type = "application/json"
+  schema       = jsonencode({
+    type = "object"
+  })
 }
