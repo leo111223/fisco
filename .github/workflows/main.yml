@@ -57,40 +57,15 @@ jobs:
         if: github.event.inputs.action == 'apply' || github.ref == 'refs/heads/main'
         run: terraform apply -auto-approve -var-file="terraform.tfvars"
         working-directory: terraform
-
-      - name: Get Terraform outputs and update frontend
-        if: github.event.inputs.action != 'destroy'
-        run: |
-          # Change to terraform directory
-          cd terraform
-          
-          # Get the raw output - avoid using sed for now
-          API_URL=$(terraform output -raw api_gateway_url)
-          
-          # Print for debugging
-          echo "API URL: $API_URL"
-          
-          # Create .env file for React
-          echo "REACT_APP_API_BASE_URL=$API_URL" > ../fisc-ai/frontend/.env
-          
-          # Verify the file was created
-          cat ../fisc-ai/frontend/.env
       
-      - name: Build frontend
-        if: github.event.inputs.action != 'destroy'
+      - name: Get Terraform outputs
         run: |
-          cd fisc-ai/frontend
-          npm ci
-          CI=false npm run build
-      
-      # - name: Get Terraform outputs
-      #   run: |
-      #       RAW_URL=$(terraform output -raw api_gateway_url | tr -d '\n\"')
-      #       echo "API_GW_BASE_URL=$RAW_URL" >> $GITHUB_ENV
+            RAW_URL=$(terraform output -raw api_gateway_url | tr -d '\n\"')
+            echo "API_GW_BASE_URL=$RAW_URL" >> $GITHUB_ENV
 
-      # - name: Update Frontend API URLs
-      #   run: |
-      #       sed -i "s|REPLACE_WITH_API_GW_BASE_URL|${API_GW_BASE_URL}|g" fisc-ai/frontend/src/App.tsx
+      - name: Update Frontend API URLs
+        run: |
+            sed -i "s|REPLACE_WITH_API_GW_BASE_URL|${API_GW_BASE_URL}|g" fisc-ai/frontend/src/App.tsx
             
       - name: Terraform Destroy
         if: github.event.inputs.action == 'destroy'

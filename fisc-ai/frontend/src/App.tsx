@@ -26,7 +26,7 @@ import FiscAILogo from './assets/FiscAI.jpeg';
 
 Amplify.configure(awsconfig);
 // export const API_BASE_URL = "https://7o81y9tcsa.execute-api.us-east-1.amazonaws.com/dev"; // Manas's API base URL (textract works)
-export const API_BASE_URL = "https://dex268p1of.execute-api.us-east-1.amazonaws.com/prod"; // Leo's API base URL
+export const API_BASE_URL = "https://6mrjdp0h6c.execute-api.us-east-1.amazonaws.com/prod"; // Leo's API base URL
 // export const API_BASE_URL = "REPLACE_WITH_API_GW_BASE_URL";
 // export const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || "";
 // if (!API_BASE_URL) {
