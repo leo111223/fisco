@@ -123,7 +123,7 @@ resource "aws_lambda_permission" "allow_apigw_invoke_query_lex" {
   principal     = "apigateway.amazonaws.com"
 
   # Adjust the REST API resource name as needed
-  source_arn = "arn:aws:execute-api:us-east-1:${var.aws_account_id}:${aws_api_gateway_rest_api.finance_api.id}/*/POST/query_lex"
+  source_arn = "arn:aws:execute-api:us-east-1:${data.aws_caller_identity.current.account_id}:${aws_api_gateway_rest_api.finance_api.id}/*/POST/query_lex"
 
   depends_on = [ 
     aws_lambda_function.query_lex_handler,
