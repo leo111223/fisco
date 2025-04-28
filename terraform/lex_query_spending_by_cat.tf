@@ -42,9 +42,7 @@ resource "aws_lexv2models_intent" "query_spending_by_category" {
   }
 
   depends_on = [
-    aws_lexv2models_bot_locale.english_locale,
-    aws_lexv2models_slot.category_slot,
-    aws_lexv2models_slot.time_frame_slot
+    aws_lexv2models_bot_locale.english_locale
   ]
 }
 
