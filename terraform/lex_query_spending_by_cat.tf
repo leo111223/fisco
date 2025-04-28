@@ -347,6 +347,13 @@ resource "aws_lexv2models_slot_type" "spending_category_type" {
     synonyms { value = "water" }
   }
 
+  slot_type_values {
+    sample_value { value = "payments" }
+    synonyms { value = "bills" }
+    synonyms { value = "electricity" }
+    synonyms { value = "water" }
+  }
+
   depends_on = [
     aws_lexv2models_bot_locale.english_locale
   ]
