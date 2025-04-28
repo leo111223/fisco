@@ -139,7 +139,7 @@ resource "aws_lambda_permission" "allow_lex_to_invoke_query_handler" {
   principal     = "lexv2.amazonaws.com"
   
   # The source ARN will be constructed from your bot ID and alias ID
-  source_arn    = "arn:aws:lex:us-east-1:864981748263:bot-alias/${aws_lexv2models_bot.finance_assistant.id}/*"
+  source_arn    = "arn:aws:lex:us-east-1:${data.aws_caller_identity.current.account_id}:bot-alias/${aws_lexv2models_bot.finance_assistant.id}/*"
 }
 
 
