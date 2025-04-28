@@ -196,8 +196,7 @@ resource "aws_dynamodb_table" "accounts" {
 
 # S3 bucket policy
 resource "aws_s3_bucket" "receipt_bucket" {
-  bucket        = "receipt-${var.aws_account_id}" 
-  #bucket        = "receipt-1112233" 
+  bucket        = "receipt-${data.aws_caller_identity.current.account_id}" 
   force_destroy = true
 }
 
